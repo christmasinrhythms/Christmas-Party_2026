@@ -14,7 +14,7 @@
 window.EVENT = {
 
   /* ---------- Event details (top of the page) ---------- */
-  title:     "Holiday Harmony",
+  title:     "Christmas In Rhythm",
   date:      "Thursday, 24 December 2026",
   time:      "11:30 – 15:00",
 
