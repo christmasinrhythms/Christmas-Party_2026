@@ -33,7 +33,7 @@ window.EVENT = {
 
   // Upload the poster into the "images" folder with exactly this name.
   // Leave it as "" to hide the poster section.
-  poster:    "images/poster.jpg",
+  poster:    "Poster.jpg",
 
   // Change this whenever you edit, so the team knows the page is fresh.
   lastUpdated: "8 Nov 2026",
