@@ -1,0 +1,386 @@
+{
+  "version": "immersive-rsvp-20261112",
+  "world": [
+    1920,
+    1080
+  ],
+  "assets": {
+    "background": "assets/doorway.png",
+    "logo": "assets/logo.png",
+    "elf": "assets/elf.png",
+    "snowman": "assets/snowman.png",
+    "dateArrow": "assets/props/date-arrow.png",
+    "venuePlaque": "assets/props/venue-plaque.png",
+    "bubble": "assets/props/speechbubble.png",
+    "video": "assets/opening.mp4",
+    "countdown": "assets/props/flip-tile-blank.png"
+  },
+  "labels": {
+    "date": {
+      "en": "24 DECEMBER 2026",
+      "zh-Hant": "2026年12月24日",
+      "png": {
+        "en": "assets/labels/date--en.png",
+        "zh-Hant": "assets/labels/date--zh-Hant.png"
+      }
+    },
+    "time": {
+      "en": "11:30–15:00",
+      "zh-Hant": "上午11:30–下午3:00",
+      "png": {
+        "en": "assets/labels/time--en.png",
+        "zh-Hant": "assets/labels/time--zh-Hant.png"
+      }
+    },
+    "venue_title": {
+      "en": "Harbour Grand",
+      "zh-Hant": "港島海逸君綽酒店",
+      "png": {
+        "en": "assets/labels/venue_title--en.png",
+        "zh-Hant": "assets/labels/venue_title--zh-Hant.png"
+      }
+    },
+    "venue_full": {
+      "en": "Harbour Grand Hong Kong",
+      "zh-Hant": "港島海逸君綽酒店",
+      "png": {
+        "en": "assets/labels/venue_full--en.png",
+        "zh-Hant": "assets/labels/venue_full--zh-Hant.png"
+      }
+    },
+    "address": {
+      "en": "1/F, Harbour Grand Hong Kong, 23 Oil Street, North Point",
+      "zh-Hant": "香港北角油街23號港島海逸君綽酒店1樓",
+      "png": {
+        "en": "assets/labels/address--en.png",
+        "zh-Hant": "assets/labels/address--zh-Hant.png"
+      }
+    },
+    "details": {
+      "en": "Address details",
+      "zh-Hant": "詳細地址",
+      "png": {
+        "en": "assets/labels/details--en.png",
+        "zh-Hant": "assets/labels/details--zh-Hant.png"
+      }
+    },
+    "rsvp": {
+      "en": "RSVP before 16 NOV",
+      "zh-Hant": "請於11月16日前回覆",
+      "png": {
+        "en": "assets/labels/rsvp--en.png",
+        "zh-Hant": "assets/labels/rsvp--zh-Hant.png"
+      }
+    },
+    "add_calendar": {
+      "en": "Add to Calendar",
+      "zh-Hant": "加入日曆",
+      "png": {
+        "en": "assets/labels/add_calendar--en.png",
+        "zh-Hant": "assets/labels/add_calendar--zh-Hant.png"
+      }
+    },
+    "calendar_google": {
+      "en": "Google Calendar",
+      "zh-Hant": "Google 日曆",
+      "png": {
+        "en": "assets/labels/calendar_google--en.png",
+        "zh-Hant": "assets/labels/calendar_google--zh-Hant.png"
+      }
+    },
+    "calendar_outlook": {
+      "en": "Outlook Calendar",
+      "zh-Hant": "Outlook 日曆",
+      "png": {
+        "en": "assets/labels/calendar_outlook--en.png",
+        "zh-Hant": "assets/labels/calendar_outlook--zh-Hant.png"
+      }
+    },
+    "calendar_apple": {
+      "en": "Apple Calendar (.ics)",
+      "zh-Hant": "Apple 日曆（.ics）",
+      "png": {
+        "en": "assets/labels/calendar_apple--en.png",
+        "zh-Hant": "assets/labels/calendar_apple--zh-Hant.png"
+      }
+    },
+    "days": {
+      "en": "Days",
+      "zh-Hant": "日",
+      "png": {
+        "en": "assets/labels/days--en.png",
+        "zh-Hant": "assets/labels/days--zh-Hant.png"
+      }
+    },
+    "hours": {
+      "en": "Hours",
+      "zh-Hant": "小時",
+      "png": {
+        "en": "assets/labels/hours--en.png",
+        "zh-Hant": "assets/labels/hours--zh-Hant.png"
+      }
+    },
+    "minutes": {
+      "en": "Minutes",
+      "zh-Hant": "分鐘",
+      "png": {
+        "en": "assets/labels/minutes--en.png",
+        "zh-Hant": "assets/labels/minutes--zh-Hant.png"
+      }
+    },
+    "seconds": {
+      "en": "Seconds",
+      "zh-Hant": "秒",
+      "png": {
+        "en": "assets/labels/seconds--en.png",
+        "zh-Hant": "assets/labels/seconds--zh-Hant.png"
+      }
+    },
+    "coming_soon": {
+      "en": "Coming Soon",
+      "zh-Hant": "即將推出",
+      "png": {
+        "en": "assets/labels/coming_soon--en.png",
+        "zh-Hant": "assets/labels/coming_soon--zh-Hant.png"
+      }
+    },
+    "door_hint": {
+      "en": "Tap the lock",
+      "zh-Hant": "點按門鎖",
+      "png": {
+        "en": "assets/labels/door_hint--en.png",
+        "zh-Hant": "assets/labels/door_hint--zh-Hant.png"
+      }
+    },
+    "replay": {
+      "en": "Replay",
+      "zh-Hant": "重新播放",
+      "png": {
+        "en": "assets/labels/replay--en.png",
+        "zh-Hant": "assets/labels/replay--zh-Hant.png"
+      }
+    },
+    "loading": {
+      "en": "Loading…",
+      "zh-Hant": "載入中…",
+      "png": {
+        "en": "assets/labels/loading--en.png",
+        "zh-Hant": "assets/labels/loading--zh-Hant.png"
+      }
+    },
+    "close": {
+      "en": "Close",
+      "zh-Hant": "關閉",
+      "png": {
+        "en": "assets/labels/close--en.png",
+        "zh-Hant": "assets/labels/close--zh-Hant.png"
+      }
+    },
+    "reset_view": {
+      "en": "Reset view",
+      "zh-Hant": "重設畫面",
+      "png": {
+        "en": "assets/labels/reset_view--en.png",
+        "zh-Hant": "assets/labels/reset_view--zh-Hant.png"
+      }
+    },
+    "zoom_out": {
+      "en": "Zoom out",
+      "zh-Hant": "縮小畫面",
+      "png": {
+        "en": "assets/labels/zoom_out--en.png",
+        "zh-Hant": "assets/labels/zoom_out--zh-Hant.png"
+      }
+    },
+    "language": {
+      "en": "繁中",
+      "zh-Hant": "ENG",
+      "png": {
+        "en": "assets/labels/language--en.png",
+        "zh-Hant": "assets/labels/language--zh-Hant.png"
+      }
+    },
+    "calendar_menu": {
+      "en": "Choose a calendar",
+      "zh-Hant": "選擇日曆",
+      "png": {
+        "en": "assets/labels/calendar_menu--en.png",
+        "zh-Hant": "assets/labels/calendar_menu--zh-Hant.png"
+      }
+    },
+    "video_unavailable": {
+      "en": "Video unavailable",
+      "zh-Hant": "影片暫時無法播放",
+      "png": {
+        "en": "assets/labels/video_unavailable--en.png",
+        "zh-Hant": "assets/labels/video_unavailable--zh-Hant.png"
+      }
+    },
+    "tilt_enable": {
+      "en": "Enable motion",
+      "zh-Hant": "啟用動態控制",
+      "png": {
+        "en": "assets/labels/tilt_enable--en.png",
+        "zh-Hant": "assets/labels/tilt_enable--zh-Hant.png"
+      }
+    },
+    "tilt_denied": {
+      "en": "Use touch to explore",
+      "zh-Hant": "請用觸控探索",
+      "png": {
+        "en": "assets/labels/tilt_denied--en.png",
+        "zh-Hant": "assets/labels/tilt_denied--zh-Hant.png"
+      }
+    },
+    "open_house": {
+      "en": "Enter the House",
+      "zh-Hant": "進入音樂屋",
+      "png": {
+        "en": "assets/labels/open_house--en.png",
+        "zh-Hant": "assets/labels/open_house--zh-Hant.png"
+      },
+      "integrationStatus": "unused this round; door is Coming Soon only"
+    }
+  },
+  "digits": {
+    "0": {
+      "src": "assets/digits/digit-0.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        312,
+        159,
+        712,
+        779
+      ]
+    },
+    "1": {
+      "src": "assets/digits/digit-1.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        385,
+        153,
+        648,
+        769
+      ]
+    },
+    "2": {
+      "src": "assets/digits/digit-2.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        303,
+        159,
+        708,
+        771
+      ]
+    },
+    "3": {
+      "src": "assets/digits/digit-3.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        326,
+        159,
+        692,
+        779
+      ]
+    },
+    "4": {
+      "src": "assets/digits/digit-4.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        297,
+        161,
+        717,
+        771
+      ]
+    },
+    "5": {
+      "src": "assets/digits/digit-5.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        331,
+        133,
+        688,
+        779
+      ]
+    },
+    "6": {
+      "src": "assets/digits/digit-6.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        330,
+        154,
+        703,
+        779
+      ]
+    },
+    "7": {
+      "src": "assets/digits/digit-7.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        345,
+        167,
+        734,
+        779
+      ]
+    },
+    "8": {
+      "src": "assets/digits/digit-8.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        315,
+        159,
+        709,
+        779
+      ]
+    },
+    "9": {
+      "src": "assets/digits/digit-9.png",
+      "canvas": [
+        1024,
+        1024
+      ],
+      "ink": [
+        321,
+        159,
+        694,
+        784
+      ]
+    }
+  },
+  "event": {
+    "title": "Christmas in Rhythms",
+    "start_hkt": "2026-12-24T11:30:00+08:00",
+    "end_hkt": "2026-12-24T15:00:00+08:00",
+    "rsvp_date": "2026-11-16"
+  },
+  "rsvp": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=bvGrKaKVE02NUW2xt3XUW9x4G49tIZ9Lh76f3qPEQo9UODJTQldSM1c1NFNYNTUwVDhJNk5QQTQzQy4u",
+  "map": "https://maps.google.com/?q=Harbour+Grand+Hong+Kong+23+Oil+Street+North+Point",
+  "canonical": "https://christmasinrhythms.github.io/Christmas-Party_2026/"
+}

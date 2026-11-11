@@ -1,0 +1,24 @@
+/* Frozen Eva sample, normalized from its 1508px image world into the 1920px app world.
+   All measurements scale with the complete assembly, including phone sizing. */
+.countdown-object {
+  --clock-width:576px;
+  left:972.891933187124px;top:492.1501607598212px;
+  width:var(--clock-width);height:auto;transform:translate(-50%,-50%);
+  border:0;border-radius:0;padding:0;background:none;box-shadow:none;
+  filter:drop-shadow(0 calc(var(--clock-width)*.0066313) calc(var(--clock-width)*.01105217) #27170e55);
+}
+.countdown-object:before,.countdown-object:after{display:none}
+.wooden-clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:calc(var(--clock-width)*.030946065);width:100%}
+.wooden-pair{display:block;min-width:0;width:100%;text-align:center}
+.wooden-pair:first-child{transform:translateX(7%)}
+.wooden-pair:last-child{transform:translateX(-7%)}
+.wooden-pair-tiles{display:flex;gap:0}
+.wooden-pair-tiles .wooden-tile+.wooden-tile{margin-left:-12%}
+.wooden-tile{display:block;position:relative;flex:1;aspect-ratio:2/3;min-width:0;perspective:calc(var(--clock-width)*.8841733)}
+.wooden-half{display:block;position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden;transform-style:preserve-3d;background:url('assets/props/flip-tile-blank.png') no-repeat;background-size:100% 200%;pointer-events:none}
+.wooden-half.upper{top:0;transform-origin:bottom;background-position:center top}
+.wooden-half.lower{top:50%;transform-origin:top;background-position:center bottom}
+.wooden-half img{position:absolute;width:80%;height:200%;left:10%;object-fit:contain;filter:brightness(0) saturate(100%) invert(20%) sepia(20%) saturate(1550%) hue-rotate(343deg) brightness(82%);pointer-events:none;user-select:none}
+.wooden-half.upper img{top:0}.wooden-half.lower img{top:-100%}
+.wooden-half.flip-old{z-index:5}.wooden-half.flip-new{z-index:4}
+.wooden-unit{display:flex;align-items:center;justify-content:center;width:92%;min-width:0;height:calc(var(--clock-width)*.0530504);margin:calc(var(--clock-width)*-.002210434) auto 0;padding:0 calc(var(--clock-width)*.0066313);border:0;border-radius:0;font:700 calc(var(--clock-width)*.02210434)/1 system-ui,'PingFang TC',sans-serif;letter-spacing:0;text-transform:uppercase;white-space:nowrap;color:#56351e;text-shadow:0 calc(var(--clock-width)*.002210434) 0 #f9e8c4,0 calc(var(--clock-width)*-.002210434) 0 #51311888;background:url('assets/props/flip-tile-blank.png') center 25%/100% 450% no-repeat;box-shadow:none}

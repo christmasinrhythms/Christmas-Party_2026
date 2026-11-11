@@ -1,0 +1,15 @@
+/* Original bubble art; compact pointer rows and independent40px coarse-input targets. */
+.invite-object .bubble-art{visibility:hidden}
+.invite-object:before{content:"";position:absolute;inset:0;border-style:solid;border-color:transparent;border-width:48.619px 63.416px;border-image:url('assets/props/speechbubble.png') 230 300 230 300 fill stretch;pointer-events:none}
+.invite-face{left:calc(16% - 1.14px);top:calc(37.411px - 16.3536%);bottom:calc(18.589px + 16.3536%);height:auto;gap:1px}
+.bubble-rsvp{display:block;flex:none;width:100%;height:24px;font-size:20px;line-height:1.2;text-align:center;white-space:nowrap}
+.invite-action-slot{display:flex;align-items:center;justify-content:center;flex:none;width:100%;height:var(--invite-row,38.4px)}
+.invite-face .wood-action{width:73.8%;height:32.4px;min-height:32.4px;padding:3.6px 9px;border-radius:3.6px;text-decoration:none}
+.invite-face .wood-action-group{gap:7.2px}
+.invite-face .wood-action-label{font-size:18.9px}
+.invite-face .wood-action-icon{font-size:18px}
+.invite-face .wood-action:after{top:50%;transform:translateY(-50%);height:var(--invite-row,38.4px)}
+.gable-logo{filter:url('#title-ivory-underlay')}
+.address-dialog .address-text{margin:0 0 20px;font:20px/1.55 Georgia,'Songti TC',serif;color:#775f43;text-align:center;overflow-wrap:normal;word-break:normal}
+.address-heading-line,.address-phrase{display:block;white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.address-dialog .dialog-link{justify-content:center;min-height:44px;font:600 14px/1.4 system-ui,'PingFang TC',sans-serif;color:#775633}

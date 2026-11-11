@@ -1,53 +1,131 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7ebdf">
-<meta name="description" content="Christmas in Rhythms — coming soon.">
-<title>Christmas in Rhythms</title>
-<style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#f7ebdf;overflow:hidden}body{font-family:system-ui,sans-serif}main{position:relative;width:100%;height:100vh;height:100svh;overflow:hidden;background:radial-gradient(ellipse,#fcf1e6,#f5e7da)}.film-poster,.film-video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center;transform:none}.film-video{opacity:0}.film-video.has-played{opacity:1}[hidden]{display:none!important}.film-control{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:2;min-width:104px;min-height:44px;padding:11px 18px;border:1px solid #a58b6880;border-radius:3px;color:#65472c;background:#fff6e7ed;font:11px/1.5 system-ui;letter-spacing:.16em;cursor:pointer}.film-control:hover{background:#fff8ed}.film-control:focus-visible{outline:2px solid #775432;outline-offset:4px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-</style>
-</head>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5e7d4"><title>Christmas in Rhythms · The Doorstep</title><meta name="description" content="A watercolor Christmas doorstep. A little music, a warm welcome, and a celebration to look forward to."><link rel="stylesheet" href="immersive.css?v=immersive-polish-20261112"><link rel="stylesheet" href="flip-clock.css?v=approved-flip-20261112"><link rel="stylesheet" href="polish.css?v=immersive-polish-20261112"><link rel="stylesheet" href="refine.css?v=immersive-refine-20261112"><link rel="stylesheet" href="controls.css?v=immersive-controls-20261112"><link rel="stylesheet" href="rsvp.css?v=immersive-halo-20261112"><link rel="stylesheet" href="affordance.css?v=immersive-audio-20261112"><link rel="stylesheet" href="audio.css?v=immersive-audio-20261112"><script src="app.mjs?v=immersive-audio-20261112" type="module"></script></head>
 <body>
-<main aria-label="Christmas in Rhythms opening film">
-  <h1 class="sr-only">Christmas in Rhythms</h1>
-  <img class="film-poster" src="./Christmas-in-Rhythms-coming-soon-poster.jpg" width="1920" height="1080" alt="Christmas in Rhythms — coming soon.">
-  <video id="film" class="film-video" autoplay muted playsinline preload="metadata" poster="./Christmas-in-Rhythms-coming-soon-poster.jpg" aria-hidden="true" tabindex="-1">
-    <source src="./Christmas-in-Rhythms-opening-near-v3.mp4" type="video/mp4">
-  </video>
-  <button id="playbackControl" class="film-control" type="button" aria-label="Replay video" hidden tabindex="-1">REPLAY</button>
-  <p id="filmStatus" class="sr-only" role="status"></p>
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none"><defs>
+<filter id="wood-incised" x="-10%" y="-20%" width="120%" height="140%" color-interpolation-filters="sRGB" primitiveUnits="userSpaceOnUse">
+  <!-- Render the text itself with opaque white fill so SourceAlpha is a clean glyph mask. -->
+  <feFlood flood-color="#956337" flood-opacity="0.60" result="faceTint"/>
+  <feComposite in="faceTint" in2="SourceAlpha" operator="in" result="recessFace"/>
+  <feMorphology in="SourceAlpha" operator="erode" radius="0.28" result="insetGlyph"/>
+  <feComposite in="SourceAlpha" in2="insetGlyph" operator="out" result="cutRim"/>
+  <feFlood flood-color="#6C4827" flood-opacity="0.18" result="rimColor"/>
+  <feComposite in="rimColor" in2="cutRim" operator="in" result="fineInnerRim"/>
+  <feOffset in="SourceAlpha" dx="0.28" dy="0.85" result="maskDownRight"/>
+  <feComposite in="SourceAlpha" in2="maskDownRight" operator="out" result="upperLeftCut"/>
+  <feGaussianBlur in="upperLeftCut" stdDeviation="0.18" result="upperLeftSoft"/>
+  <feComposite in="upperLeftSoft" in2="SourceAlpha" operator="in" result="upperLeftClip"/>
+  <feFlood flood-color="#482A13" flood-opacity="0.92" result="shadowColor"/>
+  <feComposite in="shadowColor" in2="upperLeftClip" operator="in" result="innerShadow"/>
+  <feOffset in="SourceAlpha" dx="-0.22" dy="-0.65" result="maskUpLeft"/>
+  <feComposite in="SourceAlpha" in2="maskUpLeft" operator="out" result="lowerRightCut"/>
+  <feGaussianBlur in="lowerRightCut" stdDeviation="0.12" result="lowerRightSoft"/>
+  <feComposite in="lowerRightSoft" in2="SourceAlpha" operator="in" result="lowerRightClip"/>
+  <feFlood flood-color="#FFE8B4" flood-opacity="0.64" result="lightColor"/>
+  <feComposite in="lightColor" in2="lowerRightClip" operator="in" result="lowerInnerLip"/>
+  <feMerge>
+    <feMergeNode in="recessFace"/>
+    <feMergeNode in="fineInnerRim"/>
+    <feMergeNode in="innerShadow"/>
+    <feMergeNode in="lowerInnerLip"/>
+  </feMerge>
+</filter>
+<filter id="wood-incised-control" x="-10%" y="-20%" width="120%" height="140%" color-interpolation-filters="sRGB" primitiveUnits="userSpaceOnUse">
+  <!-- Render the text itself with opaque white fill so SourceAlpha is a clean glyph mask. -->
+  <feFlood flood-color="#86582E" flood-opacity="0.58" result="faceTint"/>
+  <feComposite in="faceTint" in2="SourceAlpha" operator="in" result="recessFace"/>
+  <feMorphology in="SourceAlpha" operator="erode" radius="0.15" result="insetGlyph"/>
+  <feComposite in="SourceAlpha" in2="insetGlyph" operator="out" result="cutRim"/>
+  <feFlood flood-color="#6C4827" flood-opacity="0.14" result="rimColor"/>
+  <feComposite in="rimColor" in2="cutRim" operator="in" result="fineInnerRim"/>
+  <feOffset in="SourceAlpha" dx="0.16" dy="0.45" result="maskDownRight"/>
+  <feComposite in="SourceAlpha" in2="maskDownRight" operator="out" result="upperLeftCut"/>
+  <feGaussianBlur in="upperLeftCut" stdDeviation="0.1" result="upperLeftSoft"/>
+  <feComposite in="upperLeftSoft" in2="SourceAlpha" operator="in" result="upperLeftClip"/>
+  <feFlood flood-color="#432711" flood-opacity="0.94" result="shadowColor"/>
+  <feComposite in="shadowColor" in2="upperLeftClip" operator="in" result="innerShadow"/>
+  <feOffset in="SourceAlpha" dx="-0.12" dy="-0.35" result="maskUpLeft"/>
+  <feComposite in="SourceAlpha" in2="maskUpLeft" operator="out" result="lowerRightCut"/>
+  <feGaussianBlur in="lowerRightCut" stdDeviation="0.08" result="lowerRightSoft"/>
+  <feComposite in="lowerRightSoft" in2="SourceAlpha" operator="in" result="lowerRightClip"/>
+  <feFlood flood-color="#FFE3A3" flood-opacity="0.6" result="lightColor"/>
+  <feComposite in="lightColor" in2="lowerRightClip" operator="in" result="lowerInnerLip"/>
+  <feMerge>
+    <feMergeNode in="recessFace"/>
+    <feMergeNode in="fineInnerRim"/>
+    <feMergeNode in="innerShadow"/>
+    <feMergeNode in="lowerInnerLip"/>
+  </feMerge>
+</filter>
+<filter id="title-ivory-underlay" x="-15%" y="-20%" width="130%" height="140%" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="11" result="wideHaloMask"/>
+ <feFlood flood-color="#ffffff" flood-opacity=".8" result="wideHaloWhite"/>
+ <feComposite in="wideHaloWhite" in2="wideHaloMask" operator="in" result="wideHalo"/>
+ <feMorphology in="SourceAlpha" operator="dilate" radius="4" result="ivorySpread"/>
+ <feGaussianBlur in="ivorySpread" stdDeviation="1.8" result="ivoryFeather"/>
+ <feFlood flood-color="#fffaf0" flood-opacity=".98" result="ivoryWhite"/>
+ <feComposite in="ivoryWhite" in2="ivoryFeather" operator="in" result="ivoryUnderlay"/>
+ <feMerge><feMergeNode in="wideHalo"/><feMergeNode in="ivoryUnderlay"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter></defs></svg>
+<h1 class="sr-only">Christmas in Rhythms</h1>
+<div id="loading" class="loading-screen"><img class="loading-logo" src="assets/logo.png" alt="Christmas in Rhythms"><p data-t="loading">Loading…</p><progress id="loadProgress" value="0" max="1" aria-label="Loading"></progress><p id="loadCount" class="load-count" aria-live="polite"></p><button id="loadContinue" class="paper-button" data-t="continue_scene" hidden>Continue to the house</button></div>
+<section id="intro" class="intro" hidden aria-label="Opening film"><video id="opening" muted playsinline preload="metadata" poster="assets/doorway.png" aria-hidden="true"><source src="assets/opening.mp4" type="video/mp4"></video><button id="skipIntro" class="paper-button" data-t="skip_intro">Skip introduction</button><button id="playIntro" class="paper-button intro-play" data-t="play_intro" hidden>Play introduction</button><button id="introContinue" class="paper-button intro-continue" data-t="continue_scene" hidden>Continue to the house</button></section>
+<div id="lightTransition" class="light-transition" aria-hidden="true"></div>
+<main id="experience" hidden inert>
+ <div id="viewport" class="viewport" tabindex="0" role="region" aria-label="Explore the Christmas house">
+  <div id="world" class="world">
+   <img id="background" class="world-background" src="assets/doorway.png" alt="" draggable="false">
+   <div class="chimney chimney-left" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="chimney chimney-right" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+   <img id="gableLogo" class="gable-logo" src="assets/logo.png" alt="Christmas in Rhythms" draggable="false">
+   <button id="countdownObject" class="countdown-object scene-object" data-focus="countdown" type="button" aria-label="Countdown to the celebration">
+    <span id="digits" class="wooden-clock" aria-hidden="true"></span>
+   </button>
+   <button id="dateObject" class="date-object scene-object" data-focus="date" type="button" aria-label="Event date and time"><img class="prop-art" src="assets/props/date-arrow.png" alt="" draggable="false"><span class="date-face"><span class="engraved-line date-word" data-t="date" data-fit data-max="30.6" data-min="16.2"></span><span class="engraved-line time-word" data-t="time" data-fit data-max="32.4" data-min="16.2"></span></span></button>
+   <div id="venueObject" class="venue-object scene-object"><img class="prop-art" src="assets/props/venue-plaque.png" alt="" draggable="false"><div class="venue-face"><span class="engraved-line venue-word" data-t="venue_title" data-fit data-max="39.2" data-min="17.5"></span><button id="addressOpen" class="details-button wood-action" type="button"><span class="wood-action-group"><span class="wood-action-label" data-t="details" data-fit data-max="21" data-min="16.5"></span><span class="wood-action-icon" aria-hidden="true">↗</span></span></button></div></div>
+   <svg id="elf" class="elf actor" viewBox="35 48 564 888" aria-hidden="true"><image href="assets/elf.png" width="1536" height="1024"/></svg><svg id="snowman" class="snowman actor" viewBox="556 185 599 943" aria-hidden="true"><image href="assets/snowman.png" width="1199" height="1312"/></svg>
+   <button id="elfHello" class="actor-hotspot elf-hotspot" type="button" data-title="elf_hello"><span class="sr-only" data-t="elf_hello">Say hello to the elf</span></button><button id="snowmanHello" class="actor-hotspot snowman-hotspot" type="button" data-title="snowman_hello"><span class="sr-only" data-t="snowman_hello">Say hello to the snowman</span></button>
+   <div id="inviteObject" class="invite-object scene-object"><img class="bubble-art" src="assets/props/speechbubble.png" alt="" draggable="false"><div class="invite-face"><span class="bubble-rsvp" data-t="rsvp" data-fit data-max="20" data-min="16"></span><div class="invite-action-slot"><a id="rsvpLink" class="wood-action" target="_blank" rel="noopener noreferrer"><span class="wood-action-group"><span class="wood-action-label" data-t="rsvp_here" data-fit data-max="18.9" data-min="14.85"></span><span class="wood-action-icon" aria-hidden="true">↗</span></span></a></div><div class="invite-action-slot"><button id="calendarOpen" class="wood-action" type="button"><span class="wood-action-group"><span class="wood-action-label" data-t="add_calendar" data-fit data-max="18.9" data-min="14.85"></span><span class="wood-action-icon" aria-hidden="true">＋</span></span></button></div></div></div>
+   <button id="doorLock" class="door-lock scene-object" type="button" aria-describedby="doorHint lockTooltip"><span class="lock-ring" aria-hidden="true"></span><span class="lock-cue-arrow" aria-hidden="true"><svg viewBox="0 0 50 62" fill="none"><path d="M25 56V8M10 23L25 7L40 23" stroke="#fff1cb" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 56V8M10 23L25 7L40 23" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="doorHint" class="door-hint" data-t="door_hint"></span><span id="lockTooltip" class="lock-hover" data-t="coming_soon" role="tooltip" aria-hidden="true">Coming Soon</span></button>
+  </div>
+ </div>
+ <canvas id="snow" aria-hidden="true"></canvas>
+ <header class="toolbar"><div class="tool-cluster"><button id="resetView" class="tool" type="button" data-title="reset_view"><span aria-hidden="true">↺</span><span class="sr-only" data-t="reset_view">Reset view</span></button><button id="zoomOut" class="tool" type="button" data-title="zoom_out"><span aria-hidden="true">−</span><span class="sr-only" data-t="zoom_out">Zoom out</span></button></div><div class="tool-cluster"><button id="motionToggle" class="tool" type="button" data-title="pause_motion" aria-pressed="false"><span id="motionIcon" aria-hidden="true">Ⅱ</span><span class="sr-only" id="motionText">Pause motion</span></button><button id="tiltToggle" class="tool" type="button" data-title="tilt_enable" aria-pressed="false"><span aria-hidden="true">◈</span><span class="sr-only" id="tiltText" data-t="tilt_enable">Enable motion</span></button></div></header>
+ <div class="explore-hint"><span aria-hidden="true">↔</span><span id="exploreHint" data-t="explore">Drag to explore</span><span aria-hidden="true">↕</span></div>
+ <nav class="scene-nav" aria-label="House objects"><button type="button" data-go="date" data-t="nav_date">Date</button><button type="button" data-go="countdown" data-t="nav_countdown">Countdown</button><button type="button" data-go="invite" data-t="nav_rsvp">RSVP</button><button type="button" data-go="venue" data-t="nav_venue">Venue</button><button type="button" data-go="door" data-t="nav_door">Door</button></nav>
 </main>
-<noscript><style>.film-video{display:none}</style></noscript>
-<script>
-(function(){
-  'use strict';
-  var film=document.getElementById('film');
-  var control=document.getElementById('playbackControl');
-  var status=document.getElementById('filmStatus');
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  var failed=false;
-  var resumeAfterVisibility=false;
-  function hideControl(){control.hidden=true;control.tabIndex=-1;}
-  function showControl(text){control.textContent=text;control.setAttribute('aria-label',text==='REPLAY'?'Replay video':'Play video');control.hidden=false;control.tabIndex=0;}
-  function failure(){failed=true;film.pause();film.classList.remove('has-played');hideControl();status.textContent='Video unavailable. The coming-soon image is displayed.';}
-  async function play(){if(failed)return;hideControl();film.hidden=false;film.muted=true;try{await film.play();}catch(error){showControl('PLAY');status.textContent='Playback is paused. Select PLAY to start.';}}
-  film.loop=false;
-  film.muted=true;
-  hideControl();
-  film.addEventListener('playing',function(){film.classList.add('has-played');hideControl();status.textContent='';});
-  film.addEventListener('ended',function(){showControl('REPLAY');status.textContent='Video finished. Select REPLAY to watch again.';});
-  film.addEventListener('error',failure);
-  film.querySelector('source').addEventListener('error',failure);
-  control.addEventListener('click',function(){if(film.ended)film.currentTime=0;play();});
-  function preferenceChanged(){if(reduced.matches){film.autoplay=false;film.pause();film.hidden=true;showControl('PLAY');}else if(!film.classList.contains('has-played'))play();}
-  if(reduced.addEventListener)reduced.addEventListener('change',preferenceChanged);
-  else if(reduced.addListener)reduced.addListener(preferenceChanged);
-  document.addEventListener('visibilitychange',function(){if(document.hidden){resumeAfterVisibility=!film.paused&&!film.ended;film.pause();}else if(resumeAfterVisibility&&!reduced.matches){resumeAfterVisibility=false;play();}});
-  if(reduced.matches)preferenceChanged();else play();
-})();
-</script>
-</body>
-</html>
+<aside id="soundPlayer" class="sound-player" aria-label="Music and sound" data-playing="false">
+ <section id="soundPanel" class="sound-panel" hidden aria-label="Music controls">
+  <p id="soundFullTitle" class="sound-panel-title">Christmas in Rhythms</p>
+  <div class="sound-transport"><button id="musicPrevious" type="button" data-title="music_previous"><span aria-hidden="true">❮</span></button><button id="musicPlayFull" type="button" data-title="music_play"><span id="musicFullIcon" aria-hidden="true">▶</span></button><button id="musicNext" type="button" data-title="music_next"><span aria-hidden="true">❯</span></button></div>
+  <label class="sound-volume" for="musicVolume"><span data-t="music_volume">Music volume</span><input id="musicVolume" type="range" min="0" max="100" step="1" value="25"></label>
+  <label class="sound-volume" for="sfxVolume"><span data-t="sfx_volume">Effects volume</span><input id="sfxVolume" type="range" min="0" max="100" step="1" value="50"></label>
+  <div class="sound-options"><button id="musicMute" type="button" aria-pressed="false" data-t="music_mute">Mute music</button><button id="soundEffects" type="button" aria-pressed="true" data-t="sfx_enabled">Sound effects on</button></div>
+  <button id="masterMute" class="sound-master" type="button" aria-pressed="false" data-t="sound_mute_all">Mute all</button>
+ </section>
+ <div class="sound-summary"><button id="musicPlay" type="button" data-title="music_play"><span class="sound-record" aria-hidden="true"><span id="musicIcon">▶</span></span></button><div class="sound-caption"><span id="soundTrack" class="sound-track">Christmas in Rhythms</span><span id="soundStatus" class="sound-status" role="status" aria-live="polite">Tap to play</span></div><button id="musicExpand" class="sound-expand" type="button" aria-expanded="false" aria-controls="soundPanel" data-title="music_expand"><span id="musicExpandIcon" aria-hidden="true">⌃</span></button></div>
+</aside>
+<button id="languageToggle" class="language-toggle" type="button" aria-label="Switch to Traditional Chinese">繁中</button>
+<dialog id="addressDialog" class="paper-dialog address-dialog warm-dialog" aria-labelledby="addressHeading" aria-describedby="addressFullText"><button class="dialog-close" data-close="addressDialog" type="button" data-title="close"><span aria-hidden="true">×</span><span class="sr-only" data-t="close">Close</span></button><p class="dialog-kicker" data-t="the_gathering">THE GATHERING</p><h2 id="addressHeading">Harbour Grand Hong Kong</h2><p id="addressText" class="address-text">1/F, Harbour Grand Hong Kong, 23 Oil Street, North Point</p><a id="mapLink" class="dialog-link" target="_blank" rel="noopener noreferrer" data-t="directions">Get directions ↗</a></dialog>
+<dialog id="calendarDialog" class="paper-dialog calendar-dialog warm-dialog" aria-labelledby="calendarHeading"><button class="dialog-close" data-close="calendarDialog" type="button" data-title="close"><span aria-hidden="true">×</span><span class="sr-only" data-t="close">Close</span></button><p class="dialog-kicker" data-t="save_date">SAVE THE DATE</p><h2 id="calendarHeading" data-t="calendar_menu">Choose a calendar</h2><div class="calendar-links"><a id="outlookLink" class="calendar-option" target="_blank" rel="noopener noreferrer" data-t="calendar_outlook">Outlook Calendar</a><a id="googleLink" class="calendar-option" target="_blank" rel="noopener noreferrer" data-t="calendar_google">Google Calendar</a><a id="appleLink" class="calendar-option" download="christmas-in-rhythms.ics" data-t="calendar_apple">Apple Calendar (.ics)</a></div></dialog>
+<dialog id="doorDialog" class="paper-dialog door-dialog warm-dialog" aria-labelledby="doorHeading"><button class="dialog-close" data-close="doorDialog" type="button" data-title="close"><span aria-hidden="true">×</span><span class="sr-only" data-t="close">Close</span></button><svg class="christmas-music-seal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="88" height="88" fill="none" aria-hidden="true" focusable="false">
+ <defs>
+  <linearGradient id="door-bell-gold" x1="38" y1="48" x2="90" y2="98" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#F3D992"/><stop offset=".38" stop-color="#D2A253"/><stop offset=".72" stop-color="#B48035"/><stop offset="1" stop-color="#E8C579"/>
+  </linearGradient>
+ </defs>
+ <circle cx="64" cy="64" r="51" stroke="#B18A4B" stroke-opacity=".28" stroke-width="1"/>
+ <path d="M41 41 36 32 30 33 30 26 24 29 19 25 20 33 15 37 23 40 22 47 30 44 36 49Z" fill="#52644A" stroke="#3E513A" stroke-width=".85" stroke-linejoin="round"/>
+ <path d="M40 42 41 33 46 31 43 25 50 23 51 17 57 23 63 22 60 29 66 32 57 35 58 41 49 40 45 47Z" fill="#6B7954" stroke="#3E513A" stroke-width=".85" stroke-linejoin="round"/>
+ <path d="M25 35 43 45 51 28" stroke="#C4B77A" stroke-width=".85" stroke-linecap="round"/>
+ <circle cx="39" cy="44" r="3.5" fill="#8A3931"/><circle cx="46" cy="44" r="3.5" fill="#A64D3E"/><circle cx="42.5" cy="50" r="3.5" fill="#78342D"/>
+ <path d="M84 49V23c5 1 10 4 14 9-6-1-10 0-14 2" stroke="#9D702D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+ <ellipse cx="78" cy="50" rx="7" ry="4.5" transform="rotate(-22 78 50)" fill="#B38439"/>
+ <circle cx="61" cy="48" r="4.8" stroke="#A57732" stroke-width="2.2"/>
+ <path d="M45 65c0-10 6-15 16-15s16 5 16 15c0 11 2 19 9 26H36c7-7 9-15 9-26Z" fill="url(#door-bell-gold)" stroke="#946727" stroke-width="1.25" stroke-linejoin="round"/>
+ <path d="M49 65c0-7 4-11 9-12M47 72l-1 7" stroke="#FFF0BB" stroke-opacity=".8" stroke-width="1.6" stroke-linecap="round"/>
+ <path d="M75 66c0 10 2 17 6 22" stroke="#926426" stroke-opacity=".38" stroke-width="1.3" stroke-linecap="round"/>
+ <path d="M36 91c14 5 36 5 50 0l-1 5c-15 4-32 4-48 0Z" fill="#C29449" stroke="#946727" stroke-width="1.15" stroke-linejoin="round"/>
+ <path d="M39 92c15 3 30 3 44 0" stroke="#F9E3A7" stroke-width="1.2" stroke-linecap="round"/>
+ <path d="M56 99a5 5 0 0 0 10 0" fill="#A77831" stroke="#946727" stroke-width="1"/>
+</svg><h2 id="doorHeading" data-t="coming_soon">Coming Soon</h2><p class="door-story" data-t="door_story">A little more Christmas magic is on its way.</p><div class="music-divider" aria-hidden="true"><svg viewBox="0 0 20 20" fill="currentColor"><path d="m10 1 2.4 6.6L19 10l-6.6 2.4L10 19l-2.4-6.6L1 10l6.6-2.4z"/></svg></div><button class="door-return" type="button" data-close="doorDialog" data-t="door_return">Back to the house</button></dialog>
+<p id="toast" class="toast" role="status" hidden></p><p id="sceneStatus" class="sr-only" aria-live="polite"></p>
+<noscript><style>#loading{display:none}</style><div class="noscript"><img src="assets/doorway.png" alt="Christmas in Rhythms"><p>Enable JavaScript to explore.／請啟用JavaScript探索門口場景。</p></div></noscript>
+</body></html>
