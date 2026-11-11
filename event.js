@@ -30,7 +30,7 @@ window.EVENT = {
   themeNote: "Dress in your picked music genre",
 
   rsvp:      "RSVP before 16 Nov",
-rsvpLink: "https://forms.cloud.microsoft/pages/responsepage.aspx?id=bvGrKaKVE02NUW2xt3XUW9x4G49tIZ9Lh76f3qPEQo9UODJTQldSM1c1NFNYNTUwVDhJNk5QQTQzQy4u&route=shorturl",
+    rsvpLink: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=bvGrKaKVE02NUW2xt3XUW9x4G49tIZ9Lh76f3qPEQo9UODJTQldSM1c1NFNYNTUwVDhJNk5QQTQzQy4u"
 
   // Upload the poster into the "images" folder with exactly this name.
   // Leave it as "" to hide the poster section.
