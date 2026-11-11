@@ -2,181 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Holiday Harmony · Christmas Party</title>
-<meta name="description" content="Details for our Christmas party.">
-<meta name="theme-color" content="#FBF7EA">
-
-<!--
-  ⚠️ Team note: you normally DON'T need to edit this file.
-     • Event details + schedule  → event.js
-     • Colours + fonts           → style.css (top section)
-     • Animations                → script.js
--->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7ebdf">
+<meta name="description" content="Christmas in Rhythms — coming soon.">
+<title>Christmas in Rhythms</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#f7ebdf;overflow:hidden}body{font-family:system-ui,sans-serif}main{position:relative;width:100%;height:100vh;height:100svh;overflow:hidden;background:radial-gradient(ellipse,#fcf1e6,#f5e7da)}.film-poster,.film-video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center;transform:none}.film-video{opacity:0}.film-video.has-played{opacity:1}[hidden]{display:none!important}.film-control{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:2;min-width:104px;min-height:44px;padding:11px 18px;border:1px solid #a58b6880;border-radius:3px;color:#65472c;background:#fff6e7ed;font:11px/1.5 system-ui;letter-spacing:.16em;cursor:pointer}.film-control:hover{background:#fff8ed}.film-control:focus-visible{outline:2px solid #775432;outline-offset:4px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+</style>
 </head>
 <body>
-
-<!-- falling snow + music notes (drawn by script.js) -->
-<canvas id="sky" aria-hidden="true"></canvas>
-
-<!-- ================= HERO ================= -->
-<header class="hero">
-  <!-- twinkling fairy lights along the top (drawn by script.js) -->
-  <svg class="lights" id="lights" aria-hidden="true"></svg>
-
-  <p class="eyebrow">You're invited · Christmas Party</p>
-  <h1 class="script title" data-field="title">Holiday Harmony</h1>
-
-  <svg class="garland" viewBox="0 0 600 64" aria-hidden="true">
-    <path class="ribbon" d="M10 32 C 110 4, 190 60, 300 32 S 490 4, 590 32"/>
-    <g class="holly" transform="translate(150 40)">
-      <ellipse rx="15" ry="6" transform="rotate(-25) translate(-11 0)"/>
-      <ellipse rx="15" ry="6" transform="rotate(25) translate(11 0)"/>
-      <circle class="berry" cx="-3" cy="-4" r="4.2"/><circle class="berry" cx="4" cy="-3" r="4.2"/><circle class="berry" cx="0" cy="3" r="4.2"/>
-    </g>
-    <g class="holly" transform="translate(450 25)">
-      <ellipse rx="15" ry="6" transform="rotate(-25) translate(-11 0)"/>
-      <ellipse rx="15" ry="6" transform="rotate(25) translate(11 0)"/>
-      <circle class="berry" cx="-3" cy="-4" r="4.2"/><circle class="berry" cx="4" cy="-3" r="4.2"/><circle class="berry" cx="0" cy="3" r="4.2"/>
-    </g>
-    <path class="star" transform="translate(300 32)" d="M0 -16 L4.4 -5.4 L15.6 -4.9 L6.9 2.4 L9.8 13.4 L0 7.2 L-9.8 13.4 L-6.9 2.4 L-15.6 -4.9 L-4.4 -5.4 Z"/>
-    <text class="gnote" x="70" y="22">♪</text>
-    <text class="gnote" x="520" y="56">♫</text>
-  </svg>
-
-  <dl class="facts">
-    <div class="fact">
-      <dt>Date &amp; Time</dt>
-      <dd><span data-field="date"></span><small data-field="time"></small></dd>
-    </div>
-    <div class="fact">
-      <dt>Venue</dt>
-      <dd><a id="venueLink" data-field="venue" target="_blank" rel="noopener"></a><small data-field="address"></small></dd>
-    </div>
-    <div class="fact">
-      <dt>Theme</dt>
-      <dd><span data-field="theme"></span><small data-field="themeNote"></small></dd>
-    </div>
-  </dl>
-
-  <div class="countdown" id="countdown">
-    <div class="cd-grid">
-      <div class="cd-cell"><span data-u="d">–</span><small>days</small></div>
-      <div class="cd-cell"><span data-u="h">–</span><small>hours</small></div>
-      <div class="cd-cell"><span data-u="m">–</span><small>mins</small></div>
-      <div class="cd-cell"><span data-u="s">–</span><small>secs</small></div>
-    </div>
-    <p class="cd-msg" hidden></p>
-  </div>
-
-  <div class="actions">
-    <!-- RSVP text + form link are set in event.js (rsvp, rsvpLink) -->
-    <a class="pill" id="rsvpLink" data-field="rsvp"></a>
-
-    <!-- calendar menu: Outlook (work), Outlook app / Apple (.ics file), Google -->
-    <details class="cal" id="calMenu">
-      <summary class="btn">Add to calendar</summary>
-      <div class="cal-menu">
-        <a id="calOutlook" target="_blank" rel="noopener">Outlook (work account)</a>
-        <a id="calIcs" download="christmas-party.ics">Outlook app / Apple (.ics file)</a>
-        <a id="calGoogle" target="_blank" rel="noopener">Google Calendar</a>
-      </div>
-    </details>
-  </div>
-  <p class="soon" id="soon" hidden>✦ Full schedule coming soon ✦</p>
-
-  <a class="scroll-cue" href="#invitation">See the invitation <span aria-hidden="true">↓</span></a>
-</header>
-
-<main>
-  <!-- ================= POSTER ================= -->
-  <section class="invitation reveal" id="invitation">
-    <div class="section-head">
-      <p class="eyebrow">The Invitation</p>
-      <h2 class="script">Save the Date</h2>
-    </div>
-    <figure class="poster-frame">
-      <img id="posterImg" alt="Holiday Harmony party poster">
-    </figure>
-  </section>
-
-  <!-- ================= SCHEDULE =================
-       Hidden until scheduleConfirmed is true in event.js -->
-  <section class="schedule" id="schedule" hidden>
-    <div class="section-head">
-      <p class="eyebrow">The Programme</p>
-      <h2 class="script">Run of Show</h2>
-    </div>
-    <ol class="timeline" id="timeline"></ol>
-  </section>
+<main aria-label="Christmas in Rhythms opening film">
+  <h1 class="sr-only">Christmas in Rhythms</h1>
+  <img class="film-poster" src="./Christmas-in-Rhythms-coming-soon-poster.jpg" width="1920" height="1080" alt="Christmas in Rhythms — coming soon.">
+  <video id="film" class="film-video" autoplay muted playsinline preload="metadata" poster="./Christmas-in-Rhythms-coming-soon-poster.jpg" aria-hidden="true" tabindex="-1">
+    <source src="./Christmas-in-Rhythms-opening-near-v3.mp4" type="video/mp4">
+  </video>
+  <button id="playbackControl" class="film-control" type="button" aria-label="Replay video" hidden tabindex="-1">REPLAY</button>
+  <p id="filmStatus" class="sr-only" role="status"></p>
 </main>
-
-<footer class="foot">
-  <p>Made with festive cheer · Last updated <span data-field="lastUpdated"></span></p>
-</footer>
-
-<!-- snowbank along the bottom of the screen -->
-<div class="snowbank" aria-hidden="true">
-  <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
-    <path d="M0 40 V22 C 80 8, 160 26, 240 16 S 400 4, 480 18 S 640 30, 720 14 S 880 2, 960 16 S 1120 28, 1200 12 V40 Z"/>
-  </svg>
-</div>
-
-<!-- running Santa (timing set in event.js) -->
-<div class="santa" id="santa" aria-hidden="true">
-  <span class="ho">Ho ho ho!</span>
-  <svg class="santa-svg" viewBox="0 0 120 130">
-    <g class="bob">
-      <!-- gift sack -->
-      <path d="M30 50 q-20 6 -16 30 q4 16 22 14 q12 -18 6 -40 z" fill="#8B5A2B"/>
-      <path d="M30 50 q4 -6 10 -2" stroke="#5E3A18" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- back leg + arm -->
-      <g transform="translate(54 90)"><g class="leg leg-b">
-        <path d="M0 0 v20" stroke="#A82222" stroke-width="11" stroke-linecap="round"/>
-        <path d="M-5 18 h13 q6 0 6 6 h-19 z" fill="#1E1E1E"/>
-      </g></g>
-      <g transform="translate(54 58)"><g class="arm arm-b">
-        <path d="M0 0 l-4 18" stroke="#A82222" stroke-width="9" stroke-linecap="round"/>
-        <circle cx="-4" cy="20" r="5" fill="#1E1E1E"/>
-      </g></g>
-      <!-- body -->
-      <ellipse cx="60" cy="72" rx="25" ry="23" fill="#D42F2F"/>
-      <path d="M35 80 q25 14 50 0 v7 q-25 14 -50 0 z" fill="#FFFFFF"/>
-      <rect x="35" y="68" width="50" height="7" fill="#1E1E1E"/>
-      <rect x="56" y="66.5" width="9" height="10" rx="1" fill="none" stroke="#E7C04B" stroke-width="2.2"/>
-      <!-- front leg -->
-      <g transform="translate(66 90)"><g class="leg leg-a">
-        <path d="M0 0 v20" stroke="#D42F2F" stroke-width="11" stroke-linecap="round"/>
-        <path d="M-5 18 h13 q6 0 6 6 h-19 z" fill="#1E1E1E"/>
-      </g></g>
-      <!-- head -->
-      <circle cx="72" cy="38" r="13" fill="#F5C9A6"/>
-      <path d="M59 38 q1 22 14 25 q15 -2 15 -24 q-6 8 -14 6 q-9 2 -15 -7 z" fill="#FFFFFF"/>
-      <path d="M66 44 q7 -5 14 0 q-7 3 -14 0 z" fill="#F2F2F2"/>
-      <circle cx="80" cy="41" r="2.6" fill="#E88A7A"/>
-      <circle cx="76" cy="35" r="1.6" fill="#1E1E1E"/>
-      <!-- hat -->
-      <g class="hat">
-        <path d="M60 30 q2 -20 22 -18 q8 2 8 16 z" fill="#D42F2F"/>
-        <path d="M64 16 q-14 -8 -24 6" stroke="#D42F2F" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <circle class="pom" cx="39" cy="24" r="5" fill="#FFFFFF"/>
-        <rect x="57" y="26" width="35" height="8" rx="4" fill="#FFFFFF"/>
-      </g>
-      <!-- front arm -->
-      <g transform="translate(68 58)"><g class="arm arm-a">
-        <path d="M0 0 l6 17" stroke="#D42F2F" stroke-width="9" stroke-linecap="round"/>
-        <circle cx="7" cy="19" r="5" fill="#1E1E1E"/>
-      </g></g>
-    </g>
-  </svg>
-</div>
-
-<script src="event.js"></script>
-<script src="script.js"></script>
+<noscript><style>.film-video{display:none}</style></noscript>
+<script>
+(function(){
+  'use strict';
+  var film=document.getElementById('film');
+  var control=document.getElementById('playbackControl');
+  var status=document.getElementById('filmStatus');
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var failed=false;
+  var resumeAfterVisibility=false;
+  function hideControl(){control.hidden=true;control.tabIndex=-1;}
+  function showControl(text){control.textContent=text;control.setAttribute('aria-label',text==='REPLAY'?'Replay video':'Play video');control.hidden=false;control.tabIndex=0;}
+  function failure(){failed=true;film.pause();film.classList.remove('has-played');hideControl();status.textContent='Video unavailable. The coming-soon image is displayed.';}
+  async function play(){if(failed)return;hideControl();film.hidden=false;film.muted=true;try{await film.play();}catch(error){showControl('PLAY');status.textContent='Playback is paused. Select PLAY to start.';}}
+  film.loop=false;
+  film.muted=true;
+  hideControl();
+  film.addEventListener('playing',function(){film.classList.add('has-played');hideControl();status.textContent='';});
+  film.addEventListener('ended',function(){showControl('REPLAY');status.textContent='Video finished. Select REPLAY to watch again.';});
+  film.addEventListener('error',failure);
+  film.querySelector('source').addEventListener('error',failure);
+  control.addEventListener('click',function(){if(film.ended)film.currentTime=0;play();});
+  function preferenceChanged(){if(reduced.matches){film.autoplay=false;film.pause();film.hidden=true;showControl('PLAY');}else if(!film.classList.contains('has-played'))play();}
+  if(reduced.addEventListener)reduced.addEventListener('change',preferenceChanged);
+  else if(reduced.addListener)reduced.addListener(preferenceChanged);
+  document.addEventListener('visibilitychange',function(){if(document.hidden){resumeAfterVisibility=!film.paused&&!film.ended;film.pause();}else if(resumeAfterVisibility&&!reduced.matches){resumeAfterVisibility=false;play();}});
+  if(reduced.matches)preferenceChanged();else play();
+})();
+</script>
 </body>
 </html>
