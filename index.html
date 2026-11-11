@@ -75,8 +75,18 @@
   </div>
 
   <div class="actions">
-    <span class="pill" data-field="rsvp"></span>
-    <a class="btn" id="calLink" target="_blank" rel="noopener">Add to calendar</a>
+    <!-- RSVP text + form link are set in event.js (rsvp, rsvpLink) -->
+    <a class="pill" id="rsvpLink" data-field="rsvp"></a>
+
+    <!-- calendar menu: Outlook (work), Outlook app / Apple (.ics file), Google -->
+    <details class="cal" id="calMenu">
+      <summary class="btn">Add to calendar</summary>
+      <div class="cal-menu">
+        <a id="calOutlook" target="_blank" rel="noopener">Outlook (work account)</a>
+        <a id="calIcs" download="christmas-party.ics">Outlook app / Apple (.ics file)</a>
+        <a id="calGoogle" target="_blank" rel="noopener">Google Calendar</a>
+      </div>
+    </details>
   </div>
   <p class="soon" id="soon" hidden>✦ Full schedule coming soon ✦</p>
 

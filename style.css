@@ -155,6 +155,37 @@ a { color: var(--blue); }
 }
 .btn:hover { background: var(--blue); color: #fff; }
 
+/* RSVP pill becomes a button when rsvpLink is set */
+.pill { text-decoration: none; }
+.pill.is-link {
+  background: var(--red); color: #fff; cursor: pointer;
+  box-shadow: 0 4px 0 #8E1A22;
+  transition: transform .15s, box-shadow .15s;
+}
+.pill.is-link:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #8E1A22; }
+
+/* Add-to-calendar menu */
+.cal { position: relative; }
+.cal summary { list-style: none; cursor: pointer; display: inline-block; }
+.cal summary::-webkit-details-marker { display: none; }
+.cal summary::after { content: " ▾"; font-size: .8em; }
+.cal[open] summary { background: var(--blue); color: #fff; }
+.cal-menu {
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  z-index: 10; min-width: 290px; white-space: nowrap;
+  display: flex; flex-direction: column;
+  background: var(--paper);
+  border: 1px solid rgba(201,162,74,.6); border-radius: 14px;
+  box-shadow: 0 18px 40px -16px rgba(29,36,51,.4);
+  overflow: hidden; text-align: left;
+}
+.cal-menu a {
+  padding: 11px 18px; font-weight: 600; color: var(--blue-deep); text-decoration: none;
+  border-bottom: 1px solid rgba(201,162,74,.25);
+}
+.cal-menu a:last-child { border-bottom: 0; }
+.cal-menu a:hover { background: var(--blue-soft); }
+
 .scroll-cue {
   margin-top: 28px;
   font-size: 17px; font-weight: 600; letter-spacing: .08em;

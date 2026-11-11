@@ -35,17 +35,67 @@
   /* ===================== add to calendar =============================== */
 
   function calendarLink() {
-    var a = $("#calLink");
-    if (!a) return;
+    var menu = $("#calMenu");
+    if (!menu) return;
     var s = new Date(E.startsAt), e = new Date(E.endsAt);
-    if (isNaN(s) || isNaN(e)) { a.hidden = true; return; }
-    function fmt(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
-    var details = [E.theme, E.themeNote].filter(Boolean).join(" — ") + "\n" + location.href;
-    a.href = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-      "&text=" + encodeURIComponent(E.title || "Christmas Party") +
-      "&dates=" + fmt(s) + "/" + fmt(e) +
-      "&location=" + encodeURIComponent([E.venue, E.address].filter(Boolean).join(", ")) +
+    if (isNaN(s) || isNaN(e)) { menu.hidden = true; return; }
+
+    var title = E.title || "Christmas Party";
+    var place = [E.venue, E.address].filter(Boolean).join(", ");
+    var details = [E.theme, E.themeNote].filter(Boolean).join(" — ") +
+      "\nLatest details: " + location.href.split("#")[0];
+    function utc(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
+
+    // Outlook on the web (work / Microsoft 365 accounts)
+    $("#calOutlook").href = "https://outlook.office.com/calendar/0/deeplink/compose" +
+      "?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent" +
+      "&subject=" + encodeURIComponent(title) +
+      "&startdt=" + encodeURIComponent(s.toISOString()) +
+      "&enddt=" + encodeURIComponent(e.toISOString()) +
+      "&location=" + encodeURIComponent(place) +
+      "&body=" + encodeURIComponent(details);
+
+    // .ics file: opens in Outlook desktop, Apple Calendar and most others
+    function esc(t) { return String(t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n"); }
+    var ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Christmas Party//EN", "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:" + utc(s) + "-christmas-party@github.io",
+      "DTSTAMP:" + utc(new Date()),
+      "DTSTART:" + utc(s),
+      "DTEND:" + utc(e),
+      "SUMMARY:" + esc(title),
+      "LOCATION:" + esc(place),
+      "DESCRIPTION:" + esc(details),
+      "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:" + esc(title + " is tomorrow!"), "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"
+    ].join("\r\n");
+    $("#calIcs").href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+
+    // Google Calendar
+    $("#calGoogle").href = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent(title) +
+      "&dates=" + utc(s) + "/" + utc(e) +
+      "&location=" + encodeURIComponent(place) +
       "&details=" + encodeURIComponent(details);
+
+    // close the menu after a choice, or when clicking elsewhere
+    menu.addEventListener("click", function (ev) { if (ev.target.closest(".cal-menu a")) menu.open = false; });
+    document.addEventListener("click", function (ev) { if (!menu.contains(ev.target)) menu.open = false; });
+  }
+
+  /* ===================== RSVP link ===================================== */
+
+  function rsvpLink() {
+    var a = $("#rsvpLink");
+    if (!a) return;
+    if (E.rsvpLink) {
+      a.href = E.rsvpLink;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.classList.add("is-link");
+      a.textContent = (E.rsvp || "RSVP") + " →";
+    }
   }
 
   /* ===================== countdown ===================================== */
@@ -396,6 +446,7 @@
 
   function init() {
     fillFields();
+    rsvpLink();
     calendarLink();
     countdown();
     renderSchedule();
