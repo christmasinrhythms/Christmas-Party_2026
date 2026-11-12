@@ -11,7 +11,7 @@ export const INTRO_CUES=Object.freeze([
 export function createSoundControls({t}){
  const $=s=>document.querySelector(s),sound=new Soundscape({musicVolume:.25,sfxVolume:.5});
  sound.music.hidden=true;sound.music.id='playlistAudio';sound.music.setAttribute('aria-hidden','true');$('#soundPlayer').append(sound.music);
- let level=.25,phase='loading',started=false,state=sound.getState(),lastFilmTime=0,resumeAfterPage=false;
+ let level=.25,phase='loading',started=false,state=sound.getState(),lastFilmTime=0,resumeAfterPage=false,introCues=INTRO_CUES,orientationBlocked=false,resumeAfterRotate=false;
  const fired=new Set();
  function render(){
   const playing=state.playing,enableSound=playing&&needsSound(),playKey=playing?'music_pause':'music_play';
@@ -39,7 +39,7 @@ export function createSoundControls({t}){
  }
  sound.subscribe(next=>{state=next;render();});
  function needsSound(){return phase!=='loading'&&!state.sfxMuted&&!state.masterMuted&&state.sfxContextState!=='running';}
- const unlock=()=>{void sound.gestureUnlock();};
+ const unlock=()=>{if(!orientationBlocked)void sound.gestureUnlock();};
  document.addEventListener('pointerdown',event=>{if(!event.target.closest('#soundPlayer'))unlock();},{capture:true});
  document.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)&&!event.target.closest('#soundPlayer'))unlock();},{capture:true});
  const toggle=event=>{if(event.currentTarget.id==='musicPlay'&&state.playing&&needsSound()){unlock();return;}const pause=state.playing||state.status==='loading';unlock();if(pause)sound.pause();else void sound.play();};
@@ -51,19 +51,21 @@ export function createSoundControls({t}){
  $('#sfxVolume').addEventListener('input',event=>{sound.setSfxVolume(Number(event.target.value)/100);unlock();});
  $('#musicExpand').addEventListener('click',()=>{const open=$('#soundPanel').hidden;$('#soundPanel').hidden=!open;$('#musicExpand').setAttribute('aria-expanded',String(open));$('#musicExpandIcon').textContent=open?'⌄':'⌃';render();});
  $('#soundPlayer').addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#soundPanel').hidden){$('#soundPanel').hidden=true;$('#musicExpand').setAttribute('aria-expanded','false');$('#musicExpandIcon').textContent='⌃';$('#musicExpand').focus();render();}});
- document.addEventListener('click',event=>{unlock();const button=event.target.closest('button,a');if(!button||button.disabled||document.hidden||['elfHello','snowmanHello'].includes(button.id))return;void sound.playSfx(button.id==='doorLock'?'doorRing':'uiWoodTap',{volume:button.id==='doorLock'?1:.9});});
+ document.addEventListener('click',event=>{if(orientationBlocked)return;unlock();const button=event.target.closest('button,a');if(!button||button.disabled||document.hidden||['elfHello','snowmanHello'].includes(button.id))return;void sound.playSfx(button.id==='doorLock'?'doorRing':'uiWoodTap',{volume:button.id==='doorLock'?1:.9});});
  function applyVolume(){sound.setMusicVolume(level*(phase==='intro'?.25:1));}
  function stopEffects(){
   sound.stopSfx?.();
  }
  return {
   applyLanguage:render,
-  setPhase(next){phase=next;applyVolume();if(next==='intro'){lastFilmTime=0;fired.clear();}else stopEffects();if(!started&&next!=='loading'){started=true;void sound.tryAutoplaySfx?.();void sound.play();}},
-  filmTime(time){if(phase!=='intro'||document.hidden)return;for(const cue of INTRO_CUES){if(!fired.has(cue.name)&&lastFilmTime<=cue.time&&time>=cue.time){fired.add(cue.name);if(time-cue.time<.45)void sound.playSfx(cue.name,{volume:cue.volume});}}lastFilmTime=time;},
-  effect(name,volume=1){return sound.playSfx(name,{volume});},
+  setOrientationBlocked(blocked){if(blocked===orientationBlocked)return;orientationBlocked=blocked;if(blocked){resumeAfterRotate=state.playing||state.status==='loading'||state.blocked;stopEffects();sound.pause();}else if(!document.hidden){if(resumeAfterRotate){resumeAfterRotate=false;void sound.play();}else if(!started&&phase!=='loading'){started=true;void sound.tryAutoplaySfx?.();void sound.play();}}},
+  setIntroCues(cues){if(phase==='intro')return false;introCues=cues??INTRO_CUES;return true;},
+  setPhase(next){phase=next;applyVolume();if(next==='intro'){lastFilmTime=0;fired.clear();}else stopEffects();if(!started&&next!=='loading'&&!orientationBlocked){started=true;void sound.tryAutoplaySfx?.();void sound.play();}},
+  filmTime(time){if(phase!=='intro'||document.hidden||orientationBlocked)return;for(const cue of introCues){if(!fired.has(cue.name)&&lastFilmTime<=cue.time&&time>=cue.time){fired.add(cue.name);if(time-cue.time<.45)void sound.playSfx(cue.name,{volume:cue.volume});}}lastFilmTime=time;},
+  effect(name,volume=1){if(orientationBlocked)return false;return sound.playSfx(name,{volume});},
   stopEffects,
   pauseForPageHide(){resumeAfterPage=state.playing||state.status==='loading'||state.blocked;stopEffects();sound.pause();},
-  resumeForPageShow(){if(resumeAfterPage){resumeAfterPage=false;void sound.play();}},
+  resumeForPageShow(){if(resumeAfterPage&&!orientationBlocked){resumeAfterPage=false;void sound.play();}},
   getState:()=>sound.getState()
  };
 }
