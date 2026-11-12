@@ -25,3 +25,28 @@ export function createIntroMediaLock(){
 }
 
 export function shouldCutIntro(profile,time){return Number.isFinite(time)&&time>=profile.cut;}
+
+// Each play request owns its callbacks. Pause/load/rotation invalidate earlier promises.
+export function createIntroPlayback({film,canPlay,prepare=()=>{},onPlaying,onFallback}){
+ let generation=0,pending=false;
+ return {
+  get pending(){return pending;},
+  cancel(){generation++;pending=false;},
+  async play(){
+   if(!canPlay())return {status:'inactive'};
+   const current=++generation;pending=true;
+   try{
+    prepare();await film.play();
+    if(current!==generation)return {status:'stale'};
+    if(!canPlay()){pending=false;return {status:'stale'};}
+    pending=false;onPlaying();return {status:'playing'};
+   }catch(error){
+    if(current!==generation)return {status:'stale'};
+    if(!canPlay()){pending=false;return {status:'stale'};}
+    pending=false;
+    if(error?.name==='AbortError')return {status:'interrupted'};
+    onFallback(error);return {status:'blocked',name:error?.name};
+   }
+  }
+ };
+}

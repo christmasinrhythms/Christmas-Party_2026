@@ -1,7 +1,7 @@
-import {createIntroMediaLock,shouldCutIntro,isPhoneDevice,portraitBlocked} from './intro-media.mjs?v=immersive-mobile-portrait-20261112';
+import {createIntroMediaLock,shouldCutIntro,isPhoneDevice,portraitBlocked,createIntroPlayback} from './intro-media.mjs?v=immersive-mobile-play-ui-20261112';
 import {calendarPlatformLinks,isMobileCalendar} from './calendar-platform.mjs';
 import {INVITE_ART,isPhoneLayout,inviteGeometry,phoneInviteWidth,fitPhoneInvite,sideExploreState} from './invite-layout.mjs';
-import {createSoundControls} from './audio-ui.mjs?v=immersive-mobile-portrait-20261112';
+import {createSoundControls} from './audio-ui.mjs?v=immersive-mobile-play-ui-20261112';
 import {WoodenFlipClock} from './flip-clock.mjs';
 import {countdown,cameraFrame,focusCamera,icsContent} from './domain.mjs';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
@@ -207,19 +207,30 @@ function syncPortraitGuard(){
  }
  if(!changed)return;
  soundControls.setOrientationBlocked(blocked);
- if(blocked){guardFocus=document.activeElement;suspendedDialog=$$('dialog').find(el=>el.open);suspendedDialog?.close();resumeFilmAfterRotate=phase==='intro'&&!film.paused;film.pause();cancelAnimationFrame(cutFrame);soundControls.stopEffects();$('#portraitGuard').focus({preventScroll:true});}
+ if(blocked){guardFocus=document.activeElement;suspendedDialog=$$('dialog').find(el=>el.open);suspendedDialog?.close();resumeFilmAfterRotate=phase==='intro'&&(!film.paused||introPlayback.pending);interruptFilm();cancelAnimationFrame(cutFrame);soundControls.stopEffects();$('#portraitGuard').focus({preventScroll:true});}
  else{
   if(suspendedDialog){suspendedDialog.showModal();activeDialog=suspendedDialog;suspendedDialog=null;}
-  if(phase==='loading'&&loadingDone&&!assetFailures)beginIntro();
+  if(phase==='loading'&&loadingDone&&(introMedia?.kind==='mobile'||!assetFailures))beginIntro();
   else if(phase==='intro'&&resumeFilmAfterRotate&&!document.hidden)playFilm();
   resumeFilmAfterRotate=false;
   if(guardFocus?.isConnected&&!guardFocus.closest('[inert],[hidden]'))guardFocus.focus({preventScroll:true});
  }
 }
-function playFilm(){
- if(orientationBlocked||document.hidden||phase!=='intro')return;
- film.play().then(()=>{if(orientationBlocked||document.hidden){film.pause();return;}$('#playIntro').hidden=true;$('#introContinue').hidden=true;watchIntro();}).catch(()=>{$('#playIntro').hidden=false;$('#introContinue').hidden=false;});
+function preparePhoneFilm(){
+ if(introMedia?.kind!=='mobile')return;
+ film.muted=true;film.defaultMuted=true;film.playsInline=true;
+ film.setAttribute('muted','');film.setAttribute('playsinline','');film.setAttribute('webkit-playsinline','');
 }
+const introPlayback=createIntroPlayback({film,
+ canPlay:()=>phase==='intro'&&!transitionStarted&&!orientationBlocked&&!document.hidden&&!$('#intro').hidden&&film.readyState>=2,
+ prepare:()=>{preparePhoneFilm();if(introMedia.kind==='mobile')film.autoplay=true;},
+ onPlaying:showFilmPlaying,
+ onFallback:()=>{$('#playIntro').hidden=false;$('#introContinue').hidden=introMedia.kind==='mobile';}
+});
+function showFilmPlaying(){if(phase!=='intro'||transitionStarted||orientationBlocked||document.hidden||film.paused)return;$('#playIntro').hidden=true;$('#introContinue').hidden=true;watchIntro();}
+film.addEventListener('playing',showFilmPlaying);
+function interruptFilm(){introPlayback.cancel();if(introMedia?.kind==='mobile')film.autoplay=false;film.pause();}
+function playFilm(){return introPlayback.play();}
 window.addEventListener('resize',syncPortraitGuard);
 window.addEventListener('orientationchange',syncPortraitGuard);
 window.visualViewport?.addEventListener('resize',syncPortraitGuard);
@@ -228,16 +239,16 @@ function configureIntroMedia(){
  introMedia=chooseIntroMedia({width:size.w,height:size.h,coarse:inviteCoarse.matches,mobileUA:phoneUA,desktopSrc:manifest.assets.video});
  film.querySelector('source').src=introMedia.src;
  $('#intro').dataset.media=introMedia.kind;document.documentElement.dataset.introMedia=introMedia.kind;
- if(introMedia.kind==='mobile')film.removeAttribute('poster');
+ if(introMedia.kind==='mobile'){film.removeAttribute('poster');preparePhoneFilm();$('#playIntro').removeAttribute('data-t');$('#playIntro').classList.add('phone-play-icon');$('#playIntro').setAttribute('data-title','play_intro');$('#playIntro').innerHTML='<svg viewBox="0 0 32 36" aria-hidden="true" focusable="false"><path d="M7 4 29 18 7 32Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';}
  soundControls.setIntroCues(introMedia.cues);syncPortraitGuard();
 }
 async function imageReady(src){return new Promise(resolve=>{const image=new Image();const timeout=setTimeout(()=>resolve(false),12000);image.onload=()=>{clearTimeout(timeout);resolve(true);};image.onerror=()=>{clearTimeout(timeout);resolve(false);};image.src=src;});}
-function videoFrameReady(){return new Promise(resolve=>{let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value);};const timer=setTimeout(()=>finish(false),14000);film.addEventListener('loadeddata',()=>finish(true),{once:true});film.addEventListener('error',()=>finish(false),{once:true});film.querySelector('source').addEventListener('error',()=>finish(false),{once:true});if(film.readyState>=2)finish(true);else film.load();});}
-async function preload(){const paths=new Set(Object.entries(manifest.assets).filter(([k])=>k!=='video').map(([,v])=>v));for(const g of Object.values(manifest.digits))paths.add(g.src);for(const v of Object.values(manifest.labels))for(const path of Object.values(v.png||{}))paths.add(path);const total=paths.size+1;let settled=0;loadingState.total=total;$('#loadProgress').max=total;function update(ok){settled++;if(!ok)assetFailures++;$('#loadProgress').value=settled;loadingState.settled=settled;renderLoadStatus();}const images=[...paths].map(async path=>{const ok=await imageReady(path);update(ok);});const video=videoFrameReady().then(ok=>{videoReady=ok;update(ok);});await Promise.all([...images,video]);loadingDone=true;loadingState.complete=true;loadingState.failed=assetFailures>0;renderLoadStatus();$('#loadContinue').hidden=false;if(!assetFailures)beginIntro();}
+function videoFrameReady(){return new Promise(resolve=>{let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value);};const timer=setTimeout(()=>finish(false),14000);film.addEventListener('loadeddata',()=>finish(true),{once:true});film.addEventListener('error',()=>finish(false),{once:true});film.querySelector('source').addEventListener('error',()=>finish(false),{once:true});if(film.readyState>=2)finish(true);else{introPlayback.cancel();film.load();}});}
+async function preload(){const paths=new Set(Object.entries(manifest.assets).filter(([k])=>k!=='video').map(([,v])=>v));for(const g of Object.values(manifest.digits))paths.add(g.src);for(const v of Object.values(manifest.labels))for(const path of Object.values(v.png||{}))paths.add(path);const total=paths.size+1;let settled=0;loadingState.total=total;$('#loadProgress').max=total;function update(ok){settled++;if(!ok)assetFailures++;$('#loadProgress').value=settled;loadingState.settled=settled;renderLoadStatus();}const images=[...paths].map(async path=>{const ok=await imageReady(path);update(ok);});const video=videoFrameReady().then(ok=>{videoReady=ok;update(ok);});await Promise.all([...images,video]);loadingDone=true;loadingState.complete=true;loadingState.failed=assetFailures>0;renderLoadStatus();$('#loadContinue').hidden=introMedia.kind==='mobile';if(introMedia.kind==='mobile'||!assetFailures)beginIntro();}
 function beginIntro(){if(!loadingDone||phase!=='loading'||orientationBlocked)return;if(reduced.matches||!videoReady){enterScene();return;}phase='intro';soundControls.setPhase('intro');document.documentElement.dataset.phase='intro';$('#loading').hidden=true;$('#intro').hidden=false;film.loop=false;film.muted=true;playFilm();}
 function watchIntro(){cancelAnimationFrame(cutFrame);function step(){if(phase!=='intro'||orientationBlocked||document.hidden)return;soundControls.filmTime(film.currentTime);if(shouldCutIntro(introMedia,film.currentTime)){enterScene();return;}cutFrame=requestAnimationFrame(step);}cutFrame=requestAnimationFrame(step);}
-let transitionStarted=false;function enterScene(){if(transitionStarted||phase==='scene')return;transitionStarted=true;const cutTime=film.currentTime;soundControls.stopEffects();film.pause();cancelAnimationFrame(cutFrame);$('#lightTransition').className='light-transition on';function reveal(){phase='scene';soundControls.setPhase('scene');$('#loading').hidden=true;$('#intro').hidden=true;$('#experience').hidden=false;$('#experience').inert=orientationBlocked;syncPortraitGuard();resetCamera();current={...camera};renderCamera(true);resizeSnow();fitSceneLabels();$('#sceneStatus').textContent=t('ready');if(!orientationBlocked)$('#viewport').focus({preventScroll:true});$('#lightTransition').className='light-transition clear';document.documentElement.dataset.phase='scene';document.documentElement.dataset.introStoppedAt=String(cutTime);}if(calm)reveal();else setTimeout(reveal,420);}
+let transitionStarted=false;function enterScene(){if(transitionStarted||phase==='scene')return;transitionStarted=true;const cutTime=film.currentTime;soundControls.stopEffects();interruptFilm();cancelAnimationFrame(cutFrame);$('#lightTransition').className='light-transition on';function reveal(){phase='scene';soundControls.setPhase('scene');$('#loading').hidden=true;$('#intro').hidden=true;$('#experience').hidden=false;$('#experience').inert=orientationBlocked;syncPortraitGuard();resetCamera();current={...camera};renderCamera(true);resizeSnow();fitSceneLabels();$('#sceneStatus').textContent=t('ready');if(!orientationBlocked)$('#viewport').focus({preventScroll:true});$('#lightTransition').className='light-transition clear';document.documentElement.dataset.phase='scene';document.documentElement.dataset.introStoppedAt=String(cutTime);}if(calm)reveal();else setTimeout(reveal,420);}
 $('#loadContinue').addEventListener('click',()=>{if(!videoReady||assetFailures)enterScene();else beginIntro();});$('#skipIntro').addEventListener('click',enterScene);$('#introContinue').addEventListener('click',enterScene);$('#playIntro').addEventListener('click',playFilm);film.addEventListener('ended',enterScene);film.addEventListener('error',()=>{if(phase==='intro')enterScene();});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='intro')film.pause();else if(phase==='intro'&&!orientationBlocked)playFilm();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='intro')interruptFilm();else if(phase==='intro'&&!orientationBlocked)playFilm();});
 async function boot(){try{const response=await fetch('assets/scene-manifest.json',{cache:'no-store'});if(!response.ok)throw Error('manifest');manifest=await response.json();$('#background').src=manifest.assets.background;$('#gableLogo').src=manifest.assets.logo;$('#elf image').setAttribute('href',manifest.assets.elf);$('#snowman image').setAttribute('href',manifest.assets.snowman);$('#rsvpLink').href=manifest.rsvp;$('#mapLink').href=manifest.map;configureIntroMedia();createDigits();applyLanguage();setCalm(calm);await preload();}catch{loadingDone=true;loadingState.complete=true;loadingState.failed=true;renderLoadStatus();$('#loadContinue').hidden=false;}}
 syncPortraitGuard();scheduleCountdown();boot();

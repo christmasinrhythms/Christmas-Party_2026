@@ -33,3 +33,9 @@ html[data-portrait-blocked=true] #languageToggle{z-index:10001}
 html[data-portrait-blocked=true] dialog{visibility:hidden}
 html[data-portrait-blocked=true] dialog::backdrop{background:transparent;pointer-events:none}
 html[data-portrait-blocked=true] #toast{visibility:hidden}
+
+/* Phone policy fallback: a single paper-and-gold play icon; Skip stays in its corner. */
+.intro[data-media=mobile] .phone-play-icon{display:grid;place-items:center;top:50%;width:76px;height:76px;padding:21px 22px 21px 27px;border-radius:50%;border:1px solid #b18a4b99;color:#a5783e;background:radial-gradient(ellipse at 35% 25%,#fffaf0f5,#f1dfbfe8);box-shadow:0 4px 22px #71583826,inset 0 1px 1px #fffdf8;font-size:0;letter-spacing:0}
+.intro[data-media=mobile] .phone-play-icon svg{display:block;width:28px;height:32px;filter:drop-shadow(0 1px 1px #fff8e6)}
+.intro[data-media=mobile] #introContinue{display:none!important}
+html[data-intro-media=mobile]:not([data-phase=scene]) #soundPlayer{display:none}
