@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Christmas in Rhythms//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:20261224T033000Z-christmas-in-rhythms@github.io
+DTSTAMP:20261111T235956Z
+DTSTART:20261224T033000Z
+DTEND:20261224T070000Z
+SUMMARY:Christmas in Rhythms
+LOCATION:1/F\, Harbour Grand Hong Kong\, 23 Oil Street\, North Point\, Hon
+ g Kong Island
+DESCRIPTION:Event details: https://christmasinrhythms.github.io/Christmas-
+ Party_2026/
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Christmas in Rhythms
+END:VALARM
+END:VEVENT
+END:VCALENDAR
