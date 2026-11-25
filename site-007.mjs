@@ -1,0 +1,4 @@
+import{Soundscape,SFX_SOURCES}from'../../soundscape.mjs';
+const sound=new Soundscape();sound.subscribe(s=>document.getElementById('state').textContent=JSON.stringify(s,null,2));document.getElementById('play').onclick=async()=>{await sound.gestureUnlock();await sound.play()};document.getElementById('pause').onclick=()=>sound.pause();document.getElementById('next').onclick=()=>sound.next();document.getElementById('prev').onclick=()=>sound.prev();document.getElementById('mute').onclick=()=>sound.setMasterMuted(!sound.getState().masterMuted);for(const key of Object.keys(SFX_SOURCES)){const b=document.createElement('button');b.textContent=key;b.onclick=async()=>{await sound.gestureUnlock();await sound.playSfx(key)};document.getElementById('sfx').append(b)}window.addEventListener('pagehide',()=>sound.pause());
+
+document.getElementById('stop-sfx').onclick=()=>sound.stopSfx();
