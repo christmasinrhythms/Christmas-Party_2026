@@ -4,7 +4,14 @@ export const MUSIC_TRACKS = Object.freeze([
   { id: 'one-more-song-we-go', title: 'One More Song We Go', file: 'music/one-more-song-we-go.m4a' },
   { id: 'the-christmas-house', title: 'The Christmas House', file: 'music/the-christmas-house.m4a' }
 ].map(Object.freeze));
-export const SFX_SOURCES = Object.freeze({uiWoodTap:'sfx/ui-wood-tap.wav',doorRing:'sfx/door-ring.wav',magicChime:'sfx/magic-chime.wav',woodFlip:'sfx/wood-flip.wav',elfBell:'sfx/elf-bell.wav',snowPuff:'sfx/snow-puff.wav',introArrival:'sfx/intro-arrival.wav',throwWhoosh:'sfx/throw-whoosh.wav',discoShimmer:'sfx/disco-shimmer.wav',titleBloom:'sfx/title-bloom.wav'});
+const EAGER_SFX = Object.freeze({uiWoodTap:'sfx/ui-wood-tap.wav',doorRing:'sfx/door-ring.wav',magicChime:'sfx/magic-chime.wav',woodFlip:'sfx/wood-flip.wav',elfBell:'sfx/elf-bell.wav',snowPuff:'sfx/snow-puff.wav',introArrival:'sfx/intro-arrival.wav',throwWhoosh:'sfx/throw-whoosh.wav',discoShimmer:'sfx/disco-shimmer.wav',titleBloom:'sfx/title-bloom.wav'});
+export const SFX_SOURCES = Object.freeze({
+  ...EAGER_SFX,
+  ...Object.fromEntries(['rock','disco','kpop','jazz'].flatMap(school =>
+    ['en','zh'].map(locale => [`sorting-room-${school}-${locale}`,`sfx/sorting-room-${school}-${locale}.wav`])
+  ))
+});
+
 const clamp = x => Math.min(1,Math.max(0,Number.isFinite(Number(x))?Number(x):0));
 export class Soundscape {
   constructor({musicVolume=.32,sfxVolume=.22,baseUrl=new URL('./assets/audio/',import.meta.url)}={}) {
@@ -54,7 +61,7 @@ export class Soundscape {
     if(this._destroyed)return;
     this._sfxReady=this._sfxContext?.state==='running';
     this._sfxBlocked=Boolean(this._sfxContext)&&!this._sfxReady;
-    if(this._sfxReady){this._sfxError=null;for(const name of Object.keys(SFX_SOURCES))void this._getBuffer(name).catch(()=>{});}
+    if(this._sfxReady){this._sfxError=null;for(const name of Object.keys(EAGER_SFX))void this._getBuffer(name).catch(()=>{});}
     this._emit();
   }
   _ensureSfxContext(){

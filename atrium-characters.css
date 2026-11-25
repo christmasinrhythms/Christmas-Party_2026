@@ -1,0 +1,136 @@
+.hall-companions {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+}
+#houseInterior .hall-actor {
+  --sprite-width: clamp(113px, 12vw, 185px);
+  position: absolute;
+  bottom: max(74px, 9.5dvh);
+  width: var(--sprite-width);
+  aspect-ratio: 352 / 420;
+  transition: left 1.42s cubic-bezier(.32,.04,.44,1);
+  padding: 0;
+  border-radius: 44%;
+  background: none;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  transform: translateX(-50%);
+}
+#houseInterior .actor-elf { left: 30%; }
+#houseInterior .actor-snowman { left: 70%; --pose-y: 100%; }
+.actor-sprite {
+  position: absolute;
+  inset: 0;
+  background: url('assets/interior/atrium-poses.webp') no-repeat 0 var(--pose-y,0%);
+  background-size: 500% 200%;
+  transform-origin: 50% 86%;
+  filter: drop-shadow(0 4px 1px #1e111c75);
+  pointer-events: none;
+}
+.hall-actor[data-face="left"] .actor-sprite { transform: scaleX(-1); }
+.hall-actor[data-walking] .actor-sprite { animation: sprite-step .34s steps(1,end) infinite; }
+@keyframes sprite-step { 0%, 100% { background-position-x: 0; } 50% { background-position-x: 25%; } }
+.actor-shadow {
+  position: absolute;
+  width: 79%;
+  height: 7%;
+  left: 11%;
+  bottom: -2%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #2a1519bd, #21131b00 73%);
+}
+.actor-speech {
+  position: absolute;
+  z-index: 1;
+  bottom: 94%;
+  left: 50%;
+  width: max-content;
+  max-width: min(150px, 36vw);
+  padding: 6px 10px;
+  color: #522a22;
+  border: 1px solid #b68b5a;
+  border-radius: 12px;
+  background: #fff3d6;
+  box-shadow: 0 5px 13px #23141eb3;
+  font: 770 clamp(11px,1.2vw,16px)/1.2 Georgia, serif;
+  text-wrap: balance;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.actor-speech[hidden] { display: none; }
+.actor-speech::after {
+  content: "";
+  position: absolute;
+  left: 47%;
+  bottom: -5px;
+  width: 8px;
+  aspect-ratio: 1;
+  background: #fff3d6;
+  border-right: 1px solid #b68b5a;
+  border-bottom: 1px solid #b68b5a;
+  transform: rotate(45deg);
+}
+#houseInterior .hall-actor[data-aiming] { cursor: grabbing; }
+.hall-actor:is([data-aiming],[data-pose]) .actor-sprite { animation: none; }
+.hall-actor:is([data-aiming],[data-pose="windup"]) .actor-sprite { background-position-x: 50%; }
+.hall-actor[data-pose="throw"] .actor-sprite { background-position-x: 75%; }
+.hall-actor[data-pose="hit"] .actor-sprite { background-position-x: 100%; }
+#houseInterior[data-still="false"] .hall-actor[data-pose="hit"] .actor-sprite {
+  animation: sprite-recoil .48s ease-out;
+}
+@keyframes sprite-recoil {
+  0%, 100% { translate: 0; rotate: 0deg; }
+  15% { translate: 0 -7px; rotate: -8deg; }
+  42% { translate: 3px 0; rotate: 3deg; }
+}
+#houseInterior[data-still="true"] .hall-actor { transition: none; }
+
+.snow-effects { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+.snow-effects > i { position: absolute; display: block; }
+.snow-projectile {
+  width: clamp(12px, 1.7vw, 24px);
+  aspect-ratio: 1;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 37% 24%, #fff 12%, #edf5ff 52%, #97b4d0);
+  box-shadow: 0 0 7px #f6faffc4, inset -2px -2px #86a4c769;
+}
+.snow-aim-dot {
+  width: 6px;
+  aspect-ratio: 1;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fffbe6;
+  box-shadow: 0 0 6px #49363b, 0 0 0 1px #6d5a57;
+}
+.snow-burst b {
+  position: absolute;
+  width: 7px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f5faff;
+  box-shadow: 0 0 4px #dfedf4;
+  animation: snow-puff .43s ease-out both;
+}
+@keyframes snow-puff {
+  0% { transform: translate(0); opacity: 1; }
+  45% { opacity: 1; }
+  100% { transform: translate(var(--flake-x), var(--flake-y)) scale(.38); opacity: 0; }
+}
+#houseInterior[data-still="true"] .snow-burst b { animation: none; transform: translate(var(--flake-x), var(--flake-y)); }
+
+@media (max-width: 700px) {
+  #houseInterior .hall-actor {
+    --sprite-width: clamp(83px, 27vw, 130px);
+    bottom: max(67px,9dvh);
+  }
+  #houseInterior .actor-elf { left: 39%; }
+  #houseInterior .actor-snowman { left: 61%; }
+}
+@media (min-width: 361px) and (max-width: 700px) {
+  #houseInterior[data-scene="lobby"] .house-board { translate: -10px 0; }
+  #houseInterior[data-scene="lobby"] .house-chair { translate: 10px 0; }
+}

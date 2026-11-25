@@ -1,0 +1,241 @@
+/* The blank center of the doorstep venue sign supplies the hall's wood grain. */
+#houseInterior :is(.school-door,.sorting-result) .hall-plaque {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid #926239;
+  border-radius: 8px;
+  color: var(--hall-ink);
+  background: linear-gradient(178deg, #fff6d636, #a7672326),
+    url('assets/props/venue-plaque.png') center 33% / 158% 378% no-repeat #ecd1a4;
+  box-shadow: inset 0 0 0 1px #ffe8b5, inset 0 0 0 3px #ac7d4c71, 0 2px #57351f, 0 5px 9px #2d180e73;
+  text-shadow: none;
+}
+#houseInterior { --plaque-script: 'Bodoni 72', var(--hall-serif); }
+#houseInterior:lang(zh-Hant) { --plaque-script: 'Songti TC', 'STSong', 'PingFang TC', serif; }
+#houseInterior :is(.school-door,.house-board,.result-plaque) .hall-incised {
+  color: var(--hall-ink);
+  font-family: var(--plaque-script);
+  font-weight: 500;
+  line-height: 1.12;
+  text-shadow: 0 1px #fff2d6;
+}
+@supports (filter: url('#wood-incised')) {
+  #houseInterior :is(.school-door,.house-board,.result-plaque) .hall-incised {
+    color: #fff;
+    filter: url('#wood-incised') drop-shadow(0 0 .25px #4c2a14);
+    text-shadow: none;
+  }
+}
+#houseInterior[data-scene="lobby"] .school-door .door-sign {
+  width: min(94%, clamp(137px, 15vw, 219px));
+  min-height: 49px;
+  padding: 6px 11px;
+  gap: 8px;
+}
+#houseInterior[data-scene="lobby"] .school-door .door-sign::before,
+#houseInterior[data-scene="lobby"] .school-door .door-sign::after {
+  position: absolute;
+  top: 4px;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle at 35% 30%, #fff0bc, #ad783c 65%, #704823);
+  box-shadow: 0 1px 1px #462712;
+}
+#houseInterior .door-sign::before { left: 8px; }
+#houseInterior .door-sign::after { right: 8px; }
+#houseInterior[data-scene="lobby"] .school-door .plaque-hangers {
+  position: absolute;
+  top: -19px;
+  right: 0;
+  left: 0;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+.plaque-hangers::before, .plaque-hangers::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  border-inline: 1px solid #76502c;
+  border-radius: 3px;
+  background: repeating-linear-gradient(to bottom, #997143 0 1px, #e3bb79 1px 2px, #462a178c 2px 4px);
+  box-shadow: 1px 0 1px #3d271a7d;
+}
+.plaque-hangers::before { left: 8px; }
+.plaque-hangers::after { right: 8px; }
+#houseInterior[data-scene="lobby"] .school-door .door-sign img {
+  width: clamp(27px, 2.65vw, 38px);
+  flex: none;
+  filter: drop-shadow(0 1px 2px #5d311b70);
+}
+#houseInterior[data-scene="lobby"] .school-door .door-sign .crest-plaque {
+  width: auto;
+  min-width: 0;
+  padding: 0;
+  font-size: clamp(15px, 1.42vw, 20px);
+  text-align: center;
+}
+#houseInterior[data-scene="lobby"] .school-door:is(:hover,:focus-visible) { filter: none; }
+#houseInterior .school-door:is(:hover,:focus-visible) .door-sign { border-color: #744728; }
+#houseInterior .school-door:focus-visible { outline: none; }
+#houseInterior .school-door:focus-visible .door-sign,
+#houseInterior .house-prop:focus-visible {
+  outline: 2px solid var(--hall-red);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px #fff3dac9, 0 5px 9px #2d180e73;
+}
+
+#houseInterior[data-scene="lobby"] {
+  --hall-floor: calc((var(--hall-height) - 100dvh) / 2 + max(88px,10.7dvh));
+  --hall-furniture-height: clamp(193px, 29.5dvh, 280px);
+}
+#houseInterior[data-scene="lobby"] .house-scene .hall-props { transform: none; }
+#houseInterior[data-scene="lobby"] .house-prop {
+  bottom: var(--hall-floor);
+  display: block;
+  isolation: isolate;
+  transform: translateX(-50%);
+}
+#houseInterior[data-scene="lobby"] .house-board { left: 42.7%; transform: translate(-50%, 3.6%); }
+#houseInterior[data-scene="lobby"] .house-chair { left: 57.3%; }
+#houseInterior[data-scene="lobby"] .house-prop img {
+  height: var(--hall-furniture-height);
+  width: auto;
+  max-height: none;
+  max-width: none !important;
+  filter: none;
+}
+#houseInterior[data-scene="lobby"] .house-prop::before {
+  left: -3%;
+  right: -3%;
+  bottom: -6px;
+  height: 16px;
+  background:
+    radial-gradient(ellipse 14% 41% at 14% 51%, #36180fed 4%, #3a21129e 38%, transparent 100%),
+    radial-gradient(ellipse 14% 41% at 86% 51%, #36180fed 4%, #3a21129e 38%, transparent 100%),
+    radial-gradient(ellipse 54% 48% at 50% 52%, #3b25168f, #45322255 48%, transparent 100%);
+  filter: blur(1.4px);
+  transform: none;
+  pointer-events: none;
+}
+#houseInterior[data-scene="lobby"] .house-board::before { bottom: -3px; }
+#houseInterior[data-scene="lobby"] .house-prop .chair-preview {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+#houseInterior[data-scene="lobby"] .house-prop .chair-preview-hat {
+  left: 25%;
+  bottom: 80%;
+  width: 50%;
+  height: 28%;
+  filter: drop-shadow(0 3px 3px #3b251b55);
+}
+#houseInterior[data-scene="lobby"] .house-board .hall-board-face {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: 67%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+#houseInterior[data-scene="lobby"] .house-board :is(.hall-board-face,.hall-board-face > span) {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+#houseInterior[data-scene="lobby"] .house-board .hall-incised { font-size: clamp(18px, 2.1vw, 27px); }
+#houseInterior[data-scene="lobby"] .house-board .hall-board-time {
+  color: var(--hall-ink);
+  font: 500 clamp(12px, 1.12vw, 16px)/1.15 var(--hall-serif);
+  font-variant-numeric: tabular-nums;
+}
+#houseInterior[data-scene="lobby"] .house-board .hall-inspect {
+  font: 600 17px/1 system-ui, sans-serif;
+  color: #805936;
+}
+#houseInterior[data-scene="lobby"] .house-chair > span.hall-chair-label {
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  transform: translateX(-50%);
+  width: max-content;
+  padding: 4px 7px;
+  border: 1px solid #997247;
+  border-radius: 4px;
+  color: var(--hall-ink);
+  background: var(--hall-control);
+  box-shadow: inset 0 1px #fff3d9, 0 2px 4px #2f1b1566;
+  font: 600 12px/1.25 system-ui, 'PingFang TC', sans-serif;
+}
+#houseInterior[data-scene="lobby"] .hall-chair-label > span {
+  display: inline;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  box-shadow: none;
+  font: inherit;
+}
+#houseInterior .house-chair:is(:hover,:focus-visible) .hall-chair-label { border-color: #704622; }
+
+#houseInterior[data-panel="chair"] .result-plaque {
+  width: min(100%, 340px);
+  min-height: 84px;
+  padding: 12px 15px;
+  gap: 13px;
+}
+#houseInterior .result-plaque img {
+  width: clamp(45px, 10vw, 64px);
+  flex: none;
+  filter: drop-shadow(0 2px 3px #55351f71);
+}
+#houseInterior[data-panel="chair"] .result-plaque h2 {
+  font-size: clamp(21px, 3.5vw, 30px);
+  line-height: 1.16;
+}
+#houseInterior[data-panel="chair"] .ceremony-chair { height: 82%; }
+#houseInterior[data-panel="chair"] .ceremony-seated { height: 63%; bottom: 4%; }
+#houseInterior[data-panel="chair"] .ceremony-hat { height: 26%; bottom: 77%; }
+#houseInterior[data-panel="chair"] .ritual .ceremony-hat { animation-name: hall-hat-descends; }
+@keyframes hall-hat-descends {
+  0%, 34% { transform: rotate(-4deg); }
+  45% { transform: translateY(80%) scale(.67) rotate(1deg); }
+  49%, 100% { transform: translateY(85%) scale(.64); }
+}
+
+@media (max-width: 700px) {
+  #houseInterior[data-scene="lobby"] {
+    --hall-floor: calc((var(--hall-height) - 100dvh) / 2 + max(85px,11.5dvh));
+    --hall-furniture-height: clamp(151px, 25dvh, 214px);
+  }
+  #houseInterior[data-scene="lobby"] .school-door .door-sign {
+    width: min(94%, 27.5vw);
+    gap: 4px;
+    min-height: 49px;
+    padding: 6px 5px;
+  }
+  #houseInterior[data-scene="lobby"] .school-door:nth-child(2) .door-sign { translate: 11px 0; }
+  #houseInterior[data-scene="lobby"] .school-door:nth-child(3) .door-sign { translate: -11px 0; }
+  #houseInterior[data-scene="lobby"] .school-door:is(:first-child,:last-child) .door-sign { width: min(97%, max(102px,34vw)); }
+  #houseInterior[data-scene="lobby"] .school-door .door-sign img { width: clamp(17px, 5.6vw, 28px); }
+  #houseInterior[data-scene="lobby"] .school-door .door-sign .crest-plaque {
+    font-size: clamp(12px, 3.36vw, 16px);
+  }
+  #houseInterior[data-scene="lobby"] .house-board .hall-board-face { gap: 4px; }
+  #houseInterior[data-scene="lobby"] .house-board .hall-inspect { font-size: 15px; }
+  #houseInterior[data-panel="chair"] .result-plaque { min-height: 74px; }
+}

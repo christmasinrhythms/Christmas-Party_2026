@@ -1,0 +1,908 @@
+/* The interior uses the same warm paper and brass as the doorstep. */
+#houseInterior {
+  --paper: #fff0d5;
+  --house-ink: #291c18;
+  --house-night: #1a1013;
+  --edge: max(20px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --top: max(18px, env(safe-area-inset-top));
+  --bottom: max(18px, env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 400;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--paper);
+  background: var(--house-night);
+  font-family: system-ui, sans-serif;
+  touch-action: none;
+}
+#houseInterior[hidden] { display: none; }
+#houseInterior * { box-sizing: border-box; }
+#houseInterior h2, #houseInterior p { margin: 0; }
+#houseInterior button { cursor: pointer; color: inherit; font-family: inherit; border: 0; }
+#houseInterior button:focus-visible, #houseInterior input:focus-visible { outline: 2px solid #fff5bb; outline-offset: 4px; }
+#houseInterior button:disabled { cursor: default; opacity: .58; }
+#houseInterior [tabindex="-1"]:focus { outline: none; }
+#houseInterior img { display: block; max-width: 100%; }
+body.inside-house #soundPlayer { display: none; }
+body.inside-house #languageToggle { z-index: 490; color: #fff4e0; background: #27191bee; border-color: #e7c793a0; }
+body.inside-house:has(.house-focus) #languageToggle { z-index: 390; }
+
+.house-background, .house-shade, .house-scene { position: absolute; inset: 0; }
+.house-background {
+  display: grid;
+  transform: translate(var(--sway-x, 0px), var(--sway-y, 0px)) scale(1.055);
+  transition: transform .75s cubic-bezier(.19,.7,.22,1), filter .48s ease;
+}
+.house-background img { width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: var(--focal, center); }
+.house-shade { pointer-events: none; background: linear-gradient(#1d0f19d9, #1d0f1914 28%, transparent 66%, #110c0ee8); }
+.house-scene { transform: translate(calc(var(--sway-x, 0px) * .55), calc(var(--sway-y, 0px) * .55)); transition: transform .68s cubic-bezier(.19,.7,.22,1); }
+.house-top { position: absolute; z-index: 5; inset: var(--top) var(--edge) auto; pointer-events: none; }
+.house-top-actions { display: flex; gap: 9px; align-items: center; width: fit-content; pointer-events: auto; }
+#houseInterior .house-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  min-width: 46px;
+  padding: 8px 17px;
+  background: #24181ded;
+  border: 1px solid #ddbf8c85;
+  border-radius: 24px;
+  color: #fff3dd;
+  font: 650 13px/1.35 system-ui, sans-serif;
+  text-align: center;
+  transition: background .2s ease, border-color .2s ease;
+}
+#houseInterior .house-action:hover:not(:disabled) { background: #433033; border-color: #ffdf9b; }
+#houseInterior .house-action.compact { padding: 8px; font-size: 17px; }
+#houseInterior .house-action.primary { background: #f4d59a; color: #281a15; border-color: #f4d59a; }
+#houseInterior .house-action.primary:hover { background: #ffebbb; }
+.house-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(12px, 3vh, 30px);
+  width: fit-content;
+  padding-right: 12px;
+  text-shadow: 0 2px 14px #160e12, 0 1px 3px #100b0b;
+}
+.house-heading img { width: clamp(46px, 6vw, 84px); height: clamp(46px, 6vw, 84px); object-fit: contain; filter: drop-shadow(0 4px 8px #0008); }
+#houseInterior h2 { font: 500 clamp(28px, 4.2vw, 60px)/1.08 Georgia, "Noto Serif TC", serif; text-wrap: balance; }
+#houseInterior h2 small { display: block; margin-top: 7px; font: 650 clamp(12px, 1.3vw, 18px)/1.3 system-ui, sans-serif; }
+.house-hint {
+  position: absolute;
+  z-index: 4;
+  bottom: var(--bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--edge));
+  padding: 9px 17px;
+  color: #fff3dd;
+  border: 1px solid #e5be7859;
+  border-radius: 9px;
+  background: #1d1415ee;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.hall-doors, .hall-props, .room-props { position: absolute; inset: 0; pointer-events: none; }
+#houseInterior .school-door, #houseInterior .house-prop, #houseInterior .house-frame, #houseInterior .house-tv-button {
+  position: absolute;
+  padding: 0;
+  background: none;
+  border-radius: 8px;
+  pointer-events: auto;
+  transition: scale .25s ease, filter .25s ease;
+}
+#houseInterior :is(.school-door,.house-prop,.house-frame,.house-tv-button):hover { scale: 1.045; filter: brightness(1.12); }
+.school-door { top: 43%; width: clamp(103px, 15vw, 202px); transform: translate(-50%,-50%); display: grid; justify-items: center; gap: 3px; }
+.school-door:nth-child(1) { left: 15.5%; --door-accent: #dc817d; }
+.school-door:nth-child(2) { left: 38.6%; --door-accent: #f8cf77; }
+.school-door:nth-child(3) { left: 61.5%; --door-accent: #f9afd9; }
+.school-door:nth-child(4) { left: 84.2%; --door-accent: #b7d3a5; }
+.school-door img { width: clamp(44px, 6.8vw, 101px); aspect-ratio: 1; object-fit: contain; }
+#houseInterior .school-door span, #houseInterior .house-prop span, #houseInterior .house-frame span, #houseInterior .house-tv-button > span {
+  display: block;
+  padding: 8px 12px;
+  border: 1px solid var(--door-accent, var(--house-accent));
+  border-radius: 5px;
+  background: #211617f2;
+  color: #fff2dc;
+  box-shadow: 0 3px 13px #0007;
+  font: 700 clamp(12px, 1.1vw, 15px)/1.32 system-ui, sans-serif;
+  text-align: center;
+  text-wrap: balance;
+}
+.house-prop { bottom: 10%; display: grid; justify-items: center; gap: 5px; }
+.house-prop img { max-height: clamp(125px, 35vh, 355px); width: auto; object-fit: contain; filter: drop-shadow(0 14px 12px #14090cc9); }
+.house-board { left: 4%; }
+.house-chair { right: 4%; }
+.house-frame { width: clamp(124px, 15vw, 227px); }
+.house-frame img {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  object-fit: cover;
+  border: clamp(6px, .8vw, 12px) ridge var(--frame-edge, #bd9155);
+  box-shadow: 0 9px 22px #130a0fbd;
+  background: #302122;
+}
+.house-frame > span, .house-tv-button > span { margin-top: 7px; }
+.frame-0 { left: 7%; top: 33%; rotate: -2deg; }
+.frame-1 { left: 30%; bottom: 12%; rotate: 2deg; }
+.house-tv-button { right: 8%; bottom: 16%; width: clamp(159px, 22vw, 340px); }
+.house-tv {
+  --tv-case: #80582e;
+  --tv-interior: #1d1016;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: clamp(8px, 1.2vw, 17px);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tv-case) 65%, #fff8bb), var(--tv-case) 50%, #1d1218);
+  border: 2px solid color-mix(in srgb, var(--tv-case), #fff 27%);
+  border-radius: 16% 16% 12% 12% / 19% 19% 15% 15%;
+  box-shadow: 0 10px 35px #000a, inset 0 0 0 4px #140a1147;
+}
+.house-tv-screen {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 3px solid #150e14;
+  border-radius: 16% / 20%;
+  background: radial-gradient(ellipse at 45% 37%, color-mix(in srgb, var(--house-accent) 22%, var(--tv-interior)), var(--tv-interior) 72%);
+  box-shadow: inset 0 0 20px #000b;
+}
+.house-tv-screen > span { font-size: clamp(20px, 3.2vw, 42px); color: #fff3d5; }
+.house-tv-dials { display: grid; gap: 6px; }
+.house-tv-dials i { width: clamp(7px, 1.4vw, 18px); aspect-ratio: 1; border: 1px solid #ebd3a7aa; border-radius: 50%; background: #1c1515; box-shadow: 0 2px 3px #000b; }
+#houseInterior[data-scene="rock"] { --frame-edge: #af5752; --focal: center 46%; }
+#houseInterior[data-scene="rock"] .house-tv { --tv-case: #4c3335; --tv-interior: #271216; border-radius: 11px; }
+#houseInterior[data-scene="disco"] { --frame-edge: #e3b46a; --focal: center 47%; }
+#houseInterior[data-scene="disco"] .house-tv { --tv-case: #965c38; --tv-interior: #301934; }
+#houseInterior[data-scene="kpop"] { --frame-edge: #e5a9ec; --focal: center 45%; }
+#houseInterior[data-scene="kpop"] .house-tv { --tv-case: #b67ac7; --tv-interior: #342344; border-radius: 24px; }
+#houseInterior[data-scene="jazz"] { --frame-edge: #ba9462; --focal: center 44%; }
+#houseInterior[data-scene="jazz"] .house-tv { --tv-case: #765136; --tv-interior: #192a26; }
+
+#houseInterior[data-panel]:not([data-panel="none"]) { touch-action: auto; }
+#houseInterior[data-panel]:not([data-panel="none"]) .house-background { transform: scale(1.14); filter: blur(7px) brightness(.48); }
+#houseInterior[data-panel]:not([data-panel="none"]) .house-scene { visibility: hidden; }
+.house-focus { position: absolute; z-index: 6; inset: 0; overflow: auto; overscroll-behavior: contain; background: #130d13bd; touch-action: auto; }
+.focus-top { position: sticky; z-index: 4; top: 0; width: 100%; padding: var(--top) var(--edge) 0; pointer-events: none; }
+.focus-top button { pointer-events: auto; }
+.focus-content {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: calc(100% - 64px);
+  padding: 15px var(--edge) var(--bottom);
+  animation: inspect-in .42s cubic-bezier(.18,.7,.2,1) both;
+}
+@keyframes inspect-in { from { transform: scale(.91); } to { transform: scale(1); } }
+.house-rundown {
+  position: relative;
+  width: min(100%, 680px);
+  padding: clamp(12px, 3vw, 33px);
+  border: 8px ridge #a77746;
+  border-radius: 13px;
+  background: #56382a;
+  box-shadow: 0 28px 85px #08050abb;
+}
+.board-back { position: absolute; inset: 0; height: 100%; width: 100%; object-fit: cover; opacity: .19; pointer-events: none; }
+.paper-rundown {
+  position: relative;
+  padding: clamp(17px, 4vw, 43px);
+  color: #40291f;
+  background: radial-gradient(ellipse at 40% 5%, #fff5db, #f0d5a9);
+  border: 1px solid #ffebbb;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px #210f0d;
+}
+.paper-rundown h2 { text-align: center; }
+.paper-rundown .rundown-date { margin-top: 9px !important; color: #785334; text-align: center; font-size: 14px; }
+.paper-rundown dl { margin: 20px 0 0; }
+.paper-rundown dl div { display: grid; grid-template-columns: minmax(58px, .35fr) 1fr; align-items: baseline; gap: 12px; padding: 14px 0; border-top: 1px solid #9c744971; }
+.paper-rundown dt { color: #7d4428; font: 650 clamp(19px, 3vw, 26px)/1 Georgia, serif; font-variant-numeric: tabular-nums; }
+.paper-rundown dd { margin: 0; font-size: clamp(14px, 2vw, 17px); font-weight: 650; }
+.paper-rundown dd small { display: block; margin-top: 3px; font-size: 12px; font-weight: 450; }
+.sorting-stage { position: relative; width: min(84vw, 500px); height: clamp(170px, 38vh, 360px); isolation: isolate; }
+.sorting-stage img { position: absolute; object-fit: contain; object-position: bottom center; }
+.sorting-light { position: absolute; inset: 4% 5% 0; background: radial-gradient(ellipse at 50% 56%, #f2bd6a5d, transparent 64%); }
+.ceremony-chair { height: 77%; width: 60%; left: 20%; bottom: 0; filter: drop-shadow(0 7px 10px #070408); }
+.ceremony-hat { height: 25%; width: 32%; left: 34%; bottom: 74%; filter: drop-shadow(0 5px 10px #151010bd); animation: float-hat 3s ease-in-out infinite; }
+@keyframes float-hat { 50% { transform: translateY(-7%); } }
+.ceremony-guest { height: 78%; width: 22%; left: 39%; bottom: 0; opacity: 0; }
+.ceremony-seated { height: 62%; width: 35%; left: 32.5%; bottom: 2%; opacity: 0; }
+.ritual .ceremony-guest { animation: arrive-chair 1.6s ease-in-out both; }
+.ritual .ceremony-seated { animation: reveal-seated 3.15s linear both; }
+.ritual .ceremony-hat { animation: hat-descends 3.15s ease-in-out both; }
+@keyframes arrive-chair {
+  0% { transform: translate(-170%,8%); opacity: 0; }
+  13% { opacity: 1; }
+  24% { transform: translate(-130%,-2%) rotate(-3deg); }
+  43% { transform: translate(-85%,3%) rotate(3deg); }
+  62% { transform: translate(-42%,-2%) rotate(-2deg); }
+  84% { transform: translate(0,0); opacity: 1; }
+  100% { transform: translateY(10%) scaleY(.79); opacity: 0; }
+}
+@keyframes reveal-seated { 0%, 42% { opacity: 0; } 50%,100% { opacity: 1; } }
+@keyframes hat-descends { 0%,44% { transform: translateY(0); } 74%,100% { transform: translateY(145%); } }
+.sorting-copy, .sorting-result { width: min(100%, 510px); text-align: center; }
+#houseInterior[data-panel="chair"] h2 { font-size: clamp(25px, 4vw, 44px); }
+.sorting-copy > p { color: #ead2b7; margin-top: 8px !important; font-size: 14px; }
+.house-email { text-align: left; margin: 17px auto 0; }
+.house-email label { display: block; margin-bottom: 8px; color: #fff4df; font-size: 14px; font-weight: 700; }
+.house-email input { width: 100%; min-height: 48px; padding: 9px 12px; border: 1px solid #aa8964; border-radius: 6px; background: #fff1d6; color: #241720; font: 16px system-ui, sans-serif; }
+.house-email input[aria-invalid="true"] { border: 2px solid #d7907c; }
+#houseInterior #house-email-error { margin-top: 8px; min-height: 1.4em; color: #ffd1c5; font-size: 13px; }
+.house-email-actions { display: flex; flex-wrap: wrap; margin-top: 6px; gap: 10px; }
+.sorting-result { display: grid; gap: 16px; justify-items: center; }
+.sorting-result img { width: clamp(130px, 26vw, 245px); aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 0 24px color-mix(in srgb, var(--result) 55%, transparent)); }
+.sorting-result p { font-size: 16px; color: #ffe7bc; }
+.fashion-focus {
+  display: grid;
+  grid-template-columns: auto minmax(150px, 280px);
+  gap: clamp(16px, 4vw, 60px);
+  align-items: center;
+}
+.fashion-focus img {
+  width: auto;
+  max-height: min(70svh, 660px);
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border: clamp(7px, 1.25vw, 16px) ridge var(--frame-edge);
+  background: #28202a;
+  box-shadow: 0 14px 66px #070509b8;
+}
+#houseInterior .fashion-focus h2, #houseInterior .tv-focus h2 { font-size: clamp(24px, 4vw, 42px); }
+.house-kicker { margin-bottom: 9px !important; color: var(--house-accent); font-size: 14px; font-weight: 650; }
+.house-photo-controls, .tv-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+#houseInterior .house-photo-controls button { font-size: 24px; }
+.tv-focus { width: min(100%, 640px); }
+.tv-focus h2 { margin-bottom: 15px !important; }
+.house-tv.large { width: 100%; }
+.house-tv video { width: 100%; height: 100%; object-fit: contain; background: #0c080c; }
+.reels-card { width: 100%; padding: min(5vw, 38px); display: grid; gap: 12px; }
+.reels-card span { font-size: 13px; color: var(--house-accent); }
+.reels-card strong { font: 500 clamp(16px, 3.4vw, 34px)/1.2 Georgia, serif; text-wrap: balance; }
+.tv-actions progress { flex: 1 1 100px; height: 6px; accent-color: var(--house-accent); }
+
+.house-passage {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  pointer-events: auto;
+  perspective: 1100px;
+  animation: walk-through .75s ease-out both;
+}
+.house-passage i {
+  position: relative;
+  display: block;
+  width: 50%;
+  background: radial-gradient(ellipse at 50% 20%, #764a33, transparent 67%), repeating-linear-gradient(90deg,#42281d 0 5px,#4b2e22 8px 14px,#3d251c 17px 23px);
+  border: 3px solid #95643d;
+  box-shadow: inset 0 0 0 12px #3f281d, inset 0 0 75px #170e0d, 0 0 38px #ffcf8180;
+}
+.house-passage i::after { content: ""; position: absolute; width: 18px; aspect-ratio: 1; top: 52%; border-radius: 50%; background: radial-gradient(circle at 35% 35%,#fff1b2,#9b652d 64%); box-shadow: 0 3px 9px #25170e; }
+.house-passage i:first-child { transform-origin: left; animation: door-left .74s cubic-bezier(.41,0,.22,1) both; }
+.house-passage i:last-child { transform-origin: right; animation: door-right .74s cubic-bezier(.41,0,.22,1) both; }
+.house-passage i:first-child::after { right: 5%; }
+.house-passage i:last-child::after { left: 5%; }
+#houseInterior:has(.house-passage) .house-background { animation: arrive-room .75s ease-out both; }
+@keyframes door-left { to { transform: rotateY(86deg) translateX(-25%); } }
+@keyframes door-right { to { transform: rotateY(-86deg) translateX(25%); } }
+@keyframes walk-through { 0%,66% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes arrive-room { from { transform: scale(.99); filter: brightness(.5); } to { transform: scale(1.055); filter: brightness(1); } }
+
+@media (max-width: 700px) {
+  #houseInterior { --edge: 13px; --top: max(12px, env(safe-area-inset-top)); --bottom: max(12px, env(safe-area-inset-bottom)); }
+  .house-background { transform: translate(var(--sway-x, 0px), var(--sway-y, 0px)) scale(1.13); }
+  .house-heading { margin-top: 17px; }
+  .house-hint { font-size: 13px; }
+  .hall-doors {
+    inset: auto var(--edge) calc(var(--bottom) + 57px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  #houseInterior .school-door {
+    position: static;
+    display: grid;
+    grid-template-columns: 41px 1fr;
+    align-items: center;
+    justify-items: start;
+    min-height: 63px;
+    width: auto;
+    transform: none;
+    padding: 5px 8px;
+    gap: 6px;
+    border: 1px solid var(--door-accent);
+    border-radius: 7px;
+    background: #211617f5;
+  }
+  .school-door img { width: 41px; }
+  #houseInterior .school-door span { text-align: left; padding: 0; border: 0; background: none; box-shadow: none; }
+  .house-prop { bottom: calc(var(--bottom) + 211px); }
+  .house-prop img { max-height: min(28vh, 225px); max-width: 40vw !important; }
+  .house-board { left: 6%; }
+  .house-chair { right: 6%; }
+  .house-frame { width: min(33vw, 150px); }
+  .frame-0 { left: 6%; top: 29%; }
+  .frame-1 { left: 13%; bottom: 16%; }
+  .house-tv-button { right: 6%; bottom: 17%; width: min(43vw, 173px); }
+  .fashion-focus { grid-template-columns: 1fr; justify-items: center; gap: 12px; text-align: center; }
+  .fashion-focus img { width: min(72vw, 300px); max-height: 54svh; }
+  .house-photo-controls { justify-content: center; margin-top: 9px; }
+  .house-rundown { padding: 8px; border-width: 5px; }
+}
+@media (max-width: 390px) {
+  #houseInterior .house-top .house-action:not(.compact) { padding-inline: 12px; }
+  .house-prop img { max-height: 24vh; }
+}
+@media (max-width: 700px) and (max-height: 650px) {
+  .house-prop img { max-height: 19vh; }
+  .house-hint { max-width: calc(100% - 22px); padding: 6px 8px; }
+  .hall-doors { bottom: calc(var(--bottom) + 55px); }
+  .house-prop { bottom: calc(var(--bottom) + 183px); }
+  #houseInterior .school-door { min-height: 53px; }
+  .frame-0 { top: 27%; }
+  .house-frame { width: min(29vw, 131px); }
+}
+#houseInterior[data-still="true"] *, body.calm #houseInterior *, #houseInterior[data-still="true"] .house-background, body.calm #houseInterior .house-background { transition: none; }
+#houseInterior[data-still="true"] .house-background, body.calm #houseInterior .house-background { transform: scale(1.045); }
+#houseInterior[data-still="true"] .house-scene, body.calm #houseInterior .house-scene { transform: none; }
+#houseInterior[data-still="true"] :is(.ceremony-hat, .focus-content), body.calm #houseInterior :is(.ceremony-hat, .focus-content) { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  #houseInterior *, #houseInterior *::before, #houseInterior *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+}
+
+/* Keep inspection overlays independent of the parallax stage. */
+#houseInterior { overflow: clip; }
+body.inside-house #experience { visibility: hidden; }
+body.inside-house:has(.house-focus) #languageToggle { visibility: hidden; }
+.house-focus {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: clip;
+  background: #140e13a6;
+}
+.focus-top {
+  position: relative;
+  padding-bottom: 8px;
+  background: linear-gradient(#1a1119fa, #1a111900);
+}
+.focus-content {
+  display: block;
+  min-height: 0;
+  overflow: auto;
+  padding-top: 0;
+  animation: none;
+}
+.focus-content > :is(.house-rundown,.sorting-stage,.sorting-result,.fashion-focus,.tv-focus) {
+  margin-inline: auto;
+  animation: inspect-in .34s ease-out both;
+}
+.focus-content > :is(.house-rundown,.sorting-result,.fashion-focus,.tv-focus) {
+  margin-top: clamp(12px, 8vh, 94px);
+}
+.focus-content > .sorting-stage { margin-top: clamp(6px, 4vh, 50px); }
+.sorting-copy { margin-inline: auto; }
+.house-rundown { border-color: #b98956; }
+.paper-rundown { box-shadow: 0 0 0 3px #6b432a, inset 0 0 0 5px #d7ad7740; }
+.paper-rundown h2 { color: #532b24; }
+.sorting-result { padding: 30px 18px 36px; border-radius: 22px; border: 1px solid color-mix(in srgb, var(--result) 45%, transparent); background: radial-gradient(ellipse at 50% 26%, color-mix(in srgb, var(--result) 20%, #231820), #231820 76%); }
+.sorting-stage { background: radial-gradient(ellipse at 50% 100%, #8c63316e, transparent 46%); }
+.ceremony-seated { bottom: 0; height: 67%; }
+@keyframes hat-descends {
+  0%,45% { transform: translateY(0) rotate(-5deg); }
+  68% { transform: translateY(75%) scale(.69) rotate(1deg); }
+  78%,100% { transform: translateY(81%) scale(.65); }
+}
+#houseInterior[data-still="true"] .focus-content > *, body.calm #houseInterior .focus-content > * { animation: none; }
+
+#enterHouse { padding-inline: 14px; margin-left: 3px; background: #6d3a23; color: #fff2d5; font-weight: 800; }
+#enterHouse:hover, #enterHouse:focus-visible { background: #4e2718; }
+#doorLock .door-hint { background: #fff1d8; color: #482b1e; box-shadow: 0 3px 16px #27160f8c; }
+#doorLock:hover .door-hint, #doorLock:focus-visible .door-hint { outline: 3px solid #fff3cf; outline-offset: 3px; }
+#houseInterior .house-board .board-lettering {
+  position: absolute;
+  top: 39%;
+  left: 48%;
+  width: 71%;
+  transform: translate(-50%,-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #60351e;
+  box-shadow: none;
+  font: 700 clamp(10px, 1.2vw, 19px)/1.3 Georgia, serif;
+  letter-spacing: .11em;
+}
+#houseInterior .house-board .board-lettering span { margin-top: 5px; padding: 0; color: #693929; background: none; border: 0; box-shadow: none; font: 650 clamp(9px, .95vw, 13px)/1.3 Georgia, serif; letter-spacing: .04em; }
+.house-prop img { max-height: clamp(135px, 28vh, 260px); }
+.house-board { left: 1%; }
+.house-chair { right: 1%; }
+.school-door { top: 42%; }
+.school-door img { filter: drop-shadow(0 4px 4px #26130d91); }
+#houseInterior .school-door span { background: linear-gradient(150deg,#3a251e,#25181c); }
+#houseInterior .house-frame > span { font-weight: 650; text-wrap: balance; }
+.house-frame img { aspect-ratio: 3/4; object-fit: contain; }
+.fashion-focus img { aspect-ratio: auto; object-fit: contain; }
+.frame-0::before { content:''; display:block; position:absolute; z-index:-1; left:38%; top:-18px; width:27%; height:28px; border:1px solid color-mix(in srgb,var(--frame-edge),#21161a 52%); border-right:0; border-bottom:0; transform:rotate(43deg); }
+.frame-1::after, .house-tv-button::after { content:''; position:absolute; z-index:-1; left:13%; right:13%; top:77%; height:28%; border-inline:4px ridge color-mix(in srgb,var(--frame-edge),#1b1317 47%); transform:perspective(50px) rotateX(21deg); }
+.house-tv-button::after { top:74%; height:24%; left:17%; right:17%; border-width:7px; }
+.tv-focus .reels-card { text-align: center; }
+.reels-card > span { font-weight: 650; }
+@media (min-width:701px) and (max-height:760px) {
+  .house-frame { width: min(13vw,25vh); }
+  .house-tv-button { width: min(21vw,42vh); }
+}
+@media (max-width: 700px) {
+  #enterHouse { padding-inline: 10px; }
+  .house-board { left: 5%; }
+  .house-chair { right: 5%; }
+  .house-prop img { max-height: min(27vh, 210px); }
+  .house-frame img { aspect-ratio: 3/4; }
+  .frame-0 { top: 29%; }
+  .frame-1 { bottom: 16%; }
+  .focus-content > :is(.house-rundown,.sorting-result,.fashion-focus,.tv-focus) { margin-top: clamp(10px,6vh,48px); }
+  .fashion-focus img { width: auto; max-width: 72vw; max-height: 54svh; }
+}
+@media (max-width: 700px) and (max-height: 650px) {
+  .house-prop img { max-height: 18vh; }
+  .house-frame img { aspect-ratio: 1/1; }
+  .frame-0 { top: 26%; }
+  .frame-1 { bottom: 17%; }
+}
+.house-scene { transition: none; transform: none; }
+.house-scene :is(.hall-doors,.hall-props,.room-props) {
+  transform: translate(calc(var(--sway-x, 0px) * .43), calc(var(--sway-y, 0px) * .43));
+  transition: transform .68s cubic-bezier(.19,.7,.22,1);
+}
+#houseInterior[data-still="true"] .house-scene :is(.hall-doors,.hall-props,.room-props), body.calm #houseInterior .house-scene :is(.hall-doors,.hall-props,.room-props) { transform: none; }
+#houseInterior .house-frame > span { display:flex; gap:6px; align-items:center; justify-content:center; }
+.house-frame b { flex-shrink:0; color:var(--house-accent); font-size:14px; }
+.photo-index { font-size:14px; color:#f5d6ae; font-variant-numeric:tabular-nums; }
+#houseInterior .house-tv-button > span { background:color-mix(in srgb, var(--house-accent) 17%, #211617); }
+#houseInterior .house-tv-button .house-tv-screen > span { display:grid; place-items:center; width:2.05em; aspect-ratio:1; border-radius:50%; background:#140d17ab; border:1px solid var(--house-accent); }
+#houseInterior[data-scene="kpop"] .house-tv-button { bottom:13%; }
+@media (min-width:701px) {
+  .focus-content > .fashion-focus { width: fit-content; }
+}
+@media (max-width: 700px) {
+  .house-scene .hall-doors { transform:none; }
+  #houseInterior[data-scene="kpop"] .house-tv-button { bottom:18%; }
+  #houseInterior .house-frame > span { padding:7px 5px; font-size:11.5px; }
+  #houseInterior .house-tv-button > span { font-size:11.5px; }
+}
+
+#houseInterior .rundown-tip { margin-top:8px; padding-top:12px; border-top:1px solid #9c744971; font-size:13px; line-height:1.55; }
+#houseInterior .rundown-tip p { margin-top:3px; }
+
+/* School plaques pair each existing symbol with its bilingual name. */
+#houseInterior .school-door .crest-plaque { width: fit-content; min-width: min(98px,100%); }
+.crest-plaque small { display: block; margin-top: 3px; color: #f8dbc1; font: 550 .82em/1.25 system-ui,sans-serif; }
+.sorting-result .result-crest { width: min(100%, 385px); aspect-ratio: auto; }
+#houseInterior .sorting-result > p { font-weight: 650; }
+#houseInterior .chair-preview { position: relative; }
+#houseInterior .chair-preview > .chair-preview-hat {
+  position: absolute;
+  width: 69%;
+  height: 33%;
+  left: 14%;
+  bottom: 71%;
+  object-fit: contain;
+}
+.sorting-stage .ceremony-hat {
+  position: absolute;
+  width: 32%;
+  height: 33%;
+  left: 34%;
+  bottom: 74%;
+}
+.sorting-stage .ceremony-hat img { inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.sorting-stage .hat-mouth-open { opacity: 0; }
+.ritual .ceremony-seated { animation-duration: 4.55s; }
+.ritual .ceremony-hat { animation-duration: 4.55s; }
+.ritual.is-speaking .hat-mouth-open { animation: hat-syllables 2.15s steps(1,end) both; }
+.sorting-copy .hat-caption { min-height: 1.5em; font-size: clamp(15px, 2.1vw, 21px); color: #ffdf9f; }
+@keyframes reveal-seated { 0%,30% { opacity: 0; } 35%,100% { opacity: 1; } }
+@keyframes hat-descends {
+  0%,34% { transform: translateY(0) rotate(-5deg); }
+  45% { transform: translateY(59%) scale(.67) rotate(1deg); }
+  49%,100% { transform: translateY(64%) scale(.66); }
+}
+@keyframes hat-syllables {
+  0%,14%,22%,33%,43%,58%,65%,78%,90% { opacity: 1; }
+  7%,19%,28%,38%,51%,62%,70%,84%,95%,100% { opacity: 0; }
+}
+@media (max-width:700px) {
+  #houseInterior .school-door .crest-plaque { min-width: 0; }
+  .crest-plaque small { font-size: 10px; }
+  #houseInterior .school-door { min-height: 66px; }
+  .house-prop { bottom: calc(var(--bottom) + 217px); }
+}
+@media (max-width:700px) and (max-height:650px) {
+  #houseInterior .school-door { min-height: 57px; }
+  .house-prop { bottom: calc(var(--bottom) + 184px); }
+}
+
+/* The hall art and its interactive archways share a single camera. */
+#houseInterior[data-scene="lobby"] {
+  --hall-width: max(108vw, 154dvh);
+  --hall-camera: translate(calc(-50% + var(--hall-pan, 0px) + var(--sway-x, 0px)), calc(-50% + var(--sway-y, 0px) * .45));
+}
+#houseInterior[data-scene="lobby"] :is(.house-background,.hall-world) {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: var(--hall-width);
+  height: auto;
+  aspect-ratio: 3/2;
+  transform: var(--hall-camera);
+  transition: transform .36s cubic-bezier(.2,.75,.3,1);
+}
+#houseInterior[data-scene="lobby"] .house-background img { width: 100%; height: 100%; object-fit: fill; }
+#houseInterior[data-scene="lobby"] .house-scene .hall-doors,
+#houseInterior[data-scene="lobby"] .house-scene .hall-props { inset: 0; display: block; transform: none; }
+#houseInterior[data-scene="lobby"] .house-scene .hall-props {
+  transform: translate(calc(var(--sway-x,0px) * -.42),calc(var(--sway-y,0px) * .62));
+  transition: transform .55s cubic-bezier(.2,.76,.28,1);
+}
+#houseInterior[data-scene="lobby"][data-dragging="true"] :is(.house-background,.hall-world,.hall-props) { transition: none; cursor: grabbing; }
+#houseInterior[data-scene="lobby"][data-still="true"] { --hall-camera: translate(calc(-50% + var(--hall-pan,0px)),-50%); }
+#houseInterior[data-scene="lobby"]:not([data-panel="none"]) .house-background { transform: var(--hall-camera) scale(1.08); }
+#houseInterior[data-scene="lobby"]:has(.house-passage) .house-background { animation: hall-arrival .75s ease-out both; }
+@keyframes hall-arrival { from { transform: var(--hall-camera) scale(.91); filter: brightness(.55); } to { transform: var(--hall-camera); } }
+#houseInterior[data-scene="lobby"] .school-door {
+  position: absolute;
+  left: var(--door-x);
+  top: var(--door-y);
+  transform: translateX(-50%);
+  width: 15%;
+  height: 36%;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: start;
+  justify-items: center;
+  border: 0;
+  gap: 0;
+  padding: 0;
+  background: none;
+  border-radius: 43% 43% 6px 6px / 25% 25% 6px 6px;
+}
+#houseInterior[data-scene="lobby"] :is(.school-door,.house-board,.house-chair):hover { scale: 1; }
+#houseInterior .school-door:nth-child(1) { --door-x:16.55%; --door-y:39.6%; }
+#houseInterior .school-door:nth-child(2) { --door-x:38.76%; --door-y:42.7%; }
+#houseInterior .school-door:nth-child(3) { --door-x:61.19%; --door-y:42.7%; }
+#houseInterior .school-door:nth-child(4) { --door-x:83.72%; --door-y:39.6%; }
+.door-sign {
+  display: flex;
+  width: max-content;
+  max-width: 96%;
+  gap: 7px;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px 9px 4px 5px;
+  background: radial-gradient(ellipse at 25% 5%, #64422e,#312020 64%);
+  border: 2px ridge var(--door-accent);
+  border-radius: 8px;
+  box-shadow: 0 3px 1px #302019, 0 6px 10px #2b130dbb;
+  text-shadow: 0 1px 2px #100809;
+}
+#houseInterior .school-door .door-sign img { width: clamp(26px,3.25vw,47px); }
+#houseInterior .school-door .door-sign .crest-plaque {
+  min-width:0;
+  padding:0;
+  border:0;
+  background:none;
+  box-shadow:none;
+  text-align: left;
+  font-size: clamp(11px, .95vw, 15px);
+}
+#houseInterior .school-door .door-sign::before,#houseInterior .school-door .door-sign::after {
+  content:"";width:4px;height:4px;border-radius:50%;background:var(--door-accent);box-shadow:0 1px 1px #2c150e;
+}
+#houseInterior .school-door::after {
+  content:"";
+  position:absolute;
+  inset:24% 7% 5%;
+  z-index:-1;
+  border-radius:47% 47% 4px 4px / 30% 30% 4px 4px;
+  box-shadow: inset 0 0 28px 4px #ffdc9f9c;
+  background:radial-gradient(ellipse at 50% 80%,#ffbd6733,transparent 65%);
+  opacity:0;
+  transition:opacity .22s ease;
+}
+#houseInterior .school-door:is(:hover,:focus-visible)::after { opacity:1; }
+#houseInterior[data-scene="lobby"] .house-prop { bottom: 8.2%; }
+#houseInterior[data-scene="lobby"] .house-board { left: 43%; transform: translateX(-50%) perspective(560px) rotateY(9deg); }
+#houseInterior[data-scene="lobby"] .house-chair { left: 57%; right: auto; transform: translateX(-50%) perspective(560px) rotateY(-7deg); }
+#houseInterior[data-scene="lobby"] .house-prop img { max-height: clamp(104px,18vh,180px); max-width: none; }
+#houseInterior[data-scene="lobby"] .house-prop::before {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left: -17%;
+  right: -17%;
+  bottom: 28px;
+  height: 20px;
+  border-radius: 50%;
+  background: #33160bc9;
+  filter: blur(9px);
+  transform: skewX(-18deg);
+}
+#houseInterior[data-scene="lobby"] .house-prop > span:last-child { font-size: 12px; box-shadow: 0 4px 2px #1e0d0c99; }
+.hall-nav {
+  display: flex;
+  position: absolute;
+  z-index: 5;
+  bottom: var(--bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 9px;
+  align-items: center;
+  width: max-content;
+  max-width: calc(100% - var(--edge) * 2);
+  border: 1px solid #d6b47d86;
+  border-radius: 30px;
+  color: #fff0d5;
+  background: #211618e8;
+  padding: 3px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+#houseInterior .hall-nav button[aria-disabled="true"] { opacity: .5; cursor: default; }
+#houseInterior .hall-nav button { font-size: 23px; }
+@media (max-width: 700px) {
+  #houseInterior[data-scene="lobby"] { --hall-width: max(149dvh, 270vw); }
+  #houseInterior .school-door .door-sign img { width: 32px; }
+  #houseInterior[data-scene="lobby"] .house-board { left: 43.2%; }
+  #houseInterior[data-scene="lobby"] .house-chair { left: 56.8%; }
+  #houseInterior[data-scene="lobby"] .house-prop { bottom: 11%; }
+  #houseInterior[data-scene="lobby"] .house-prop img { max-height: 18dvh; }
+}
+
+/* Height and mounting shadows give furniture contact with the illustrated room. */
+#houseInterior .house-frame {
+  border-radius: 3px;
+  transform: perspective(850px) rotateY(var(--frame-angle, 0deg)) rotateX(-3deg);
+}
+#houseInterior .house-frame img {
+  border: clamp(7px,.85vw,14px) ridge var(--frame-edge);
+  box-shadow: inset 0 0 0 1px #0e070b, 3px 5px 0 color-mix(in srgb,var(--frame-edge),#1d1215 55%), 9px 17px 18px #10060cbb;
+}
+#houseInterior .frame-0 { --frame-angle: 10deg; top: 33%; left: 8%; }
+#houseInterior .frame-1 { --frame-angle: -8deg; top: 31%; right: 8%; left:auto; bottom:auto; }
+#houseInterior .house-frame::before {
+  content:"";position:absolute;z-index:-1;top:-19px;left:39%;width:23%;height:26px;
+  border:1px solid #e8c091ad;border-right:0;border-bottom:0;
+  transform: rotate(45deg);opacity:.86;
+}
+#houseInterior .frame-1::after { content:none; }
+#houseInterior .house-tv-button {
+  left:50%;
+  right:auto;
+  bottom:13%;
+  transform: translateX(-50%) perspective(900px) rotateY(-6deg) rotateX(5deg);
+  width:clamp(154px,19vw,290px);
+}
+#houseInterior .house-tv-button .house-tv {
+  box-shadow: 5px 6px 0 #170c14, 10px 10px 0 color-mix(in srgb,var(--tv-case), #09080a 56%), 17px 15px 24px #10070ad1, inset 0 0 0 4px #140a1147;
+}
+#houseInterior .tv-stand {
+  display:block;
+  position:relative;
+  margin:-4px auto 0;
+  height:clamp(18px,3vh,29px);
+  width:76%;
+  background:linear-gradient(90deg,#2b1815,#5e3e2e 32%,#4c2e27 70%,#271613);
+  border: 3px solid #63422c;
+  border-top:4px solid var(--frame-edge);
+  border-radius:3px 3px 7px 7px;
+  box-shadow:0 12px 12px #0f070bdc;
+}
+#houseInterior .house-tv-button::after { content:none; }
+#houseInterior[data-scene="kpop"] .tv-stand { background:linear-gradient(90deg,#2a1b4e,#86538c 37%,#442b5c);border-color:#8a61a2; }
+#houseInterior[data-scene="rock"] .tv-stand { background:linear-gradient(90deg,#170f13,#552b30,#201217);border-color:#4e292b; }
+@media (max-width:700px) {
+  #houseInterior .frame-0 { top:31%;left:6%; }
+  #houseInterior .frame-1 { top:33%;right:6%; }
+  #houseInterior .house-tv-button { bottom:14%;width:min(39vw,169px); }
+  #houseInterior[data-scene="kpop"] .house-tv-button { bottom:14%; }
+}
+@media (max-width:700px) and (max-height:650px) {
+  #houseInterior .frame-0 { top:31%; }
+  #houseInterior .frame-1 { top:31%; }
+  #houseInterior .house-tv-button { width:min(35vw,154px);bottom:15%; }
+}
+/* The generic scene-label treatment is replaced on the physical door bracket. */
+#houseInterior .school-door > .door-sign { display:flex;background:radial-gradient(ellipse at 25% 5%,#64422e,#312020 64%);border:2px ridge var(--door-accent);padding:4px 8px;box-shadow:0 3px 1px #302019,0 6px 10px #2b130dbb; }
+#houseInterior[data-scene="lobby"] {
+  --hall-height: calc(var(--hall-width) * 2 / 3);
+}
+#houseInterior[data-scene="lobby"] .house-prop {
+  bottom: calc((var(--hall-height) - 100dvh) / 2 + max(73px, 10dvh));
+}
+@media (max-width:700px) {
+  #houseInterior[data-scene="lobby"] { --hall-width: max(154dvh, 210vw); }
+  #houseInterior[data-scene="lobby"] .house-prop { bottom: calc((var(--hall-height) - 100dvh) / 2 + max(80px, 11dvh)); }
+}
+#houseInterior[data-scene="lobby"] .house-board .board-lettering {
+  font-size: clamp(8px, 1.65dvh, 11px);
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+#houseInterior[data-scene="lobby"] .house-board .board-lettering span {
+  font-size: clamp(8px, 1.32dvh, 11px);
+  letter-spacing: 0;
+}
+@media (min-width:1000px) {
+  #houseInterior[data-scene="lobby"] .house-prop img { max-height: clamp(153px,21dvh,214px); }
+}
+
+#houseInterior[data-scene="jazz"] .frame-0 { top:27%; }
+#houseInterior[data-scene="jazz"] .frame-1 { top:26%; }
+@media (max-width:700px) {
+  #houseInterior[data-scene="jazz"] .frame-0 { top:24%; }
+  #houseInterior[data-scene="jazz"] .frame-1 { top:25%; }
+}
+
+/* Room media */
+#houseInterior .house-tv .house-tv-screen {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 13% / 13%;
+}
+#houseInterior .room-tv-player:hover { scale: 1; filter: none; }
+.room-video-stage { position: absolute; inset: 0; }
+#houseInterior .room-video-stage video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#houseInterior .room-video-stage video:fullscreen { object-fit: contain; }
+#houseInterior .room-video-stage .room-video-exit { display: none; }
+#houseInterior .room-video-stage:fullscreen {
+  display: grid;
+  place-items: center;
+  background: #090709;
+  touch-action: auto;
+}
+#houseInterior .room-video-stage:fullscreen video {
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: 100dvh;
+  object-fit: contain;
+}
+#houseInterior .room-video-stage:fullscreen .room-video-exit {
+  display: inline-flex;
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  background: #171015ee;
+}
+#houseInterior .room-video-actions {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin: 5px auto 0;
+}
+#houseInterior .room-video-actions .house-action {
+  gap: 5px;
+  min-height: 44px;
+  padding-inline: 11px;
+  border-radius: 6px;
+}
+#houseInterior [data-house="tv-fullscreen"] > [aria-hidden] { font-size: 18px; line-height: 1; }
+#houseInterior .room-video-status {
+  position: absolute;
+  width: 100%;
+  background: #201718;
+  font-size: 12px;
+  text-align: center;
+}
+#houseInterior .room-video-status:empty { display: none; }
+
+#houseInterior .house-frame .wall-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 32dvh;
+  object-fit: cover;
+  border: clamp(6px, .8vw, 12px) ridge var(--frame-edge);
+}
+#houseInterior .empty-frame { pointer-events: none; }
+#houseInterior .empty-frame .wall-photo {
+  background: radial-gradient(ellipse at 45% 27%, #544348, #251b23 82%);
+  box-shadow: inset 0 0 0 3px #ae8a6350, inset 0 0 20px #110b10a0, 7px 12px 18px #10060cb0;
+}
+#houseInterior .fashion-focus img { max-width: min(52vw, 760px); object-fit: contain; }
+
+#houseInterior .wall-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 6px;
+  max-width: calc(100% - 16px);
+}
+#houseInterior .wall-controls .house-action {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 10px;
+  border-radius: 19px;
+}
+#houseInterior .wall-count { padding-inline: 3px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#houseInterior .wall-status:not(:empty) {
+  position: absolute;
+  inset: auto 0 calc(100% + 8px);
+  padding: 6px 9px;
+  background: #281c20;
+  color: #fff3dd;
+  border-radius: 6px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.try-on-mirror {
+  position: absolute;
+  z-index: 1;
+  left: 27%;
+  bottom: 13%;
+  display: grid;
+  justify-items: center;
+  width: clamp(75px, 10vw, 152px);
+  margin: 0;
+  text-align: center;
+  transform: perspective(850px) rotateY(7deg);
+}
+.mirror-glass {
+  width: 88%;
+  aspect-ratio: 0.57;
+  max-height: 29dvh;
+  border: clamp(5px, .8vw, 11px) ridge var(--frame-edge);
+  border-radius: 51% 51% 9% 9% / 27% 27% 4% 4%;
+  background:
+    linear-gradient(140deg, transparent 28%, #fff5dc8c 30%, #fff8ed24 38%, transparent 44% 51%, #f7e7d035 52%, transparent 58%),
+    linear-gradient(155deg, #897a8c, #ecd5c8 32%, #a9a0a0 55%, #514858);
+  box-shadow: inset 0 0 0 2px #f8e6d06e, inset 0 0 19px #2b253a80, 4px 5px #261715, 10px 16px 16px #160d14a8;
+}
+.try-on-mirror figcaption {
+  position: relative;
+  margin-top: 4px;
+  padding: 3px 6px;
+  border: 1px solid #ccaa75;
+  border-radius: 5px;
+  color: #38231b;
+  background: linear-gradient(#ffe8bd, #d4ad77);
+  box-shadow: 0 3px 8px #100b11c9;
+  font: 700 clamp(11px, 1.15vw, 14px)/1.26 system-ui, sans-serif;
+}
+.try-on-mirror small {
+  display: block;
+  font-size: .85em;
+  font-weight: 600;
+}
+@media (max-width: 700px) {
+  #houseInterior .fashion-focus img { max-width: min(100%, 76vw); }
+  #houseInterior .room-props [data-wall-frames] :is(.frame-0,.frame-1) {
+    top: 32%;
+    width: min(30vw, 150px);
+  }
+  #houseInterior [data-wall-frames] .wall-photo { max-height: 25dvh; }
+  #houseInterior .fullscreen-label { display: none; }
+  .try-on-mirror {
+    width: clamp(72px, 21vw, 110px);
+    left: 4%;
+    bottom: max(74px, 13%);
+  }
+  .mirror-glass { max-height: 20dvh; }
+}
+@media (max-height: 540px) and (min-width: 701px) {
+  #houseInterior .house-tv-button { width: min(22vw, 41dvh); bottom: 15%; }
+}

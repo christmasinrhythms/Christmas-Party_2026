@@ -1,0 +1,63 @@
+#houseInterior .tv-briefing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(7px, 2.2vw, 16px);
+  padding: clamp(17px, 5.2%, 40px);
+  background: radial-gradient(ellipse at 52% 43%, color-mix(in srgb,var(--house-accent) 21%,#38232d), #1c121b 74%);
+  color: #fff1d7;
+  text-align: center;
+}
+#houseInterior .tv-briefing p {
+  color: #ffda90;
+  font-size: clamp(10px, 1.7vw, 14px);
+  font-weight: 750;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+#houseInterior .tv-briefing strong { font: 700 clamp(22px,4.8vw,43px)/1 "Bodoni 72", Georgia, "Songti TC", serif; }
+#houseInterior .tv-briefing > span { font-size: clamp(13px,2.05vw,18px); line-height: 1.46; max-width: 35ch; text-wrap: pretty; }
+#houseInterior .tv-briefing .tv-filming-note { color: #ffe39f; font-weight: 750; }
+#houseInterior .tv-slide-count {
+  align-self: center;
+  min-width: 36px;
+  color: #fff2d7;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+#houseInterior .tv-clip-caption {
+  padding-top: 6px;
+  color: #fff1d7;
+  text-align: center;
+  font-size: 13px;
+  text-shadow: 0 2px 7px #201117eb;
+}
+#houseInterior .room-video-stage > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0c090d;
+}
+#houseInterior .room-video-stage:fullscreen > video {
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: 100dvh;
+}
+#houseInterior .tv-hardware { align-items: center; }
+.tv-transport, .tv-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; }
+#houseInterior .tv-key[aria-pressed="true"] { box-shadow: inset 0 0 10px #ffdc9e66, 0 2px #24151a; }
+#houseInterior .tv-key[data-house="tv-prev"],
+#houseInterior .tv-key[data-house="tv-next"] { font-size: 20px; }
+@media (max-width: 560px) {
+  #houseInterior .tv-hardware { display: grid; justify-items: center; }
+  .room-tv-panel { grid-template-columns: minmax(0, 1fr); }
+  .room-tv-panel > :is(.tv-speaker,.tv-power) { display: none; }
+}
+
+@media (pointer: coarse) {
+  #houseInterior .tv-key { min-width: 44px; min-height: 44px; }
+}

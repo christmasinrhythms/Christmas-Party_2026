@@ -1,0 +1,237 @@
+/* Shared interior controls retain the house’s cream paper and aged brass. */
+#houseInterior .wall-controls[hidden] { display: none; }
+
+#houseInterior:is([data-panel="chair"],[data-panel="tv"]) .focus-content {
+  align-content: start;
+  padding-top: clamp(12px, 3dvh, 30px);
+}
+#houseInterior .chair-inspection { width: min(100%, 1100px); }
+#houseInterior .dress-code-choices {
+  margin: 0 auto 16px;
+  padding: 12px clamp(10px, 2.5vw, 24px);
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #bb9b69;
+  border-radius: 10px;
+  color: var(--hall-ink, #38281d);
+  background: var(--hall-finish, #fff0db);
+  box-shadow: var(--hall-shadow);
+  text-align: center;
+}
+#houseInterior .dress-code-choices h3 { margin: 0; font-family: var(--hall-serif, Georgia, serif); font-size: 20px; }
+.dress-code-choices ul {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 1.6vw, 20px);
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+.dress-code-choices li { display: grid; align-content: start; justify-items: center; gap: 4px; }
+.dress-code-choices li img { width: clamp(38px, 7vw, 74px); aspect-ratio: 1; object-fit: contain; }
+.dress-code-choices li span { font-weight: 700; font-size: clamp(10px, 1.3vw, 14px); line-height: 1.18; }
+#houseInterior .dress-code-choices p { font-size: clamp(12px, 1.6vw, 15px); line-height: 1.35; }
+#houseInterior .chair-inspection .chair-closeup { width: 100%; }
+#houseInterior .chair-inspection .sorting-stage { height: min(54dvh, 525px); }
+#houseInterior .chair-inspection .sorting-copy { min-width: 0; }
+#houseInterior .chair-inspection .sorting-result { margin: 0; width: auto; }
+#houseInterior .chair-inspection .sorting-result h2 { color: var(--hall-ink); }
+#houseInterior .team-result-label { font-weight: 650; }
+#houseInterior .team-rep-badge {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px 5px 6px;
+  border: 1px solid #aa864c;
+  border-radius: 22px;
+  color: #513519;
+  background: linear-gradient(#fff0c7, #e5c58b);
+  font-weight: 750;
+  font-size: 13px;
+  box-shadow: inset 0 1px #fff9e8, 0 2px 4px #3f261c25;
+}
+.team-rep-badge span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #fff0bd;
+  background: #674a23;
+}
+#houseInterior .sorting-copy [data-house="chair-reset"] { width: fit-content; }
+.sorting-stage.is-revealing .sorting-hat-closeup { animation: team-reveal 700ms ease-out both; }
+@keyframes team-reveal {
+  from { opacity: .35; transform: translateY(-18%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The glass and cabinet frame the media and leave provider controls clear. */
+#houseInterior .room-tv-player .house-tv-screen {
+  border-radius: 8%;
+  outline: 1px solid #ffdb8b57;
+  box-shadow: 0 0 9px #ffe3a232, inset 0 0 20px #000b;
+}
+#houseInterior[data-still="false"] .room-tv-player:has(.room-video-stage) .house-tv-screen { animation: tv-warmup 400ms ease-out; }
+@keyframes tv-warmup {
+  from { box-shadow: 0 0 16px #ffda7a8c, inset 0 0 20px #000b; }
+  to { box-shadow: 0 0 9px #ffe3a232, inset 0 0 20px #000b; }
+}
+#houseInterior .room-tv-player .house-tv { position: relative; }
+#houseInterior .room-tv-player .house-tv::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  bottom: 5px;
+  width: 5px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fbb760;
+  box-shadow: 0 0 8px #ffac55bd;
+  pointer-events: none;
+}
+.room-video-stage > iframe { width: 100%; height: 100%; border: 0; display: block; background: #0b090b; }
+#houseInterior .room-video-stage:fullscreen > iframe { width: 100vw; height: 100dvh; }
+.room-tv-player:not(.has-youtube) .house-tv-screen::after,
+.tv-rules-screen .house-tv-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #ffebbf1c, transparent 35%),
+    repeating-linear-gradient(0deg, #0b070e23 0px 1px, transparent 1px 4px);
+  box-shadow: inset 0 0 15px #09050b8c;
+  pointer-events: none;
+}
+#houseInterior .room-video-actions .house-action {
+  white-space: nowrap;
+  padding-inline: clamp(8px, 1vw, 13px);
+}
+#houseInterior .room-video-actions [data-house="tv-rules"] { font-size: 12px; }
+#houseInterior .room-video-status {
+  bottom: calc(100% + 6px);
+  padding: 5px 7px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.tv-channel-id, .tv-source-card {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  max-height: 100%;
+  place-content: center;
+  padding: 10px;
+  color: #fff2d0;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #5b4731, #191117 75%);
+}
+.tv-channel-id strong, .tv-source-card strong { font: 700 clamp(14px, 2vw, 26px)/1.12 var(--hall-serif, Georgia, serif); }
+.tv-channel-id small, .tv-source-card small { color: #f5d094; font-size: clamp(10px, 1vw, 13px); }
+.tv-source-card { height: 100%; }
+#houseInterior .room-video-actions .tv-original { font-size: 12px; text-decoration: none; }
+#houseInterior .tv-focus { width: min(100%, 620px); }
+#houseInterior .tv-rules-screen .house-tv-screen {
+  position: relative;
+  aspect-ratio: auto;
+  border-radius: 12px;
+}
+.tv-rule-sheet {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  padding: clamp(14px, 3vw, 28px);
+  color: #fff3d9;
+  background: linear-gradient(160deg, #34291f, #161117 72%);
+  font-size: clamp(14px, 1.6vw, 19px);
+  line-height: 1.43;
+}
+.tv-rule-sheet ol { margin: 0; padding-inline-start: 1.45em; display: grid; gap: .55em; }
+.tv-rule-sheet li::marker { color: #f4c982; font-weight: 750; }
+#houseInterior .tv-rule-sheet p {
+  margin-top: .9em;
+  padding-top: .65em;
+  border-top: 1px solid #c9a66d60;
+  color: #f7d597;
+  font-weight: 700;
+}
+#houseInterior .house-tv-button.has-youtube {
+  width: clamp(250px, 21vw, 308px);
+  transform: translateX(-50%);
+}
+#houseInterior .room-video-stage:fullscreen { animation: none; }
+#houseInterior .room-video-stage:fullscreen .room-video-exit { z-index: 2; }
+
+@media (max-width: 700px) {
+  #houseInterior .chair-inspection .sorting-copy { grid-row: 1; }
+  #houseInterior .chair-inspection .sorting-stage { height: min(29dvh, 240px); }
+  #houseInterior .chair-inspection .sorting-result { min-height: auto; }
+  #houseInterior .chair-inspection .house-email-actions { margin-top: 5px; }
+  #houseInterior .focus-content > .tv-focus { margin-top: 0; }
+  #houseInterior .tv-focus { padding: 14px; }
+  #houseInterior .tv-rules-screen { padding: 7px; gap: 5px; }
+  #houseInterior .tv-rules-screen .house-tv-dials i { width: 7px; }
+  #houseInterior .has-youtube .house-tv { grid-template-columns: minmax(0, 1fr) 8px; }
+  #houseInterior .house-tv-button.has-youtube { width: 250px; bottom: max(76px, 12%); }
+  #houseInterior .room-props:has(.has-youtube) [data-wall-frames] :is(.frame-0,.frame-1) {
+    top: 25%;
+    width: min(24vw, 122px);
+  }
+  #houseInterior .room-props:has(.has-youtube) .try-on-mirror {
+    left: 2%;
+    width: clamp(44px, 14vw, 85px);
+  }
+  #houseInterior .room-props:has(.has-youtube) .try-on-mirror figcaption { padding-inline: 3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sorting-stage.is-revealing .sorting-hat-closeup { animation: none; }
+}
+
+#houseInterior .chair-method {
+  display: block;
+  min-height: 44px;
+  padding: 5px 0;
+  width: fit-content;
+  color: #714629;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#houseInterior .chair-method:focus-visible, #houseInterior .tv-examples :focus-visible {
+  outline: 2px solid #744c2d;
+  outline-offset: 2px;
+}
+.tv-examples { margin-top: 12px; color: var(--hall-ink); }
+.tv-examples summary {
+  min-height: 44px;
+  padding: 11px 8px 9px;
+  border-bottom: 1px solid #a787602e;
+  cursor: pointer;
+  font-weight: 750;
+}
+.tv-examples ul { margin: 6px 0 0; padding: 0; list-style: none; }
+#houseInterior .tv-example-choice {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 8px;
+  color: var(--hall-ink);
+  background: transparent;
+  border-bottom: 1px solid #a787602e;
+  text-align: left;
+  font: 650 14px/1.35 system-ui, sans-serif;
+}
+#houseInterior .tv-example-choice:hover { background: #f6e1b8; }
+.tv-example-choice small { flex-shrink: 0; color: #785539; font-size: 11px; }
+
+/* Keep the atrium background on the same camera as its doors when motion is off. */
+body.calm #houseInterior[data-scene="lobby"] .house-background { transform: var(--hall-camera); }
+body.calm #houseInterior[data-scene="lobby"]:not([data-panel="none"]) .house-background {
+  transform: var(--hall-camera) scale(1.08);
+}
+#houseInterior[data-scene="lobby"] .school-door:is(:nth-child(2), :nth-child(3)) { height: 27%; }

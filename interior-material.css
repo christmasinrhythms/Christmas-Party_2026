@@ -1,0 +1,193 @@
+/* Interior surfaces reuse the doorstep's ivory, brass, and incised wood. */
+#houseInterior {
+  --hall-ivory: #fff8e9;
+  --hall-paper: radial-gradient(ellipse at 42% 18%, #fff8e9, #f7ead3 63%, #eedbbd);
+  --hall-finish: linear-gradient(#fff4da, #ead3a7);
+  --hall-control: linear-gradient(#fae9c8, #ecd3a4);
+  --hall-ink: #513520;
+  --hall-deep: #392316;
+  --hall-brass: #ad884d;
+  --hall-line: #c6a16199;
+  --hall-shadow: 0 4px 16px #291b174d;
+  --hall-red: #743c2c;
+  --hall-serif: Georgia, "Songti TC", "Noto Serif TC", serif;
+}
+#houseInterior h2 { font-family: var(--hall-serif); }
+#houseInterior .house-heading {
+  color: #fff0d0;
+  text-shadow: 0 2px 2px #3f2518, 0 4px 18px #2c1a13;
+}
+#houseInterior .house-heading h2 { font-weight: 500; }
+#houseInterior .house-action {
+  min-width: 46px;
+  min-height: 46px;
+  border: 1px solid var(--hall-brass);
+  background: var(--hall-control);
+  color: var(--hall-ink);
+  box-shadow: inset 0 1px #fff9e6e6, var(--hall-shadow);
+  transition: background .16s ease, box-shadow .16s ease;
+}
+#houseInterior .house-action.compact,
+#houseInterior .house-top .house-action,
+#houseInterior .focus-top .house-action { border-radius: 24px; background: #fff2dfea; }
+#houseInterior .house-action:is(:hover,:active):not(:disabled,[aria-disabled="true"]) {
+  border-color: #987243;
+  color: #442c1b;
+  background: #fff5df;
+}
+#houseInterior .house-action:active:not(:disabled,[aria-disabled="true"]) { box-shadow: inset 0 2px 3px #75512d55; }
+#houseInterior .house-action.primary {
+  background: #6d3a23;
+  color: #fff2d5;
+  border-color: #6d3a23;
+  box-shadow: inset 0 1px #d3a07299, var(--hall-shadow);
+}
+#houseInterior .house-action.primary:hover:not(:disabled) { background: #542a1b; color: #fff2d5; }
+#houseInterior .house-action:disabled,
+#houseInterior .house-action[aria-disabled="true"] {
+  background: #e9dcc3;
+  border-color: #b79f7b;
+  color: #745f49;
+  box-shadow: none;
+  opacity: .85;
+}
+#houseInterior .house-action:focus-visible,
+#houseInterior input:focus-visible {
+  outline: 2px solid var(--hall-red);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #fff3d8, var(--hall-shadow);
+}
+body.inside-house #languageToggle {
+  color: #62452c;
+  background: #fff2dfea;
+  border-color: #b29367aa;
+}
+#houseInterior .hall-nav {
+  padding: 3px 4px;
+  border: 1px solid #bba17a;
+  color: var(--hall-ink);
+  background: #fff0dbf0;
+  box-shadow: var(--hall-shadow);
+}
+#houseInterior .hall-nav .house-action { box-shadow: none; }
+#houseInterior .hall-nav > span { padding-inline: 5px; }
+#houseInterior .house-hint {
+  border: 1px solid #bb9b69;
+  border-radius: 24px;
+  color: var(--hall-ink);
+  background: #fff0dbed;
+  box-shadow: var(--hall-shadow);
+}
+#houseInterior .house-frame > span,
+#houseInterior .house-tv-button > span:not(.play-glyph) {
+  border: 1px solid #b79564;
+  border-radius: 5px;
+  color: var(--hall-ink);
+  background: var(--hall-finish);
+  box-shadow: inset 0 1px #fff6da, 0 3px 7px #2e1b176b;
+}
+#houseInterior .house-frame b { color: var(--hall-ink); }
+#houseInterior .house-frame:is(:hover,:focus-visible) > span,
+#houseInterior .house-tv-button:is(:hover,:focus-visible) > span { background: #fff5de; }
+#houseInterior .house-focus {
+  background: linear-gradient(150deg, #3e292670, #33271e55);
+}
+#houseInterior .focus-top { background: linear-gradient(#2e211779, transparent); }
+#houseInterior[data-panel]:not([data-panel="none"]) .house-background { filter: blur(5px) brightness(.71); }
+
+/* Inspection cards share the same paper and double border as the venue dialog. */
+#houseInterior :is(.sorting-copy,.sorting-result,.fashion-focus > div,.tv-focus) {
+  position: relative;
+  color: var(--hall-ink);
+  background: var(--hall-paper);
+  border: 1px solid var(--hall-brass);
+  border-radius: 14px;
+  box-shadow: 0 24px 72px #35221759, inset 0 0 0 5px #fff9eb;
+}
+#houseInterior :is(.sorting-copy,.sorting-result,.fashion-focus > div,.tv-focus)::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--hall-line);
+  border-radius: 8px;
+  pointer-events: none;
+}
+#houseInterior :is(.sorting-copy,.sorting-result,.fashion-focus > div,.tv-focus) h2 { color: #714a2a; }
+#houseInterior .sorting-copy { padding: 19px 24px 22px; }
+#houseInterior .sorting-copy > p { color: #63482d; }
+#houseInterior .sorting-copy .hat-caption { color: #773a29; }
+#houseInterior .sorting-result {
+  width: min(100%, 460px);
+  gap: 14px;
+  padding: 26px 24px 28px;
+}
+#houseInterior .sorting-result > p { color: var(--hall-ink); }
+#houseInterior .paper-rundown {
+  background: var(--hall-paper);
+  color: var(--hall-deep);
+  border: 1px solid var(--hall-brass);
+  box-shadow: inset 0 0 0 5px var(--hall-ivory), 0 0 0 2px #7a4b31;
+}
+#houseInterior .house-email label { color: var(--hall-ink); }
+#houseInterior .house-email input {
+  color: var(--hall-deep);
+  background: #fffaf1;
+  border-color: #a88457;
+  box-shadow: inset 0 1px 3px #bda17938;
+}
+#houseInterior .house-email input[aria-invalid="true"] { border-color: #984c35; }
+#houseInterior #house-email-error { color: #813d2b; }
+#houseInterior .house-email-actions button,
+#houseInterior .tv-actions button { border-radius: 5px; }
+#houseInterior .house-kicker,
+#houseInterior .photo-index { color: #775537; }
+#houseInterior .fashion-focus > div { padding: clamp(19px,3vw,33px); }
+#houseInterior .tv-focus { padding: clamp(18px,3vw,34px); }
+#houseInterior .tv-focus .house-tv-screen { isolation: isolate; }
+#houseInterior .reels-card strong { font-family: var(--hall-serif); word-break: keep-all; overflow-wrap: anywhere; }
+#houseInterior .tv-actions progress {
+  min-width: 45px;
+  height: 9px;
+  accent-color: #945e3d;
+}
+#houseInterior .rundown-tip { color: #604728; }
+@media (max-width: 700px) {
+  #houseInterior .sorting-stage { height: clamp(166px, 33dvh, 295px); margin-top: 0; }
+  #houseInterior .sorting-copy { padding: 17px 17px 20px; }
+  #houseInterior .fashion-focus { width: min(100%,395px); }
+  #houseInterior .fashion-focus > div { width: 100%; }
+  #houseInterior .fashion-focus img { max-height: 47dvh; }
+  #houseInterior .house-hint { padding: 8px 13px; font-size: 12px; }
+}
+#houseInterior .tv-focus .reels-card { color: #fff1d9; }
+#houseInterior .tv-actions:has([data-house="play"]:disabled) [data-house="tv-pause"]:enabled {
+  background: #6d3a23;
+  border-color: #6d3a23;
+  color: #fff2d5;
+}
+#houseInterior .tv-actions progress {
+  appearance: none;
+  overflow: hidden;
+  border: 1px solid #a88457;
+  border-radius: 8px;
+  background: #dbc6a3;
+}
+#houseInterior .tv-actions progress::-webkit-progress-bar { background: #dbc6a3; }
+#houseInterior .tv-actions progress::-webkit-progress-value { background: #8b4d32; }
+#houseInterior .tv-actions progress::-moz-progress-bar { background: #8b4d32; }
+#houseInterior .sorting-stage { margin-bottom: 16px; }
+#houseInterior .sorting-light::after {
+  content: "";
+  position: absolute;
+  inset: auto 20% -3px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #3a2619bb, transparent 70%);
+}
+#houseInterior .house-rundown { border-color: #9b7049; }
+#houseInterior .paper-rundown { box-shadow: inset 0 0 0 4px #fff9eb, 0 0 0 2px #7b5a3c; }
+@media (max-width:700px) {
+  #houseInterior .sorting-stage { height: clamp(166px,36dvh,310px); }
+  #houseInterior .focus-content > .fashion-focus { margin-top: clamp(0px,2.5dvh,22px); }
+  #houseInterior .fashion-focus > div { padding-block: 15px; }
+}
