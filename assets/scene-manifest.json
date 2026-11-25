@@ -145,8 +145,8 @@
       }
     },
     "door_hint": {
-      "en": "Tap the lock",
-      "zh-Hant": "點按門鎖",
+      "en": "Tap the door to enter the party!",
+      "zh-Hant": "點擊大門，進入派對！",
       "png": {
         "en": "assets/labels/door_hint--en.png",
         "zh-Hant": "assets/labels/door_hint--zh-Hant.png"

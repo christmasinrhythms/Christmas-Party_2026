@@ -164,7 +164,7 @@
           <g transform="translate(588 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-14 10l14-6 14 6l2 58h-32z" fill="#d4a537"/><g fill="#fff3c4"><circle cx="-6" cy="24" r="2"/><circle cx="5" cy="34" r="2"/><circle cx="-2" cy="50" r="2"/></g></g>
           <g transform="translate(616 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-16 10l16-6 16 6l4 74h-40z" fill="#f2b8c6"/><path d="M-6 8l6 22 6-22z" fill="#fff"/></g>
           <g transform="translate(644 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-14 10l14-6 14 6l2 80h-32z" fill="#1f2a3a"/><path d="M-5 9l5 18 5-18z" fill="#f3ead7"/><path d="M-5 14l5 3 5-3-1 6-4-2-4 2z" fill="#6b2232"/></g>
-          <g class="host elf"><image href="assets/room/elf.png" x="250" y="608" width="132" height="208"/></g>
+          <g class="walker" id="walkElf"><g class="facer"><g class="host elf"><image href="assets/room/elf.png" x="250" y="608" width="132" height="208"/></g></g></g>
         </g>
 
         <!-- REELS: camera + director's chair + snowman -->
@@ -179,17 +179,18 @@
           <rect x="1234" y="604" width="132" height="44" rx="4" fill="#a3222b"/><path d="M1240 604V690M1360 604V690" stroke="#6b4326" stroke-width="8"/>
           <rect x="1234" y="680" width="132" height="14" rx="3" fill="#a3222b"/>
           <g transform="translate(1266 650) rotate(-8)"><rect width="74" height="34" rx="3" fill="#1d1a19"/><path d="M0 0h74v10H0z" fill="#f1e6d2"/><path d="M8 0l8 10M24 0l8 10M40 0l8 10M56 0l8 10" stroke="#1d1a19" stroke-width="5"/></g>
-          <g class="host snowman"><image href="assets/room/snowman.png" x="1392" y="614" width="132" height="208"/></g>
+          <g class="walker" id="walkSnow"><g class="facer"><g class="host snowman"><image href="assets/room/snowman.png" x="1392" y="614" width="132" height="208"/></g></g></g>
         </g>
 
         <g id="dust"></g>
+        <g id="snowballs"></g>
         <rect width="1600" height="900" fill="url(#gVignette)" pointer-events="none"/>
         <rect width="1600" height="900" filter="url(#grain)" opacity=".55" pointer-events="none"/>
       </svg>
 
       <!-- what the elf and snowman say -->
-      <div class="say say-elf" style="left:96px;top:486px"><span data-c="scene.elfSays"></span></div>
-      <div class="say say-snow" style="left:1270px;top:486px"><span data-c="scene.snowmanSays"></span></div>
+      <div class="say say-elf" id="sayElf" style="left:96px;top:486px"><span></span></div>
+      <div class="say say-snow" id="saySnow" style="left:1270px;top:486px"><span></span></div>
 
       <!-- clickable: the objects themselves -->
       <button class="hot go-dress" type="button" data-open="dress" aria-labelledby="plDress" style="left:236px;top:470px;width:446px;height:350px"></button>
@@ -255,10 +256,8 @@
         <button type="button" role="tab" data-switch="reels"><span class="rt-no">2</span><span data-c="hotspots.reels.label"></span></button>
       </div>
       <h2 id="reelsTitle" data-c="reels.title"></h2>
-      <p class="status-note"><span class="stamp" data-ui="guide">Guide</span> <span data-c="reels.status"></span></p>
     </header>
 
-    <h3 class="sub" data-c="reels.howTitle"></h3>
     <div class="how">
       <div class="phone" id="howPhone">
         <div class="screen">
@@ -269,32 +268,19 @@
         </div>
       </div>
       <div class="how-right">
-        <div class="director"><img src="assets/room/snowman.png" alt=""><p class="say-inline" data-c="reels.snowmanSays"></p></div>
-        <ol class="steps" id="howSteps"></ol>
-      </div>
-    </div>
-
-    <h3 class="sub" data-c="reels.ideasTitle"></h3>
-    <div class="ideas">
-      <div class="idea-tabs" id="ideaTabs" role="tablist"></div>
-      <div class="idea-stage">
-        <div class="phone small" id="ideaPhone">
-          <div class="screen">
-            <div class="rec"><i></i>REC <span id="ideaTimer">00:00</span></div>
-            <div class="frame" id="ideaFrame"></div>
-            <div class="beat" id="ideaBeat"></div>
-            <div class="progress"><span id="ideaBar"></span></div>
-          </div>
+        <div class="rules">
+          <p class="rules-tag" data-c="reels.rulesTitle"></p>
+          <p class="rules-text" data-c="reels.rules"></p>
         </div>
-        <div class="idea-info" id="ideaInfo" aria-live="polite"></div>
+        <div class="director"><img src="assets/room/snowman.png" alt=""><p class="say-inline" data-c="reels.snowmanSays"></p><img class="elf-buddy" src="assets/room/elf.png" alt=""></div>
       </div>
     </div>
 
-    <h3 class="sub" data-c="reels.libraryTitle"></h3>
-    <p class="small-note" data-c="reels.libraryNote"></p>
-    <div class="library card">
-      <div class="lib-tabs" id="libTabs" role="tablist"></div>
-      <ul class="lib-list" id="libList"></ul>
+    <h3 class="sub" data-c="reels.mvTitle"></h3>
+    <div class="featured" id="mvFeatured"></div>
+    <div class="mv card">
+      <div class="lib-tabs" id="mvTabs" role="tablist"></div>
+      <ul class="mv-list" id="mvList"></ul>
     </div>
 
     <div class="card tips"><h3 data-c="reels.tipsTitle"></h3><ul class="checks" id="reelTips"></ul></div>

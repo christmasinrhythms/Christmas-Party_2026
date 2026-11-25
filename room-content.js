@@ -21,8 +21,15 @@ window.ROOM = {
   scene: {
     title: { en: "Welcome to the ballroom", zh: "歡迎來到宴會廳" },
     hint:  { en: "Tap a sign — or the mirror or camera — to explore", zh: "點按木牌、鏡子或攝影機，開始探索" },
-    elfSays:     { en: "Let's get you dressed!", zh: "一齊換衫啦！" },
-    snowmanSays: { en: "Lights, camera, action!", zh: "準備，開機！" },
+    // What the elf and the snowman say in the ballroom (they take turns).
+    elfLines: {
+      en: ["Merry Christmas!", "Let's get you dressed!", "Ho ho ho!", "Snowball fight!", "Tap the mirror!"],
+      zh: ["聖誕快樂！", "一齊換衫啦！", "Ho ho ho！", "擲雪球啦！", "點按鏡子！"]
+    },
+    snowmanLines: {
+      en: ["Merry Christmas!", "Lights, camera, action!", "Brrr… dance with me!", "Missed me!", "Tap the camera!"],
+      zh: ["聖誕快樂！", "準備，開機！", "好凍呀…一齊跳舞！", "擲唔中！", "點按攝影機！"]
+    },
     // Optional Higgsfield video of walking in through the doors (MP4).
     // If the file isn't there, the page plays its own door animation.
     entranceVideo: "assets/room/entrance.mp4"
@@ -30,7 +37,7 @@ window.ROOM = {
 
   hotspots: {
     dress: { label: { en: "How should I dress?", zh: "應該怎樣打扮？" }, sub: { en: "4 genres to try on", zh: "四種曲風任你試" } },
-    reels: { label: { en: "Reel challenge", zh: "短片挑戰" },       sub: { en: "15–30s · one per table", zh: "15–30秒・每桌一段" } },
+    reels: { label: { en: "Reel challenge", zh: "短片挑戰" },       sub: { en: "30s–1 min · funny MVs", zh: "30秒至1分鐘・搞笑MV" } },
     plan:  { label: { en: "Floor plan", zh: "場地佈局" },           sub: { en: "Tentative", zh: "暫定" } }
   },
 
@@ -104,113 +111,62 @@ window.ROOM = {
   /* ---------- 2. Reel challenge ---------- */
   reels: {
     title: { en: "Reel challenge", zh: "短片挑戰" },
-    // Change this note when the final brief is confirmed.
-    status: {
-      en: "A guide to help you prepare — the final challenge, table line-up, clip length and judging will be announced on the day.",
-      zh: "此為準備參考——正式題目、桌別安排、片長及評選方式將於當日公布。"
+    snowmanSays: { en: "Have fun with it!", zh: "盡情玩得開心！" },
+    rulesTitle: { en: "The rules", zh: "規則" },
+    rules: {
+      en: "Make a 30-second to 1-minute reel with your table. Recreate a funny MV — freestyle and have fun!",
+      zh: "全桌合力拍一段30秒至1分鐘的短片，重現一段搞笑MV——自由發揮，玩得開心！"
     },
-    howTitle: { en: "How it works", zh: "玩法" },
-    snowmanSays: { en: "Here's how your table's reel works!", zh: "你們這桌的短片，玩法如下！" },
-    // The animated steps beside the phone.
-    facts: [
-      { icon: "table", label: { en: "One reel per table",  zh: "每桌一段" },  text: { en: "The whole table joins in — faces and comic timing beat dance skills.", zh: "全桌一齊參與——表情和笑位比舞技更重要。" } },
-      { icon: "phone", label: { en: "15–30 seconds",       zh: "15–30秒" },   text: { en: "Vertical 9:16, filmed on one phone.", zh: "直向9:16，用一部手機拍攝。" } },
-      { icon: "clock", label: { en: "About 25 minutes",    zh: "約25分鐘" },  text: { en: "Filmed at the hotel before the MC opening.", zh: "於酒店現場、司儀開場前拍攝。" } },
-      { icon: "star",  label: { en: "Screened on the day", zh: "當日播放" },  text: { en: "Every table's reel is shown at the party.", zh: "各桌作品將於派對上播放。" } }
-    ],
-    rolesTitle: { en: "Roles at your table", zh: "全桌分工" },
-    roles: [
-      { en: "Director",   zh: "導演", note: { en: "Keeps the idea and timing", zh: "掌握構思及節奏" } },
-      { en: "Camera",     zh: "攝影", note: { en: "Films steady, vertical takes", zh: "穩定直向拍攝" } },
-      { en: "Performers", zh: "演出", note: { en: "Everyone else — commit to it!", zh: "其餘所有人——全情投入！" } },
-      { en: "Submitter",  zh: "交片", note: { en: "Sends the final clip", zh: "負責提交最終片段" } }
-    ],
-    planTitle: { en: "Your 25 minutes", zh: "你的25分鐘" },
-    plan: [
-      { min: 3, en: "Read the brief, split roles",   zh: "看題目、分工" },
-      { min: 5, en: "Learn 2–3 moves",               zh: "學兩至三個動作" },
-      { min: 4, en: "Plan your genre and formation", zh: "設計曲風及隊形" },
-      { min: 8, en: "Record 2–3 takes",              zh: "試拍兩至三次" },
-      { min: 5, en: "Review and retake",             zh: "檢視及補拍" }
-    ],
 
-    // Challenge ideas. The elf and the snowman act out each one on the phone.
-    ideasTitle: { en: "Challenge ideas", zh: "挑戰點子" },
-    ideas: [
-      {
-        scene: "meow",   // which elf & snowman animation plays on the phone
-        name:  { en: "Meow Poker Face", zh: "貓爪忍笑" },
-        beats: { en: ["Deadpan", "Cat paws", "Hold the laugh"], zh: ["冷面", "貓爪", "忍笑定格"] },
-        how:   { en: "5s everyone deadpan, 5s one person suddenly makes cat paws and the rest copy, 5s stay serious while trying not to laugh.",
-                 zh: "5秒全員冷面，5秒一人突然做貓爪、其餘跟做，5秒保持嚴肅卻努力忍笑。" },
-        length: "15s", seated: true,
-        watch: "https://www.youtube.com/watch?v=BcZStyz6KcQ&t=234s"
-      },
-      {
-        scene: "expect",   // which elf & snowman animation plays on the phone
-        name:  { en: "Expectation vs Reality", zh: "期望與現實" },
-        beats: { en: ["Perfect photo", "Prop reveal", "Confident freeze"], zh: ["完美合照", "道具出錯", "自信定格"] },
-        how:   { en: "4s elegant photo pose, 7s pull back to reveal upside-down props or mismatched hats, 4s everyone freezes, totally confident.",
-                 zh: "4秒優雅合照，7秒鏡頭拉遠發現道具拿反或聖誕帽戴錯，4秒全員自信定格。" },
-        length: "15–20s", seated: true,
-        watch: "https://www.youtube.com/watch?v=nV02ig0Ahog"
-      },
-      {
-        scene: "grrr",   // which elf & snowman animation plays on the phone
-        name:  { en: "Grrr Call & Response", zh: "Grrr反差接力" },
-        beats: { en: ["Puzzled", "Deadpan paws", "Cute freeze"], zh: ["疑惑", "冷面貓爪", "可愛定格"] },
-        how:   { en: "5s half the table looks puzzled, 5s the other half answers with deadpan claws, 5s everyone switches to an over-the-top cute freeze.",
-                 zh: "5秒半桌做疑惑表情，5秒另一半冷面貓爪回應，5秒全桌突然轉成誇張可愛定格。" },
-        length: "15s", seated: true,
-        watch: "https://www.youtube.com/watch?v=wHlAnhkLUvw"
-      },
-      {
-        scene: "aura",   // which elf & snowman animation plays on the phone
-        name:  { en: "Aura Captain", zh: "冷面隊長" },
-        beats: { en: ["Calm captain", "Pretend rowing", "Freeze"], zh: ["冷面隊長", "假划船", "一起定格"] },
-        how:   { en: "A seated captain in sunglasses makes two slow hand moves while everyone behind mimes rowing, then the whole table freezes deadpan.",
-                 zh: "戴墨鏡的隊長坐在前方做兩個慢手勢，後排同步假裝划船，最後全桌冷面定格。" },
-        length: "15–20s", seated: true,
-        watch: "https://www.youtube.com/watch?v=ciZBZtX3vN4"
-      }
+    // Links are just for fun — teams can pick anything.
+    // Each line: title, artist, and a url. Without a url, the button searches YouTube.
+    mvTitle: { en: "Need ideas? Just for fun", zh: "想要靈感？純粹參考" },
+    featuredTitle: { en: "Hot picks", zh: "熱門推介" },
+    featured: [
+      { title: "Riau boat race dance (aura farming)", artist: "Viral", genre: "fun", url: "https://www.youtube.com/watch?v=ciZBZtX3vN4" },
+      { title: "Nothing beats a Jet2 holiday", artist: "Viral", genre: "fun", search: "nothing beats a jet2 holiday" },
+      { title: "When We Disco (Duet with SUNMI) — dance tutorial", artist: "J.Y. Park", genre: "disco", url: "https://www.youtube.com/shorts/B8IJIAyLDco" },
+      { title: "Hong Kong (feat. Faye Wong)", artist: "The Weeknd", genre: "jazz", search: "The Weeknd Hong Kong official video" }
     ],
-
-    // Genre inspiration videos (YouTube). Add or remove lines freely.
-    libraryTitle: { en: "Reference links", zh: "參考連結" },
-    libraryNote:  { en: "Videos to spark ideas — the challenge ideas first, then by genre. Not the official brief.", zh: "參考影片，助你構思——先看挑戰點子，再按曲風瀏覽。並非正式題目。" },
-    library: {
+    mvs: {
+      fun: [
+        { title: "Riau boat race dance (aura farming)", artist: "Viral", url: "https://www.youtube.com/watch?v=ciZBZtX3vN4" },
+        { title: "Nothing beats a Jet2 holiday", artist: "Viral", search: "nothing beats a jet2 holiday" }
+      ],
       rock: [
-        { title: "Rock Around the Clock — retro partner dance", url: "https://youtube.com/shorts/-aCYYTSNsy4" },
-        { title: "Rock Around the Clock — Miranda Derrick & Bdash", url: "https://youtube.com/shorts/rWUKuIXjU1Q" }
+        { title: "Don't Stop Me Now", artist: "Queen" },
+        { title: "Livin' On A Prayer", artist: "Bon Jovi" },
+        { title: "Sweet Child O' Mine", artist: "Guns N' Roses" },
+        { title: "Sk8er Boi", artist: "Avril Lavigne" },
+        { title: "海闊天空", artist: "Beyond" }
       ],
       disco: [
-        { title: "When We Disco — dance tutorial (J.Y. Park)", url: "https://youtube.com/shorts/B8IJIAyLDco" },
-        { title: "You Should Be Dancing — 70s moves", url: "https://youtube.com/shorts/pcBmj3bumCg" },
-        { title: "Retro disco mix — 80s dance", url: "https://youtube.com/shorts/JvmEne2Nslw" },
-        { title: "When We Disco — group dance cover", url: "https://youtube.com/shorts/mUS8wq6cPcA" },
-        { title: "When We Disco — challenge version", url: "https://youtube.com/shorts/hCw9VjBOL_k" }
+        { title: "When We Disco (Duet with SUNMI)", artist: "J.Y. Park" },
+        { title: "Stayin' Alive", artist: "Bee Gees" },
+        { title: "Dancing Queen", artist: "ABBA" },
+        { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars" },
+        { title: "Levitating", artist: "Dua Lipa" }
       ],
       kpop: [
-        { title: "Catch Catch challenge (YENA)", url: "https://youtube.com/shorts/2wXtGuQY6rA" },
-        { title: "Disco in New York (NCT DREAM)", url: "https://youtube.com/shorts/zLJv7AHIRVM" },
-        { title: "Yodel rush ride (TXT)", url: "https://youtube.com/shorts/MpOExZMtEc4" },
-        { title: "dyk kyn dyk kyn (TXT)", url: "https://youtube.com/shorts/qrpsPc9y5sA" },
-        { title: "c'mon MOA (TXT)", url: "https://youtube.com/shorts/NU6uFAUeVCM" },
-        { title: "Soda Pop (NCT DREAM)", url: "https://youtube.com/shorts/UXRIZpomK50" }
+        { title: "Dynamite", artist: "BTS" },
+        { title: "APT.", artist: "ROSÉ & Bruno Mars" },
+        { title: "Gangnam Style", artist: "PSY" },
+        { title: "How You Like That", artist: "BLACKPINK" },
+        { title: "Super Shy", artist: "NewJeans" }
       ],
       jazz: [
-        { title: "Opera challenge #1", url: "https://youtube.com/shorts/3NV3M0gAmGQ" },
-        { title: "Opera challenge #2", url: "https://youtube.com/shorts/g55Gac8nB0Y" },
-        { title: "Viral opera challenge — try not to laugh", url: "https://youtube.com/shorts/pd66ZdMZ5g4" },
-        { title: "Echoes of the jungle — singing challenge", url: "https://youtube.com/shorts/VdnslYwa1cU" },
-        { title: "Can-can running trend", url: "https://youtube.com/shorts/zpchXk7oCDI" },
-        { title: "Can you dance the Can-can?", url: "https://youtube.com/shorts/0fR2xPEzeCY" }
+        { title: "Hong Kong (feat. Faye Wong)", artist: "The Weeknd", search: "The Weeknd Hong Kong official video" },
+        { title: "Leave the Door Open", artist: "Silk Sonic" },
+        { title: "It's Beginning to Look a Lot Like Christmas", artist: "Michael Bublé" },
+        { title: "Ain't No Other Man", artist: "Christina Aguilera" },
+        { title: "Lone Digger", artist: "Caravan Palace" }
       ]
     },
-    tipsTitle: { en: "Filming tips", zh: "拍攝小貼士" },
+
+    tipsTitle: { en: "Quick tips", zh: "小貼士" },
     tips: {
-      en: ["Charge your phone and clear some storage.", "Film vertically, in good light, facing the light.", "Seated versions are welcome — no standing on chairs.", "Do a quick sound check before your final take."],
-      zh: ["手機充滿電，並預留儲存空間。", "直向拍攝，面向光源，光線要充足。", "歡迎坐着演出——請勿站在椅上。", "最後一次拍攝前，先試試收音。"]
+      en: ["Film vertically, facing the light.", "Seated moves are welcome — no standing on chairs.", "30 seconds to 1 minute."],
+      zh: ["直向拍攝，面向光源。", "歡迎坐着演出——請勿站在椅上。", "片長30秒至1分鐘。"]
     }
   },
 

@@ -10,7 +10,7 @@
   var params = new URLSearchParams(location.search);
   var lang = params.get("lang") === "zh" ? "zh" : "en";
   var R = null;
-  var state = { genre: null, idea: 0, lib: "ideas", panel: null };
+  var state = { genre: null, mv: "fun", panel: null };
   var NS = "http://www.w3.org/2000/svg";
 
   var UI = {
@@ -20,10 +20,10 @@
           pieces: "Key pieces", extras: "Finishing touches", easy: "Easy version", allOut: "Go all out",
           pinterest: "More looks on Pinterest ↗", reference: "Reference look", watch: "Watch reference ↗",
           seated: "Seated-friendly", min: "min", pickHint: "Pick a genre on the stage to see the look.",
-          realLooks: "Real-life looks", seeReal: "See real people wearing it on Pinterest ↗",
+          hey: "Hey!", realLooks: "Real-life looks", seeReal: "See real people wearing it on Pinterest ↗",
           realNote: "Real outfit photos for this genre will appear here soon.", ideasTab: "Challenge ideas",
           oops: "Content is being updated — please check back in a few minutes.",
-          genres: { rock: "Rock & Punk", disco: "Disco Vibe", kpop: "K-pop", jazz: "Jazz & Classic" },
+          genres: { fun: "Funny & viral", rock: "Rock & Punk", disco: "Disco Vibe", kpop: "K-pop", jazz: "Jazz & Classic" },
           title: "Christmas in Rhythms · The Ballroom", langLabel: "切換至繁體中文" },
     zh: { back: "返回大屋", toggle: "EN", skip: "略過", close: "關閉", updated: "最後更新",
           dressingRoom: "更衣室", directorsSet: "導演片場", easel: "畫架上",
@@ -31,10 +31,10 @@
           pieces: "主要單品", extras: "點睛配飾", easy: "輕鬆版", allOut: "全力出擊",
           pinterest: "到 Pinterest 看更多造型 ↗", reference: "參考造型", watch: "觀看參考 ↗",
           seated: "可坐着演出", min: "分鐘", pickHint: "在舞台上揀選曲風，看看造型。",
-          realLooks: "真人造型參考", seeReal: "到 Pinterest 看真人穿搭 ↗",
+          hey: "哎呀！", realLooks: "真人造型參考", seeReal: "到 Pinterest 看真人穿搭 ↗",
           realNote: "此曲風的真人穿搭相片即將在此展示。", ideasTab: "挑戰點子",
           oops: "內容更新中——請稍後再回來看看。",
-          genres: { rock: "搖滾龐克", disco: "迪斯可熱潮", kpop: "韓流K-pop", jazz: "爵士古典" },
+          genres: { fun: "搞笑爆紅", rock: "搖滾龐克", disco: "迪斯可熱潮", kpop: "韓流K-pop", jazz: "爵士古典" },
           title: "Christmas in Rhythms · 宴會廳", langLabel: "Switch to English" }
   };
   function u(k) { return UI[lang][k]; }
@@ -258,7 +258,7 @@
   }
 
   /* =================== reel challenge =================== */
-  var loops = { how: null, idea: null };
+  var loops = { how: null };
 
   // The elf and the snowman act out each challenge on the phone.
   // Props appear per beat (0, 1, 2) through CSS: see "mini scenes" in room.css.
@@ -270,7 +270,7 @@
   function props(who) {
     return '<i class="p paw paw-l">' + PAW + '</i><i class="p paw paw-r">' + PAW + "</i>" +
       '<i class="p hat">' + HAT + '</i><i class="p q">?</i><i class="p grr">GRR!</i><i class="p pfft">pfft…</i>' +
-      '<i class="p heart">' + HEART + "</i>" + (who === "elf" ? '<i class="p shades">' + SHADES + "</i>" : '<i class="p oar">' + OAR + "</i>");
+      '<i class="p heart">' + HEART + '</i><i class="p note n1">♪</i><i class="p note n2">♫</i>' + (who === "elf" ? '<i class="p shades">' + SHADES + "</i>" : '<i class="p oar">' + OAR + "</i>");
   }
   function miniScene(scene, beat, extra) {
     return '<div class="mini ' + (extra || "") + '" data-idea="' + esc(scene || "meow") + '" data-beat="' + (beat || 0) + '">' +
@@ -285,94 +285,57 @@
     m.dataset.beat = beat;
   }
 
+  function mvUrl(v) {
+    if (v.url) return safeUrl(v.url);
+    var q = v.search || ((v.artist || "") + " " + (v.title || "") + " official MV");
+    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q.trim());
+  }
+  var GENRE_COL = { fun: "#2f8f5b", rock: "#8f1f24", disco: "#b8336a", kpop: "#6d9cc7", jazz: "#c8a24a" };
+  function mvCard(v, big) {
+    var g = v.genre || state.mv;
+    return '<a class="mvc' + (big ? " big" : "") + '" style="--c:' + esc(GENRE_COL[g] || "#a5783e") + '" href="' + esc(mvUrl(v)) + '" target="_blank" rel="noopener">' +
+      '<span class="mvc-art" aria-hidden="true"><span class="mvc-disc"></span><span class="mvc-play">▶</span></span>' +
+      '<span class="mvc-text"><b>' + esc(v.title || "") + "</b><small>" + esc(v.artist || "") + "</small></span>" +
+      '<span class="ext" aria-hidden="true">↗</span></a>';
+  }
+
   function renderReels() {
     var r = R.reels;
-    $("#howSteps").innerHTML = (r.facts || []).map(function (f, i) {
-      return '<li data-step="' + i + '"><b>' + esc(tx(f.label)) + "</b><span>" + esc(tx(f.text)) + "</span><i></i></li>";
-    }).join("");
-    $("#ideaTabs").innerHTML = (r.ideas || []).map(function (d, i) {
-      return '<button type="button" role="tab" data-idea="' + i + '" aria-selected="' + (state.idea === i) + '">' +
-        '<span class="thumb">' + miniScene(d.scene, 1, "still") + "</span><b>" + esc(tx(d.name)) + "</b></button>";
-    }).join("");
-    renderIdeaInfo();
-    renderLibrary();
+    setBeat($("#howFrame"), "dance", 0);
+    $("#mvFeatured").innerHTML = (r.featured || []).length
+      ? '<p class="feat-label">' + esc(tx(r.featuredTitle)) + "</p>" + (r.featured || []).map(function (v) { return mvCard(v, true); }).join("")
+      : "";
+    renderMv();
     $("#reelTips").innerHTML = (tx(r.tips) || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
-    var d0 = (r.ideas || [])[0]; if (d0) setBeat($("#howFrame"), d0.scene, 0);
   }
 
-  function renderIdeaInfo() {
-    var d = (R.reels.ideas || [])[state.idea]; if (!d) return;
-    setBeat($("#ideaFrame"), d.scene, 0);
-    $("#ideaInfo").innerHTML = "<h4>" + esc(tx(d.name)) + '</h4><p class="beats">' +
-      (tx(d.beats) || []).map(function (b) { return "<span>" + esc(b) + "</span>"; }).join("") + "</p>" +
-      "<p>" + esc(tx(d.how)) + '</p><p class="chips"><span>' + esc(d.length || "") + "</span>" + (d.seated ? "<span>" + u("seated") + "</span>" : "") + "</p>" +
-      (d.watch ? '<a class="pin" href="' + esc(safeUrl(d.watch)) + '" target="_blank" rel="noopener">' + u("watch") + "</a>" : "");
-  }
-
-  function renderLibrary() {
-    var lib = {}, base = R.reels.library || {};
-    lib.ideas = (R.reels.ideas || []).filter(function (d) { return d.watch; }).map(function (d) { return { title: tx(d.name), url: d.watch }; });
-    Object.keys(base).forEach(function (k) { lib[k] = base[k]; });
-    var keys = Object.keys(lib).filter(function (k) { return (lib[k] || []).length; });
-    if (keys.indexOf(state.lib) < 0) state.lib = keys[0];
-    $("#libTabs").innerHTML = keys.map(function (k) {
-      return '<button type="button" role="tab" data-lib="' + esc(k) + '" aria-selected="' + (k === state.lib) + '">' + esc(k === "ideas" ? u("ideasTab") : (u("genres")[k] || k)) + " <small>" + (lib[k] || []).length + "</small></button>";
+  function renderMv() {
+    var mv = R.reels.mvs || {}, keys = Object.keys(mv).filter(function (k) { return (mv[k] || []).length; });
+    if (keys.indexOf(state.mv) < 0) state.mv = keys[0];
+    $("#mvTabs").innerHTML = keys.map(function (k) {
+      return '<button type="button" role="tab" data-mv="' + esc(k) + '" aria-selected="' + (k === state.mv) + '">' + esc(u("genres")[k] || k) + " <small>" + mv[k].length + "</small></button>";
     }).join("");
-    $("#libList").innerHTML = (lib[state.lib] || []).map(function (v) {
-      return '<li><a href="' + esc(safeUrl(v.url)) + '" target="_blank" rel="noopener"><span class="play" aria-hidden="true">▶</span><span>' + esc(v.title) + '</span><span class="ext" aria-hidden="true">↗</span></a></li>';
-    }).join("");
+    $("#mvList").innerHTML = (mv[state.mv] || []).map(function (v) { return "<li>" + mvCard(v, false) + "</li>"; }).join("");
   }
 
-  function mmss(sec) { sec = Math.floor(sec); return "00:" + (sec < 10 ? "0" : "") + sec; }
+  function mmss(sec) { sec = Math.floor(sec); return (sec >= 60 ? "01" : "00") + ":" + ((sec % 60) < 10 ? "0" : "") + (sec % 60); }
 
-  // "How it works": the phone records 0→30s while the four steps light up in turn,
-  // and the elf and snowman run through a challenge on screen.
-  var how = { start: 0, step: -1, beat: -1, STEP: 3600 };
+  // the phone records up to 1:00 while the elf and snowman dance on screen
+  var how = { start: 0, beat: -1, TOTAL: 12000 };
   function howTick(now) {
-    var facts = R.reels.facts || [], n = facts.length || 1, total = how.STEP * n, ideas = R.reels.ideas || [];
-    var e = (now - how.start) % total, step = Math.floor(e / how.STEP);
-    var f = Math.floor((e % how.STEP) / (how.STEP / 3));
-    if (step !== how.step) {
-      how.step = step;
-      $$("#howSteps li").forEach(function (li, i) { li.classList.toggle("on", i === step); li.style.setProperty("--dur", (how.STEP / 1000) + "s"); });
-    }
-    if (f !== how.beat || step !== how.stepShown) {
-      how.beat = f; how.stepShown = step;
-      var d = ideas[step % (ideas.length || 1)];
-      if (d) setBeat($("#howFrame"), d.scene, f);
-    }
-    $("#howTimer").textContent = mmss(e / total * 30);
-    $("#howBar").style.width = (e / total * 100).toFixed(1) + "%";
+    var e = (now - how.start) % how.TOTAL, f = Math.floor(e / 1200) % 3;
+    if (f !== how.beat) { how.beat = f; setBeat($("#howFrame"), "dance", f); }
+    $("#howTimer").textContent = mmss(e / how.TOTAL * 60);
+    $("#howBar").style.width = (e / how.TOTAL * 100).toFixed(1) + "%";
     loops.how = requestAnimationFrame(howTick);
-  }
-  // Challenge idea: the elf and snowman perform its three beats
-  var idea = { start: 0, beat: -1, BEAT: 1800 };
-  function ideaTick(now) {
-    var d = (R.reels.ideas || [])[state.idea]; if (!d) return;
-    var total = idea.BEAT * 3, e = (now - idea.start) % total, b = Math.floor(e / idea.BEAT);
-    if (b !== idea.beat) {
-      idea.beat = b;
-      setBeat($("#ideaFrame"), d.scene, b);
-      var beat = $("#ideaBeat"); beat.textContent = (tx(d.beats) || [])[b] || "";
-      beat.classList.remove("pop"); void beat.offsetWidth; beat.classList.add("pop");
-    }
-    var secs = parseInt(d.length, 10) || 15;
-    $("#ideaTimer").textContent = mmss(e / total * secs);
-    $("#ideaBar").style.width = (e / total * 100).toFixed(1) + "%";
-    loops.idea = requestAnimationFrame(ideaTick);
   }
   function startReelLoops() {
     stopReelLoops();
-    if (reduced) {
-      $$("#howSteps li").forEach(function (li) { li.classList.add("on"); });
-      var d0 = (R.reels.ideas || [])[0]; if (d0) setBeat($("#howFrame"), d0.scene, 1);
-      var d = (R.reels.ideas || [])[state.idea]; if (d) { setBeat($("#ideaFrame"), d.scene, 1); $("#ideaBeat").textContent = (tx(d.beats) || []).join(" → "); }
-      return;
-    }
-    how.start = performance.now(); how.step = -1; how.beat = -1; how.stepShown = -1; idea.start = performance.now(); idea.beat = -1;
-    loops.how = requestAnimationFrame(howTick); loops.idea = requestAnimationFrame(ideaTick);
+    if (reduced) { setBeat($("#howFrame"), "dance", 1); return; }
+    how.start = performance.now(); how.beat = -1;
+    loops.how = requestAnimationFrame(howTick);
   }
-  function stopReelLoops() { cancelAnimationFrame(loops.how); cancelAnimationFrame(loops.idea); }
+  function stopReelLoops() { cancelAnimationFrame(loops.how); }
 
   /* =================== floor plan =================== */
   function renderFloor() {
@@ -443,12 +406,102 @@
     if (lastTrigger && !quick) lastTrigger.focus({ preventScroll: true });
   }
 
+  /* =================== the elf and snowman play around =================== */
+  var fun = { timer: null, n: 0, started: false };
+  function lines(who) { var l = tx(R.scene && R.scene[who === "elf" ? "elfLines" : "snowmanLines"]); return Array.isArray(l) && l.length ? l : [""]; }
+  function say(who, text) {
+    var sp = $(who === "elf" ? "#sayElf span" : "#saySnow span"); if (!sp) return;
+    sp.textContent = text;
+    sp.classList.remove("pop"); void sp.offsetWidth; sp.classList.add("pop");
+  }
+  function resetSays() { say("elf", lines("elf")[0]); say("snow", lines("snow")[0]); }
+  function host(who) { return $(".host." + (who === "elf" ? "elf" : "snowman")); }
+  function bump(el, cls, ms) { if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); setTimeout(function () { el.classList.remove(cls); }, ms); }
+  /* both characters stroll back and forth across the floor (and their bubbles follow) */
+  var walkers = {
+    elf: { id: "#walkElf", bubble: "#sayElf", bx: 96, cx: 316, min: 0, max: 380, x: 0, to: 0, wait: 1200, face: 1, home: 1 },
+    snow: { id: "#walkSnow", bubble: "#saySnow", bx: 1270, cx: 1458, min: -380, max: 0, x: 0, to: 0, wait: 2400, face: -1, home: -1 }
+  };
+  function hold(who, ms) { var w = walkers[who]; if (w) w.wait = Math.max(w.wait, ms); }
+  function placeWalker(w) {
+    var g = $(w.id); if (!g) return;
+    g.setAttribute("transform", "translate(" + w.x.toFixed(1) + " 0)");
+    var f = g.firstElementChild, flip = w.face !== w.home;
+    f.setAttribute("transform", flip ? "translate(" + (2 * w.cx) + " 0) scale(-1 1)" : "");
+    var b = $(w.bubble); if (b) b.style.left = (w.bx + w.x).toFixed(1) + "px";
+  }
+  var walkLast = 0;
+  function walkFrame(now) {
+    var dt = walkLast ? Math.min(now - walkLast, 60) : 0; walkLast = now;
+    if (!state.panel && !document.hidden) {
+      ["elf", "snow"].forEach(function (k) {
+        var w = walkers[k], h = host(k);
+        if (w.wait > 0) { w.wait -= dt; if (h) h.classList.remove("walking"); return; }
+        var d = w.to - w.x;
+        if (Math.abs(d) < 2) {
+          w.wait = rnd(900, 2600);
+          var nt; do { nt = rnd(w.min, w.max); } while (Math.abs(nt - w.x) < 90);
+          w.to = nt; return;
+        }
+        w.face = d > 0 ? 1 : -1;
+        w.x += Math.sign(d) * Math.min(Math.abs(d), 0.075 * dt);
+        if (h) h.classList.add("walking");
+        placeWalker(w);
+      });
+    }
+    requestAnimationFrame(walkFrame);
+  }
+  function startWalking() {
+    walkers.elf.to = 200; walkers.snow.to = -200;
+    requestAnimationFrame(walkFrame);
+  }
+  function throwBall(from) {
+    var g = $("#snowballs"); if (!g) return;
+    var ex = walkers.elf.x, sx = walkers.snow.x;
+    hold(from, 700); hold(from === "elf" ? "snow" : "elf", 1300);
+    var tw = walkers[from]; tw.face = tw.home; placeWalker(tw);
+    var a = from === "elf" ? [372 + ex, 676] : [1404 + sx, 690], b = from === "elf" ? [1440 + sx, 676] : [330 + ex, 664], c = [(a[0] + b[0]) / 2, 210];
+    var ball = el("circle", { r: "13", fill: "#ffffff", stroke: "#d9e3ea", "stroke-width": "3" }); g.appendChild(ball);
+    bump(host(from), "throw", 500);
+    var t0 = performance.now(), D = 1100;
+    (function fly(now) {
+      var t = Math.min((now - t0) / D, 1), k = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      var x = (1 - k) * (1 - k) * a[0] + 2 * (1 - k) * k * c[0] + k * k * b[0], y = (1 - k) * (1 - k) * a[1] + 2 * (1 - k) * k * c[1] + k * k * b[1];
+      ball.setAttribute("cx", x.toFixed(1)); ball.setAttribute("cy", y.toFixed(1));
+      if (t < 1) { requestAnimationFrame(fly); return; }
+      ball.remove();
+      for (var i = 0; i < 9; i++) {
+        var p = el("circle", { cx: b[0], cy: b[1], r: (rnd(3, 7)).toFixed(1), fill: "#ffffff", class: "splat" });
+        p.style.setProperty("--dx", rnd(-50, 50).toFixed(0) + "px"); p.style.setProperty("--dy", rnd(-55, 10).toFixed(0) + "px");
+        g.appendChild(p); setTimeout(function (n) { n.remove(); }.bind(null, p), 700);
+      }
+      var target = from === "elf" ? "snow" : "elf";
+      bump(host(target), "hit", 700); say(target, u("hey"));
+    })(t0);
+  }
+  function funTick() {
+    if (!R || state.panel || document.hidden) return;
+    fun.n++;
+    var who = fun.n % 2 ? "elf" : "snow", l = lines(who);
+    if (fun.n % 4 === 0) throwBall(fun.n % 8 === 0 ? "snow" : "elf");
+    else if (fun.n % 5 === 0) { hold(who, 1000); bump(host(who), "jump", 900); }
+    say(who, l[Math.floor(fun.n / 2) % l.length]);
+  }
+  function startFun() {
+    if (fun.started) return; fun.started = true;
+    resetSays();
+    if (reduced) return;
+    fun.timer = setInterval(funTick, 2600);
+    startWalking();
+  }
+
   /* =================== the entrance =================== */
   function finishEntrance() {
     var en = $("#entrance");
     document.body.classList.remove("is-entering");
     en.classList.add("gone");
     document.body.classList.add("ready");
+    startFun();
     $("#viewport").classList.remove("walking");
     var vid = $("#entranceVideo"); try { vid.pause(); } catch (e) {}
     setTimeout(function () { en.hidden = true; }, 750);
@@ -464,7 +517,7 @@
   function runEntrance(skip) {
     if (skip || reduced) {
       document.body.classList.remove("is-entering");
-      var en = $("#entrance"); en.hidden = true; document.body.classList.add("ready");
+      var en = $("#entrance"); en.hidden = true; document.body.classList.add("ready"); startFun();
       return;
     }
     var src = R.scene && R.scene.entranceVideo, done = false;
@@ -491,11 +544,7 @@
       if (sw) { var to = sw.dataset.switch; if (to !== state.panel) { var keep = lastTrigger; closePanel(true); lastTrigger = keep; openPanel(to, null); } return; }
       var g = t.closest("#genrePicker button, .cover"); if (g) { chooseGenre(g.dataset.g); return; }
       var sh = t.closest(".shot"); if (sh) { lightbox(photosOf(themeById(state.genre)), Number(sh.dataset.shot)); return; }
-      var s = t.closest("#howSteps li"); if (s && !reduced) { how.start = performance.now() - Number(s.dataset.step) * how.STEP; how.step = -1; return; }
-      var i = t.closest("#ideaTabs button");
-      if (i) { state.idea = Number(i.dataset.idea); $$("#ideaTabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b === i)); });
-               renderIdeaInfo(); idea.start = performance.now(); idea.beat = -1; if (reduced) startReelLoops(); return; }
-      var l = t.closest("#libTabs button"); if (l) { state.lib = l.dataset.lib; renderLibrary(); var nb = $('#libTabs [data-lib="' + state.lib + '"]'); if (nb) nb.focus(); }
+      var mvb = t.closest("#mvTabs button"); if (mvb) { state.mv = mvb.dataset.mv; renderMv(); var nb = $('#mvTabs [data-mv="' + state.mv + '"]'); if (nb) nb.focus(); }
     });
     document.addEventListener("keydown", function (e) {
       if (lbOpen()) { if (e.key === "Escape") closeLb(); else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); return; }
@@ -507,7 +556,7 @@
       var p = new URLSearchParams(location.search);
       if (lang === "zh") p.set("lang", "zh"); else p.delete("lang");
       try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch (e) {}
-      if (R) { renderAll(); if (state.panel === "reels") startReelLoops(); }
+      if (R) { renderAll(); resetSays(); if (state.panel === "reels") startReelLoops(); }
     });
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(fit, 80); });
     window.addEventListener("hashchange", function () {
