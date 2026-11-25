@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a1410">
+<title>Christmas in Rhythms · The Ballroom</title>
+<meta name="description" content="Step inside: how to dress for the party and the reel challenge.">
+<!--
+  ⚠️ Team note: you normally DON'T need to edit this file.
+     • All the words on this page → room-content.js
+     • Pictures                   → assets/room/ (keep the same file names)
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="room.css?v=ballroom-20261125">
+</head>
+<body class="is-entering">
+
+<header class="topbar">
+  <a class="tb-btn back" id="backHouse" href="index.html?return=1">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10h-5v-6H9v6z"/></svg>
+    <span data-ui="back">Back to the house</span>
+  </a>
+  <p class="wordmark">Christmas <i>in</i> Rhythms</p>
+  <button class="tb-btn lang" id="langToggle" type="button">繁中</button>
+</header>
+
+<!-- ================= THE DOORS (first-person entrance) ================= -->
+<div class="entrance" id="entrance" aria-hidden="true">
+  <div class="warm-light"></div>
+  <div class="door door-l"><span class="pn pn1"></span><span class="pn pn2"></span><i class="handle"></i></div>
+  <div class="door door-r"><span class="pn pn1"></span><span class="pn pn2"></span><i class="handle"></i>
+    <svg class="wreath" viewBox="0 0 120 120"><circle cx="60" cy="60" r="38" fill="none" stroke="#2f5a3c" stroke-width="20"/>
+      <circle cx="60" cy="60" r="38" fill="none" stroke="#3f7a4f" stroke-width="8" stroke-dasharray="6 9"/>
+      <g fill="#b3262d"><circle cx="30" cy="44" r="4"/><circle cx="88" cy="52" r="4"/><circle cx="46" cy="92" r="4"/><circle cx="82" cy="86" r="4"/><circle cx="62" cy="24" r="4"/></g>
+      <path d="M60 92 l-16 18 l10 -2 l2 10z M60 92 l16 18 l-10 -2 l-2 10z" fill="#b3262d"/><circle cx="60" cy="92" r="6" fill="#d23a3f"/></svg>
+  </div>
+  <video id="entranceVideo" muted playsinline preload="auto"></video>
+  <button class="skip" id="skipEntrance" type="button" data-ui="skip">Skip</button>
+</div>
+
+<!-- ================= THE BALLROOM ================= -->
+<section class="ballroom" id="ballroom">
+  <div class="viewport" id="viewport">
+    <div class="stage" id="stage">
+      <svg class="scene" viewBox="0 0 1600 900" aria-hidden="true">
+        <defs>
+          <linearGradient id="gPlaster" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7e9d0"/><stop offset="1" stop-color="#ead2ab"/></linearGradient>
+          <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d7b98d"/><stop offset="1" stop-color="#ecd6b2"/></linearGradient>
+          <linearGradient id="gSideR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#d7b98d"/><stop offset="1" stop-color="#ecd6b2"/></linearGradient>
+          <linearGradient id="gRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c7d4"/><stop offset="1" stop-color="#efe2cb"/></linearGradient>
+          <linearGradient id="gFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c99459"/><stop offset=".55" stop-color="#a8743f"/><stop offset="1" stop-color="#7a4e2a"/></linearGradient>
+          <linearGradient id="gNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55688c"/><stop offset="1" stop-color="#a9b8cb"/></linearGradient>
+          <linearGradient id="gCurtain" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7f1b23"/><stop offset=".5" stop-color="#b52a33"/><stop offset="1" stop-color="#7f1b23"/></linearGradient>
+          <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d58c"/><stop offset="1" stop-color="#a5783e"/></linearGradient>
+          <linearGradient id="gMirror" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f4f6"/><stop offset=".5" stop-color="#c9d2da"/><stop offset="1" stop-color="#9aa7b3"/></linearGradient>
+          <linearGradient id="gBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c8" stop-opacity=".6"/><stop offset="1" stop-color="#fff3c8" stop-opacity="0"/></linearGradient>
+          <linearGradient id="gRunner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a2630"/><stop offset="1" stop-color="#6f1820"/></linearGradient>
+          <radialGradient id="gGlow"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".95"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient>
+          <radialGradient id="gBall" cx=".35" cy=".35"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#c3cbd4"/><stop offset="1" stop-color="#7a8591"/></radialGradient>
+          <radialGradient id="gVignette" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#5a3418" stop-opacity="0"/><stop offset="1" stop-color="#5a3418" stop-opacity=".45"/></radialGradient>
+          <pattern id="pFacet" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="none" stroke="#66707c" stroke-width="1"/></pattern>
+          <clipPath id="cWinL"><path d="M360 420V240a60 60 0 0 1 120 0v180z"/></clipPath>
+          <clipPath id="cWinR"><path d="M1120 420V240a60 60 0 0 1 120 0v180z"/></clipPath>
+          <filter id="wc" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter>
+          <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 .42  0 0 0 0 .3  0 0 0 0 .18  0 0 0 .16 0"/></filter>
+        </defs>
+
+        <!-- room shell, painted -->
+        <rect width="1600" height="900" fill="#e8d2ab"/><path d="M0 560H1600V900H0z" fill="#a8743f"/>
+        <g filter="url(#wc)">
+          <path d="M0 0H1600L1300 110H300z" fill="url(#gRoof)"/>
+          <g stroke="#6b4326" stroke-width="7" stroke-linecap="round"><path d="M300 110L0 0M425 110L200 0M550 110L400 0M675 110L600 0M800 110V0M925 110L1000 0M1050 110L1200 0M1175 110L1400 0M1300 110L1600 0M150 55H1450"/></g>
+          <g fill="#fffaf2" opacity=".9"><path d="M40 6q60 14 120 0q70 16 140 2q80 14 150 0v8H40z"/><path d="M820 4q70 14 150 0q80 16 150 2q70 12 140 0v8H820z"/></g>
+          <path d="M0 0L300 110V500L0 900z" fill="url(#gSide)"/>
+          <path d="M1600 0L1300 110V500L1600 900z" fill="url(#gSideR)"/>
+          <g stroke="#6b4326" stroke-width="12"><path d="M150 55V700M250 92V567M1450 55V700M1350 92V567"/></g>
+          <g stroke="#6b4326" stroke-width="8"><path d="M150 300L250 220M150 300L250 380M1450 300L1350 220M1450 300L1350 380"/></g>
+          <rect x="300" y="110" width="1000" height="390" fill="url(#gPlaster)"/>
+          <g fill="#6b4326"><rect x="300" y="110" width="1000" height="14"/><rect x="298" y="110" width="16" height="390"/><rect x="520" y="110" width="16" height="390"/><rect x="1064" y="110" width="16" height="390"/><rect x="1286" y="110" width="16" height="390"/></g>
+          <g stroke="#6b4326" stroke-width="9"><path d="M314 150L360 196M520 150L480 196M1080 150L1120 196M1286 150L1240 196"/></g>
+          <rect x="300" y="440" width="1000" height="60" fill="#8a5a32"/><path d="M300 440H1300" stroke="#c9a15b" stroke-width="3"/>
+          <path d="M300 500H1300L1600 900H0z" fill="url(#gFloor)"/>
+        </g>
+        <g id="floorLines" stroke="#5a3418" stroke-opacity=".28" stroke-width="2"></g>
+        <!-- red carpet to the stage -->
+        <path d="M760 524H840L910 900H690z" fill="url(#gRunner)"/><path d="M760 524L690 900M840 524L910 900" stroke="#e0b45a" stroke-width="4"/>
+
+        <!-- garland swags with red bows -->
+        <g class="garland">
+          <path d="M314 132q53 40 106 0q53 40 106 0M1080 132q53 40 103 0q53 40 103 0" stroke="#2f5a3c" stroke-width="14" fill="none" stroke-linecap="round"/>
+          <path d="M314 132q53 40 106 0q53 40 106 0M1080 132q53 40 103 0q53 40 103 0" stroke="#4f8a5c" stroke-width="5" fill="none" stroke-dasharray="3 7"/>
+          <g fill="#b3262d"><path d="M420 128l-14-10v20zM420 128l14-10v20z"/><path d="M1183 128l-14-10v20zM1183 128l14-10v20z"/></g>
+          <g fill="#d23a3f"><circle cx="420" cy="128" r="5"/><circle cx="1183" cy="128" r="5"/></g>
+        </g>
+        <!-- lanterns -->
+        <g fill="url(#gGlow)"><circle cx="330" cy="330" r="44"/><circle cx="1270" cy="330" r="44"/><circle cx="200" cy="330" r="70"/><circle cx="1400" cy="330" r="70"/></g>
+        <g fill="#5a3a22"><rect x="322" y="318" width="16" height="24" rx="3"/><rect x="1262" y="318" width="16" height="24" rx="3"/><rect x="190" y="314" width="20" height="32" rx="4"/><rect x="1390" y="314" width="20" height="32" rx="4"/></g>
+        <g fill="#ffd77a"><rect x="326" y="322" width="8" height="16"/><rect x="1266" y="322" width="8" height="16"/><rect x="194" y="318" width="12" height="24"/><rect x="1394" y="318" width="12" height="24"/></g>
+
+        <!-- windows with falling snow -->
+        <g><path d="M360 420V240a60 60 0 0 1 120 0v180z" fill="url(#gNight)"/><path d="M1120 420V240a60 60 0 0 1 120 0v180z" fill="url(#gNight)"/>
+          <g clip-path="url(#cWinL)"><g class="snowfall" id="snowL"></g></g>
+          <g clip-path="url(#cWinR)"><g class="snowfall" id="snowR"></g></g>
+          <g fill="none" stroke="#6b4326" stroke-width="9"><path d="M360 420V240a60 60 0 0 1 120 0v180z"/><path d="M1120 420V240a60 60 0 0 1 120 0v180z"/></g>
+          <g stroke="#6b4326" stroke-width="4"><path d="M420 182V420M360 300H480M1180 182V420M1120 300H1240"/></g>
+          <g fill="#fffaf2"><path d="M354 420h132v9H354zM1114 420h132v9h-132z"/><path d="M362 420q20-10 40 0t40-2 38 2zM1122 420q20-10 40 0t40-2 38 2z"/></g>
+        </g>
+
+        <!-- stage -->
+        <rect x="550" y="150" width="500" height="320" fill="#3a1412"/>
+        <g class="beams"><path class="beam b1" d="M690 150L620 470H760z" fill="url(#gBeam)"/><path class="beam b2" d="M910 150L840 470H980z" fill="url(#gBeam)"/></g>
+        <image href="assets/room/logo.png" x="652" y="176" width="296" height="125" class="logo"/>
+        <g fill="#5a3a22">
+          <path d="M640 470V440q0-10 10-12l70-10q14-2 14 12v40z"/><path d="M650 470v-30M726 470v-30" stroke="#5a3a22" stroke-width="5"/>
+          <path d="M800 470V398" stroke="#d8c08a" stroke-width="4"/><path d="M786 470h28" stroke="#d8c08a" stroke-width="5"/><ellipse cx="800" cy="392" rx="8" ry="11" fill="#2a2a2a" stroke="#d8c08a" stroke-width="2"/>
+          <path d="M915 470q-26-8-18-38q6-18 -2-34q8-14 22-6q14 10 6 24q-8 16 0 30q10 20-8 24z" fill="#7a3d1e"/><path d="M917 380V330" stroke="#5a2c12" stroke-width="4"/>
+        </g>
+        <path d="M540 140h520v26c-21 22-65 22-87 0c-21 22-65 22-87 0c-21 22-65 22-87 0c-21 22-65 22-87 0c-21 22-65 22-87 0c-21 22-65 22-87 0z" fill="url(#gCurtain)"/>
+        <path d="M540 140h520" stroke="url(#gGold)" stroke-width="9"/>
+        <path d="M540 150v330h44c-10-80 30-200 -10-300c-10-20-20-30-34-30z" fill="url(#gCurtain)"/>
+        <path d="M1060 150v330h-44c10-80-30-200 10-300c10-20 20-30 34-30z" fill="url(#gCurtain)"/>
+        <path d="M520 470H1080L1110 524H490z" fill="#7a4a28"/><path d="M490 524H1110v18H490z" fill="#4a2c18"/><path d="M520 470H1080" stroke="#c9a15b" stroke-width="3"/>
+
+        <!-- string lights + mirror ball -->
+        <g id="lights"></g>
+        <g class="spots" id="spots"></g>
+        <path d="M800 0V30" stroke="#6b4326" stroke-width="2"/>
+        <g class="ball"><circle cx="800" cy="58" r="28" fill="url(#gBall)"/><circle cx="800" cy="58" r="28" fill="url(#pFacet)"/><circle cx="790" cy="48" r="6" fill="#fff" opacity=".85" class="glint"/></g>
+
+        <!-- christmas tree -->
+        <g class="tree" transform="translate(-30 20) scale(.92)">
+          <ellipse cx="170" cy="704" rx="120" ry="16" fill="#5a3418" opacity=".3"/>
+          <rect x="156" y="650" width="28" height="50" fill="#5a3418"/>
+          <path d="M170 330L84 470H256z" fill="#3f7a4f"/><path d="M170 400L64 560H276z" fill="#356b45"/><path d="M170 480L44 660H296z" fill="#2f5a3c"/>
+          <path d="M110 452q60 22 120 0M92 540q78 30 156 0M72 636q98 34 196 0" stroke="#e9c46a" stroke-width="3" fill="none" stroke-dasharray="2 8"/>
+          <g id="treeBaubles"></g>
+          <path class="star" d="M170 300l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#f3d58c"/>
+          <rect x="210" y="664" width="46" height="38" fill="#b3262d"/><path d="M233 664v38M210 683h46" stroke="#e9c46a" stroke-width="5"/>
+          <rect x="96" y="672" width="40" height="30" fill="#2f5a3c"/><path d="M116 672v30M96 687h40" stroke="#f1e6d2" stroke-width="4"/>
+        </g>
+
+        <g id="tables"></g>
+
+        <!-- floor plan easel (hidden for now) -->
+        <g class="obj obj-plan" data-feature="plan">
+          <path d="M1000 520L974 676M1000 520L1028 676M1000 520V686" stroke="#5a3418" stroke-width="6"/>
+          <rect x="952" y="534" width="96" height="70" rx="3" fill="#f4ecdc" stroke="#c9a15b" stroke-width="3"/>
+        </g>
+
+        <!-- DRESS CODE: elf + mirror + clothes rail -->
+        <g class="obj obj-dress">
+          <ellipse cx="460" cy="806" rx="230" ry="20" fill="#5a3418" opacity=".28"/>
+          <path d="M392 800V566a62 62 0 0 1 124 0V800z" fill="url(#gMirror)"/>
+          <path class="streak" d="M414 800V566l26-40 26 0L442 800z" fill="#fff" opacity=".4"/>
+          <path d="M392 800V566a62 62 0 0 1 124 0V800z" fill="none" stroke="url(#gGold)" stroke-width="12"/>
+          <path d="M446 488l8-14 8 14" fill="#e9c46a"/><path d="M402 800l-14 22M506 800l14 22" stroke="#a5783e" stroke-width="8" stroke-linecap="round"/>
+          <path d="M408 512q46-30 92 0" stroke="#2f5a3c" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="454" cy="500" r="7" fill="#b3262d"/>
+          <path d="M538 576V806M662 576V806M530 576H670" stroke="#c9a15b" stroke-width="6" stroke-linecap="round"/>
+          <path d="M530 806h22M648 806h22" stroke="#c9a15b" stroke-width="6" stroke-linecap="round"/>
+          <g transform="translate(560 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-14 10l14-6 14 6l4 70h-36z" fill="#1d1a19"/><path d="M-3 12h6v60h-6z" fill="#8f1f24"/></g>
+          <g transform="translate(588 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-14 10l14-6 14 6l2 58h-32z" fill="#d4a537"/><g fill="#fff3c4"><circle cx="-6" cy="24" r="2"/><circle cx="5" cy="34" r="2"/><circle cx="-2" cy="50" r="2"/></g></g>
+          <g transform="translate(616 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-16 10l16-6 16 6l4 74h-40z" fill="#f2b8c6"/><path d="M-6 8l6 22 6-22z" fill="#fff"/></g>
+          <g transform="translate(644 580)"><path d="M0 0q-6 0-6 6" stroke="#ddd" stroke-width="2" fill="none"/><path d="M-14 10l14-6 14 6l2 80h-32z" fill="#1f2a3a"/><path d="M-5 9l5 18 5-18z" fill="#f3ead7"/><path d="M-5 14l5 3 5-3-1 6-4-2-4 2z" fill="#6b2232"/></g>
+          <g class="walker" id="walkElf"><g class="facer"><g class="host elf"><image href="assets/room/elf.png" x="250" y="608" width="132" height="208"/></g></g></g>
+        </g>
+
+        <!-- REELS: camera + director's chair + snowman -->
+        <g class="obj obj-reels">
+          <ellipse cx="1300" cy="836" rx="250" ry="20" fill="#5a3418" opacity=".28"/>
+          <path d="M1142 632L1088 826M1142 632L1146 836M1142 632L1198 826" stroke="#2a2a2a" stroke-width="8" stroke-linecap="round"/>
+          <rect x="1090" y="572" width="104" height="62" rx="10" fill="#2e2e2e"/><rect x="1110" y="556" width="40" height="18" rx="4" fill="#3c3c3c"/>
+          <circle cx="1086" cy="603" r="22" fill="#1a1a1a" stroke="#555" stroke-width="5"/><circle cx="1086" cy="603" r="9" fill="#4a6b8f"/>
+          <circle class="rec" cx="1178" cy="586" r="6" fill="#ff3b3b"/>
+          <path d="M1226 548q20-16 40 0" stroke="#2f5a3c" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="1246" cy="540" r="5" fill="#b3262d"/>
+          <path d="M1230 690h140M1230 690l20 140M1370 690l-20 140M1240 830l120-140M1360 830l-120-140" stroke="#6b4326" stroke-width="8" stroke-linecap="round"/>
+          <rect x="1234" y="604" width="132" height="44" rx="4" fill="#a3222b"/><path d="M1240 604V690M1360 604V690" stroke="#6b4326" stroke-width="8"/>
+          <rect x="1234" y="680" width="132" height="14" rx="3" fill="#a3222b"/>
+          <g transform="translate(1266 650) rotate(-8)"><rect width="74" height="34" rx="3" fill="#1d1a19"/><path d="M0 0h74v10H0z" fill="#f1e6d2"/><path d="M8 0l8 10M24 0l8 10M40 0l8 10M56 0l8 10" stroke="#1d1a19" stroke-width="5"/></g>
+          <g class="walker" id="walkSnow"><g class="facer"><g class="host snowman"><image href="assets/room/snowman.png" x="1392" y="614" width="132" height="208"/></g></g></g>
+        </g>
+
+        <g id="dust"></g>
+        <g id="snowballs"></g>
+        <rect width="1600" height="900" fill="url(#gVignette)" pointer-events="none"/>
+        <rect width="1600" height="900" filter="url(#grain)" opacity=".55" pointer-events="none"/>
+      </svg>
+
+      <!-- what the elf and snowman say -->
+      <div class="say say-elf" id="sayElf" style="left:96px;top:486px"><span></span></div>
+      <div class="say say-snow" id="saySnow" style="left:1270px;top:486px"><span></span></div>
+
+      <!-- clickable: the objects themselves -->
+      <button class="hot go-dress" type="button" data-open="dress" aria-labelledby="plDress" style="left:236px;top:470px;width:446px;height:350px"></button>
+      <button class="hot go-reels" type="button" data-open="reels" aria-labelledby="plReels" style="left:1056px;top:530px;width:480px;height:300px"></button>
+      <button class="hot hot-plan" type="button" data-open="plan" data-feature="plan" style="left:940px;top:516px;width:118px;height:178px"></button>
+
+      <!-- the two signposts = the two tabs -->
+      <button class="plaque go-dress" id="plDress" type="button" data-open="dress" style="left:310px;top:676px">
+        <span class="pl-no">1</span><b data-c="hotspots.dress.label"></b><small data-c="hotspots.dress.sub"></small>
+      </button>
+      <button class="plaque go-reels" id="plReels" type="button" data-open="reels" style="left:1010px;top:676px">
+        <span class="pl-no">2</span><b data-c="hotspots.reels.label"></b><small data-c="hotspots.reels.sub"></small>
+      </button>
+    </div>
+  </div>
+
+  <div class="scene-title">
+    <h1 data-c="scene.title"></h1>
+    <p data-c="scene.hint"></p>
+  </div>
+
+  <!-- big buttons for phones -->
+  <nav class="phone-cards" aria-label="Explore">
+    <button type="button" data-open="dress" class="pc pc-dress"><img class="pc-host" src="assets/room/elf.png" alt=""><b data-c="hotspots.dress.label"></b><small data-c="hotspots.dress.sub"></small></button>
+    <button type="button" data-open="reels" class="pc pc-reels"><img class="pc-host" src="assets/room/snowman.png" alt=""><b data-c="hotspots.reels.label"></b><small data-c="hotspots.reels.sub"></small></button>
+  </nav>
+</section>
+
+<!-- ================= PANEL: HOW SHOULD I DRESS? ================= -->
+<div class="panel" id="panel-dress" role="dialog" aria-modal="true" aria-labelledby="dressTitle" hidden>
+  <div class="panel-inner">
+    <button class="close" type="button" data-close><span aria-hidden="true">×</span><span class="sr" data-ui="close">Close</span></button>
+    <header class="p-head">
+      <div class="ptabs" role="tablist">
+        <button type="button" role="tab" data-switch="dress"><span class="rt-no">1</span><span data-c="hotspots.dress.label"></span></button>
+        <button type="button" role="tab" data-switch="reels"><span class="rt-no">2</span><span data-c="hotspots.reels.label"></span></button>
+      </div>
+      <h2 id="dressTitle" data-c="themes.title"></h2>
+      <p class="lede" data-c="themes.intro"></p>
+    </header>
+    <div class="dress-grid">
+      <div class="dress-stage" id="dressStage">
+        <div class="spot-cone"></div>
+        <img class="stylist" src="assets/room/elf.png" alt="">
+        <div class="bubble" id="bubble" data-c="themes.prompt"></div>
+        <div class="fig-wrap" id="figWrap"></div>
+        <div class="platform"></div>
+        <div class="sparkles" id="sparkles"></div>
+        <div class="genre-picker" id="genrePicker" role="tablist"></div>
+      </div>
+      <div class="dress-info" id="dressInfo" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PANEL: REEL CHALLENGE ================= -->
+<div class="panel" id="panel-reels" role="dialog" aria-modal="true" aria-labelledby="reelsTitle" hidden>
+  <div class="panel-inner">
+    <button class="close" type="button" data-close><span aria-hidden="true">×</span><span class="sr" data-ui="close">Close</span></button>
+    <header class="p-head">
+      <div class="ptabs" role="tablist">
+        <button type="button" role="tab" data-switch="dress"><span class="rt-no">1</span><span data-c="hotspots.dress.label"></span></button>
+        <button type="button" role="tab" data-switch="reels"><span class="rt-no">2</span><span data-c="hotspots.reels.label"></span></button>
+      </div>
+      <h2 id="reelsTitle" data-c="reels.title"></h2>
+    </header>
+
+    <div class="how">
+      <div class="phone" id="howPhone">
+        <div class="screen">
+          <div class="rec"><i></i>REC <span id="howTimer">00:00</span></div>
+          <div class="frame" id="howFrame"></div>
+          <div class="ratio">9:16</div>
+          <div class="progress"><span id="howBar"></span></div>
+        </div>
+      </div>
+      <div class="how-right">
+        <div class="rules">
+          <p class="rules-tag" data-c="reels.rulesTitle"></p>
+          <p class="rules-text" data-c="reels.rules"></p>
+        </div>
+        <div class="director"><img src="assets/room/snowman.png" alt=""><p class="say-inline" data-c="reels.snowmanSays"></p><img class="elf-buddy" src="assets/room/elf.png" alt=""></div>
+      </div>
+    </div>
+
+    <h3 class="sub" data-c="reels.mvTitle"></h3>
+    <div class="featured" id="mvFeatured"></div>
+    <div class="mv card">
+      <div class="lib-tabs" id="mvTabs" role="tablist"></div>
+      <ul class="mv-list" id="mvList"></ul>
+    </div>
+
+    <div class="card tips"><h3 data-c="reels.tipsTitle"></h3><ul class="checks" id="reelTips"></ul></div>
+  </div>
+</div>
+
+<!-- ================= PANEL: FLOOR PLAN ================= -->
+<div class="panel" id="panel-plan" role="dialog" aria-modal="true" aria-labelledby="planTitle" hidden>
+  <div class="panel-inner">
+    <button class="close" type="button" data-close><span aria-hidden="true">×</span><span class="sr" data-ui="close">Close</span></button>
+    <header class="p-head">
+      <p class="kicker" data-ui="easel">On the easel</p>
+      <h2 id="planTitle" data-c="floor.title"></h2>
+      <p class="status-note"><span class="stamp" data-ui="tentative">Tentative</span> <span data-c="floor.status"></span></p>
+      <p class="lede" data-c="floor.intro"></p>
+    </header>
+    <figure class="blueprint"><a id="floorLink" target="_blank" rel="noopener"><img id="floorImg" alt="Floor plan of the Grand Ballroom"><span class="zoom" data-ui="zoom">Open full size ↗</span></a></figure>
+    <ul class="areas" id="floorAreas"></ul>
+  </div>
+</div>
+
+<p class="updated"><span data-ui="updated">Last updated</span> <span data-c="lastUpdated"></span></p>
+
+<div class="oops" id="oops" hidden><p data-ui="oops">Content is being updated — please check back in a few minutes.</p></div>
+
+<!-- room.js loads room-content.js itself, always fresh, so edits show straight away -->
+<script src="room.js?v=ballroom-20261125"></script>
+</body>
+</html>

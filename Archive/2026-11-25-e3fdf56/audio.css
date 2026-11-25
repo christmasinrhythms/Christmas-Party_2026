@@ -1,0 +1,27 @@
+/* A quiet record player stays clear of the scene navigation and toolbar. */
+.sound-player{position:fixed;z-index:96;left:max(16px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:260px;color:#65472d;font:12px/1.4 system-ui,'PingFang TC',sans-serif}
+html:not([data-phase]) .sound-player,html[data-phase=loading] .sound-player{display:none}
+.sound-summary{display:flex;align-items:center;gap:8px;border:1px solid #b79a6d99;border-radius:28px;padding:3px 5px;background:#fff2dfeF;box-shadow:0 3px 14px #51351f1a}
+.sound-player button{display:grid;place-items:center;flex:none;min-width:44px;min-height:44px;background:none;border-radius:50%;color:inherit}
+.sound-player button:hover{background:#e7cda44d}.sound-player button:active{background:#d7b57c66}
+.sound-player button:focus-visible{outline:2px solid #7b3d33;outline-offset:1px}
+.sound-record{width:35px;height:35px;display:grid;place-items:center;border-radius:50%;border:1px solid #997740;background:repeating-radial-gradient(circle,#5b4631 0 2px,#6c5337 3px 4px);color:#fff1cd;font-size:15px;box-shadow:inset 0 0 0 10px #76532c22}
+.sound-player[data-playing=true] .sound-record{box-shadow:inset 0 0 0 10px #76532c22,0 0 0 2px #c5a66555}
+.sound-caption{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}.sound-track{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sound-status{font-size:10px;color:#81674c;white-space:nowrap}
+.sound-expand{font-size:17px}.sound-panel{margin-bottom:8px;padding:12px;border:1px solid #b79a6d99;border-radius:13px;background:#fff2dff5;box-shadow:0 5px 24px #51351f24;max-height:calc(100svh - 190px);overflow:auto}
+.sound-panel-title{margin:0 0 6px;font:13px Georgia,'Songti TC',serif;overflow-wrap:anywhere}
+.sound-transport{display:flex;justify-content:center;align-items:center;gap:16px}.sound-transport button{font-size:19px}
+.sound-volume{display:flex;align-items:center;gap:10px;margin:8px 0 4px}.sound-volume>span{font-size:11px;flex:none}.sound-volume input{accent-color:#8f6a38;width:100%;min-width:0;min-height:44px;cursor:pointer}
+.sound-options{display:flex;gap:5px}.sound-options button{flex:1;border:1px solid #b99d7077;border-radius:7px;font-size:11px;padding:6px;min-width:0}.sound-options button[aria-pressed=true]{background:#e4cba666}
+.sound-player .sound-master{width:100%;margin-top:8px;padding:8px;border:1px solid #b99d7099;border-radius:7px;font-size:11px}.sound-master[aria-pressed=true]{background:#e4cba666}
+.actor-hotspot{position:absolute;z-index:4;background:transparent;padding:0;border:0;border-radius:45%;cursor:pointer;touch-action:manipulation}
+.elf-hotspot{left:145px;top:670px;width:185px;height:350px}.snowman-hotspot{left:1625px;top:680px;width:191px;height:340px}
+.actor-hotspot:focus-visible{outline:2px dashed #fff2c3;outline-offset:2px;background:#fff0be0a}
+.actor-hotspot:after{content:'✧';position:absolute;top:16%;left:40%;font-size:45px;color:#fff3b8;opacity:0;pointer-events:none;filter:drop-shadow(0 0 4px #cc9229)}
+.actor-hotspot.reacting:after{animation:actor-spark .8s ease-out}.snowman-hotspot.reacting:after{content:'❄';color:#fffaf1;filter:drop-shadow(0 0 4px #97b9c3)}
+@keyframes actor-spark{0%{opacity:0;transform:translateY(8px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translateY(-22px) scale(1.2)}}
+body.calm .actor-hotspot.reacting:after{animation:none;opacity:1}
+@media(max-width:1000px){.sound-player{left:12px;bottom:100px;width:100px}.sound-caption{display:none}.sound-panel{width:260px;max-width:calc(100vw - 24px)}.sound-summary{gap:3px;padding:2px 3px}}
+@media(max-width:700px){.sound-player button{min-width:44px;min-height:44px}.sound-panel{width:min(278px,calc(100vw - 24px))}}
+@media(max-height:500px){.sound-player{bottom:80px}.sound-panel{max-height:calc(100svh - 145px)}}
+@media(prefers-reduced-motion:reduce){.actor-hotspot.reacting:after{animation:none;opacity:1}}

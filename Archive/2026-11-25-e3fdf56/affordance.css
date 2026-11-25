@@ -1,0 +1,14 @@
+/* The invite background alone grows about its original tail point. */
+.invite-object:before{transform:scale(1.04,1.18);transform-origin:7.6% calc(100% - 12.5625px)}
+.date-object:hover,.venue-object:hover{filter:none}
+.date-face .engraved-line,.venue-word{transition:filter .16s ease}
+.wood-glow .date-word,.wood-glow .time-word,.wood-glow .venue-word{filter:url('#wood-incised') brightness(1.35) drop-shadow(0 0 2px #fff8dfff) drop-shadow(0 0 6px #ffce6bff) drop-shadow(0 0 12px #e4a43bd9)}
+/* Selected navigation suppresses camera proximity, not mouse glow. */
+@media(hover:hover) and (pointer:fine){.date-object:hover .date-word,.date-object:hover .time-word,.venue-object:hover .venue-word{filter:url('#wood-incised') brightness(1.35) drop-shadow(0 0 2px #fff8dfff) drop-shadow(0 0 6px #ffce6bff) drop-shadow(0 0 12px #e4a43bd9)}}
+.scene-nav button{text-transform:uppercase;transition:background .15s,color .15s,text-shadow .15s}
+.scene-nav button:hover,.scene-nav button:focus-visible,.scene-nav button[aria-current=true]{color:#765128;text-shadow:0 0 5px #ffe5a6;background:#ead3ad66}
+.scene-nav button:active{background:#ddbf8b77}
+body.calm .date-face .engraved-line,body.calm .venue-word,body.calm .scene-nav button{transition:none}
+@media(max-width:700px){.scene-nav{width:calc(100vw - 24px);max-width:420px}.scene-nav button{flex:1;min-width:0;padding:6px 4px}}
+@media(max-width:700px){html[lang=en] .scene-nav [data-go=countdown]{flex:1.35}}
+@media(prefers-reduced-motion:reduce){.date-face .engraved-line,.venue-word,.scene-nav button{transition:none!important}}
