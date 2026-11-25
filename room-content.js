@@ -36,104 +36,69 @@ window.ROOM = {
 
   /* ---------- 1. How should I dress? ---------- */
   themes: {
-    title:  { en: "How should I dress for the Christmas party?", zh: "聖誕派對應該怎樣打扮？" },
-    intro:  {
-      en: "Dress code: wear your favourite music genre. Pick one and watch the look change — then remix what you already own, no need to buy anything new.",
-      zh: "服裝主題：穿出你最愛的音樂曲風。揀一個曲風，看看造型如何變身——用衣櫃現有衣物配搭便可，毋須特意添置。"
-    },
-    prompt: { en: "Pick a genre and I'll change!", zh: "揀個曲風，我即刻換裝！" },
-    // Optional reference pictures (Higgsfield or free photos):
-    // assets/room/theme-rock.jpg, theme-disco.jpg, theme-kpop.jpg, theme-jazz.jpg
+    title:  { en: "How should I dress?", zh: "應該怎樣打扮？" },
+    intro:  { en: "Pick a genre and get inspired — then freestyle your own look!", zh: "揀個曲風，睇吓靈感——然後自由發揮！" },
+    prompt: { en: "Pick a genre!", zh: "揀個曲風！" },
+
+    // Each genre's reference photos live in assets/room/looks/.
+    // To add a photo: upload it there, then copy one { src: … } line below,
+    // change the file name, and keep a comma between lines.
     list: [
       {
-        id: "rock", image: "assets/room/theme-rock.jpg",
-        // REAL-LIFE LOOKS: paste a Pinterest board link between the quotes,
-        // e.g. "https://www.pinterest.com/yourname/rock-punk-looks/"
-        pinterestBoard: "",
-        // …or list photos saved in assets/room/looks/ (credit is optional)
+        id: "rock",
+        name: { en: "Rock & Punk", zh: "搖滾龐克" },
+        colours: ["#1d1a19", "#8f1f24"],
         photos: [
-          { src: "assets/room/looks/rock-1.jpg", credit: "" },
-          { src: "assets/room/looks/rock-2.jpg", credit: "" }
-        ],
-        name:    { en: "Rock & Punk", zh: "搖滾龐克" },
-        tagline: { en: "Loud, a little rebellious, all attitude.", zh: "大聲、帶點反叛、氣場全開。" },
-        colours: ["#1d1a19", "#8f1f24", "#c9c3b8", "#4a4f57"],
-        pieces:  { en: ["Leather or denim jacket", "Band T-shirt or black tee", "Ripped black jeans or tartan skirt", "Boots or high-top sneakers"],
-                   zh: ["皮褸或牛仔外套", "樂隊T恤或黑色T恤", "破洞黑牛仔褲或格仔裙", "靴或高筒波鞋"] },
-        extras:  { en: ["Studs, chains, safety pins", "Wristbands and rings", "Smoky eyeliner, spiky hair"],
-                   zh: ["鉚釘、鏈條、扣針", "手帶及戒指", "煙燻眼線、尖刺髮型"] },
-        easy:    { en: "Black tee + denim jacket + one studded accessory.", zh: "黑T恤＋牛仔外套＋一件鉚釘配飾。" },
-        allOut:  { en: "Full leather, tartan, chains and coloured hair spray.", zh: "全身皮革、格仔、鏈條，再加彩色噴髮。" },
-        search:  "rock punk party outfit"
+          { src: "assets/room/looks/rock-1.jpg" },
+          { src: "assets/room/looks/rock-2.jpg" },
+          { src: "assets/room/looks/rock-3.jpg" },
+          { src: "assets/room/looks/rock-4.jpg" },
+          { src: "assets/room/looks/rock-5.jpg" },
+          { src: "assets/room/looks/rock-6.jpg" }
+        ]
       },
       {
-        id: "disco", image: "assets/room/theme-disco.jpg",
-        // REAL-LIFE LOOKS: paste a Pinterest board link between the quotes,
-        // e.g. "https://www.pinterest.com/yourname/rock-punk-looks/"
-        pinterestBoard: "",
-        // …or list photos saved in assets/room/looks/ (credit is optional)
+        id: "disco",
+        name: { en: "Disco Vibe", zh: "迪斯可熱潮" },
+        colours: ["#d4a537", "#b8336a"],
         photos: [
-          { src: "assets/room/looks/disco-1.jpg", credit: "" },
-          { src: "assets/room/looks/disco-2.jpg", credit: "" }
-        ],
-        name:    { en: "Disco Vibe", zh: "迪斯可熱潮" },
-        tagline: { en: "Sparkle under the mirror ball.", zh: "在鏡面球下閃閃發光。" },
-        colours: ["#d4a537", "#b8336a", "#2f6f8f", "#e8e1d0"],
-        pieces:  { en: ["Sequin, satin or metallic top", "Flared trousers or a jumpsuit", "Wide-collar shirt", "Platform shoes or boots"],
-                   zh: ["亮片、緞面或金屬感上衣", "喇叭褲或連身褲", "大翻領恤衫", "厚底鞋或靴"] },
-        extras:  { en: ["Big sunglasses", "Headband or afro wig", "Gold jewellery and glitter"],
-                   zh: ["大框太陽眼鏡", "頭帶或爆炸頭假髮", "金色首飾及閃粉"] },
-        easy:    { en: "One sparkly top + flares or wide-leg trousers.", zh: "一件閃亮上衣＋喇叭褲或闊腳褲。" },
-        allOut:  { en: "Head-to-toe sequins, platforms and a mirror-ball prop.", zh: "全身亮片、厚底鞋，再拿一個鏡面球道具。" },
-        search:  "70s disco party outfit"
+          { src: "assets/room/looks/disco-1.jpg" },
+          { src: "assets/room/looks/disco-2.jpg" },
+          { src: "assets/room/looks/disco-3.jpg" },
+          { src: "assets/room/looks/disco-4.jpg" },
+          { src: "assets/room/looks/disco-5.jpg" }
+        ]
       },
       {
-        id: "kpop", image: "assets/room/theme-kpop.jpg",
-        // REAL-LIFE LOOKS: paste a Pinterest board link between the quotes,
-        // e.g. "https://www.pinterest.com/yourname/rock-punk-looks/"
-        pinterestBoard: "",
-        // …or list photos saved in assets/room/looks/ (credit is optional)
+        id: "kpop",
+        name: { en: "K-pop", zh: "韓流K-pop" },
+        colours: ["#f2b8c6", "#6d9cc7"],
         photos: [
-          { src: "assets/room/looks/kpop-1.jpg", credit: "" },
-          { src: "assets/room/looks/kpop-2.jpg", credit: "" }
-        ],
-        name:    { en: "K-pop", zh: "韓流K-pop" },
-        tagline: { en: "Stage-ready, coordinated, camera-friendly.", zh: "舞台感、整齊劃一、上鏡一流。" },
-        colours: ["#f2b8c6", "#6d9cc7", "#ffffff", "#232323"],
-        pieces:  { en: ["Oversized blazer or bomber jacket", "Cargo pants or pleated skirt", "Layered streetwear", "Chunky sneakers"],
-                   zh: ["寬身西裝外套或飛行褸", "工裝褲或百褶裙", "多層次街頭服飾", "厚底波鞋"] },
-        extras:  { en: ["Bucket hat or beanie", "Chains and hair clips", "A little glitter"],
-                   zh: ["漁夫帽或冷帽", "鏈飾及髮夾", "少量閃粉"] },
-        easy:    { en: "Match one colour with your table, like a group concept.", zh: "全桌配襯同一顏色，像團體概念造型。" },
-        allOut:  { en: "Coordinated stage outfits with a shared colour story.", zh: "全桌整套舞台造型，用同一色系呼應。" },
-        search:  "kpop stage outfit"
+          { src: "assets/room/looks/kpop-1.jpg" },
+          { src: "assets/room/looks/kpop-2.jpg" },
+          { src: "assets/room/looks/kpop-3.jpg" },
+          { src: "assets/room/looks/kpop-4.jpg" },
+          { src: "assets/room/looks/kpop-5.jpg" },
+          { src: "assets/room/looks/kpop-6.jpg" }
+        ]
       },
       {
-        id: "jazz", image: "assets/room/theme-jazz.jpg",
-        // REAL-LIFE LOOKS: paste a Pinterest board link between the quotes,
-        // e.g. "https://www.pinterest.com/yourname/rock-punk-looks/"
-        pinterestBoard: "",
-        // …or list photos saved in assets/room/looks/ (credit is optional)
+        id: "jazz",
+        name: { en: "Jazz & Classic", zh: "爵士古典" },
+        colours: ["#1f2a3a", "#c8a24a"],
         photos: [
-          { src: "assets/room/looks/jazz-1.jpg", credit: "" },
-          { src: "assets/room/looks/jazz-2.jpg", credit: "" }
-        ],
-        name:    { en: "Jazz & Classic", zh: "爵士古典" },
-        tagline: { en: "Old-school glamour, swing and strings.", zh: "復古華麗，搖擺與弦樂之間。" },
-        colours: ["#1f2a3a", "#c8a24a", "#f3ead7", "#6b2232"],
-        pieces:  { en: ["Suit, waistcoat or tuxedo", "Bow tie and suspenders", "Flapper or cocktail dress", "Polished shoes"],
-                   zh: ["西裝、背心或禮服", "煲呔及吊帶", "1920年代流蘇裙或雞尾酒裙", "擦亮的皮鞋"] },
-        extras:  { en: ["Fedora or feather headband", "Pearls and gloves", "Pocket square"],
-                   zh: ["紳士帽或羽毛頭飾", "珍珠及手套", "袋巾"] },
-        easy:    { en: "White shirt + bow tie, or a little black dress + pearls.", zh: "白恤衫＋煲呔，或黑色小禮服＋珍珠。" },
-        allOut:  { en: "Full Gatsby glamour: feathers, pearls and pinstripes.", zh: "全套大亨小傳風格：羽毛、珍珠、細條紋。" },
-        search:  "1920s jazz gatsby outfit"
+          { src: "assets/room/looks/jazz-1.jpg" },
+          { src: "assets/room/looks/jazz-2.jpg" },
+          { src: "assets/room/looks/jazz-3.jpg" },
+          { src: "assets/room/looks/jazz-4.jpg" },
+          { src: "assets/room/looks/jazz-5.jpg" },
+          { src: "assets/room/looks/jazz-6.jpg" },
+          { src: "assets/room/looks/jazz-7.jpg" },
+          { src: "assets/room/looks/jazz-8.jpg" },
+          { src: "assets/room/looks/jazz-9.jpg" }
+        ]
       }
-    ],
-    tips: {
-      en: ["Comfort first — you'll be filming a reel, so wear shoes you can move in.", "Coordinate with your table for a stronger reel.", "Keep props light and easy to carry."],
-      zh: ["舒適至上——當日要拍短片，請穿方便活動的鞋。", "與同桌協調造型，拍出來更有氣勢。", "道具宜輕便易攜。"]
-    }
+    ]
   },
 
   /* ---------- 2. Reel challenge ---------- */

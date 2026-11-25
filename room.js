@@ -176,56 +176,57 @@
 
   function list(items) { return "<ul>" + (items || []).map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>"; }
 
+  /* photo wall: before a genre is picked, one cover per genre; afterwards, that genre's photos */
+  function photosOf(t) { return (t && t.photos || []).filter(function (p) { return p && p.src; }); }
   function renderDressInfo(animate) {
     var box = $("#dressInfo"), t = state.genre && themeById(state.genre);
     if (!t) {
-      box.innerHTML = '<p class="pick-hint">' + esc(u("pickHint")) + '</p><ul class="start-tips">' +
-        (tx(R.themes.tips) || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>";
+      box.innerHTML = '<div class="covers">' + (R.themes.list || []).map(function (g) {
+        var p = photosOf(g)[0];
+        return '<button type="button" class="cover" data-g="' + esc(g.id) + '" style="--c:' + esc((g.colours || [])[1] || "#a5783e") + '">' +
+          (p ? '<img src="' + esc(p.src) + '" alt="" loading="lazy">' : "") +
+          '<span class="cover-name">' + esc(tx(g.name)) + "</span></button>";
+      }).join("") + "</div>";
     } else {
-      var sw = (t.colours || []).map(function (c) { return '<i style="background:' + esc(c) + '"></i>'; }).join("");
-      var pin = "https://www.pinterest.com/search/pins/?q=" + encodeURIComponent(t.search || tx(t.name));
-      box.innerHTML = "<h3>" + esc(tx(t.name)) + '</h3><p class="tagline">' + esc(tx(t.tagline)) + "</p>" +
-        '<div class="swatches" aria-hidden="true">' + sw + "</div>" +
-        '<div class="cols"><div><h4>' + u("pieces") + "</h4>" + list(tx(t.pieces)) + "</div><div><h4>" + u("extras") + "</h4>" + list(tx(t.extras)) + "</div></div>" +
-        '<div class="levels"><p><b>' + u("easy") + "</b>" + esc(tx(t.easy)) + "</p><p><b>" + u("allOut") + "</b>" + esc(tx(t.allOut)) + "</p></div>" +
-        '<div id="refSlot"></div>' + realLooks(t, pin);
-      if (t.image) {
-        var img = new Image();
-        img.onload = function () {
-          var slot = $("#refSlot"); if (!slot || state.genre !== t.id) return;
-          slot.innerHTML = '<figure class="ref"><figcaption>' + esc(u("reference")) + "</figcaption></figure>";
-          img.alt = tx(t.name); slot.firstChild.insertBefore(img, slot.firstChild.firstChild);
-        };
-        img.src = t.image;
-      }
+      var ps = photosOf(t);
+      box.innerHTML = '<h3 class="wall-title">' + esc(tx(t.name)) + ' <small>' + ps.length + "</small></h3>" +
+        '<div class="wall">' + ps.map(function (p, i) {
+          return '<button type="button" class="shot" data-shot="' + i + '"><img src="' + esc(p.src) + '" alt="' + esc(tx(t.name)) + " " + (i + 1) +
+            '" loading="lazy" onerror="this.parentNode.remove()"></button>';
+        }).join("") + "</div>";
     }
     if (animate) { box.classList.remove("fade"); void box.offsetWidth; box.classList.add("fade"); }
-    if (t && t.pinterestBoard) buildPins();
   }
 
-  /* real people wearing the look: a Pinterest board (official embed), own photos, or a link */
-  function realLooks(t, pin) {
-    var html = '<section class="real"><h4>' + esc(u("realLooks")) + "</h4>";
-    var photos = (t.photos || []).filter(function (p) { return p && p.src; });
-    if (t.pinterestBoard && /^https:\/\/([a-z]+\.)?pinterest\.[a-z.]+\//i.test(t.pinterestBoard)) {
-      html += '<div class="board"><a data-pin-do="embedBoard" data-pin-board-width="900" data-pin-scale-height="320" data-pin-scale-width="90" href="' + esc(t.pinterestBoard) + '"></a></div>';
-    } else if (photos.length) {
-      html += '<div class="looks" style="--n:' + Math.min(photos.length, 3) + '">' + photos.map(function (p) {
-        return '<figure><a href="' + esc(p.src) + '" target="_blank" rel="noopener"><img src="' + esc(p.src) + '" alt="' + esc(tx(t.name)) + '" loading="lazy" onerror="this.closest(\'figure\').remove()"></a>' +
-          (p.credit ? "<figcaption>" + esc(p.credit) + "</figcaption>" : "") + "</figure>"; }).join("") + "</div>";
-    } else {
-      html += '<p class="real-note">' + esc(u("realNote")) + "</p>";
+  /* lightbox: tap a photo to see it big, then flip through */
+  var lb = { list: [], i: 0, el: null };
+  function lightbox(list, i) {
+    if (!lb.el) {
+      lb.el = document.createElement("div");
+      lb.el.className = "lightbox"; lb.el.hidden = true; lb.el.setAttribute("role", "dialog"); lb.el.setAttribute("aria-modal", "true");
+      lb.el.innerHTML = '<button type="button" class="lb-close" aria-label="Close">×</button>' +
+        '<button type="button" class="lb-prev" aria-label="Previous">‹</button><figure><img alt=""><figcaption></figcaption></figure>' +
+        '<button type="button" class="lb-next" aria-label="Next">›</button>';
+      document.body.appendChild(lb.el);
+      lb.el.addEventListener("click", function (e) {
+        if (e.target.closest(".lb-prev")) step(-1); else if (e.target.closest(".lb-next")) step(1);
+        else if (e.target.closest(".lb-close") || e.target === lb.el) closeLb();
+      });
+      var x0 = null;
+      lb.el.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+      lb.el.addEventListener("touchend", function (e) { if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1); x0 = null; });
     }
-    return html + "</section>";
+    lb.list = list; lb.i = i; show(); lb.el.hidden = false;
+    requestAnimationFrame(function () { lb.el.classList.add("on"); });
+    $(".lb-close", lb.el).focus({ preventScroll: true });
   }
-  var pinLoading = false;
-  function buildPins() {
-    if (window.PinUtils && window.PinUtils.build) { window.PinUtils.build(); return; }
-    if (pinLoading) return; pinLoading = true;
-    var js = document.createElement("script"); js.async = true; js.src = "https://assets.pinterest.com/js/pinit.js";
-    js.onload = function () { if (window.PinUtils && window.PinUtils.build) window.PinUtils.build(); };
-    document.body.appendChild(js);
+  function show() {
+    var img = $("img", lb.el); img.src = lb.list[lb.i].src;
+    $("figcaption", lb.el).textContent = (lb.i + 1) + " / " + lb.list.length;
   }
+  function step(d) { lb.i = (lb.i + d + lb.list.length) % lb.list.length; show(); }
+  function closeLb() { if (!lb.el) return; lb.el.classList.remove("on"); lb.el.hidden = true; }
+  function lbOpen() { return lb.el && !lb.el.hidden; }
 
   function setFigure(id) {
     $("#figWrap").innerHTML = '<div class="fig-inner">' + (FIG[id] || FIG.base) + "</div>";
@@ -488,14 +489,18 @@
       if (t.closest("[data-close]")) { closePanel(); return; }
       var sw = t.closest("[data-switch]");
       if (sw) { var to = sw.dataset.switch; if (to !== state.panel) { var keep = lastTrigger; closePanel(true); lastTrigger = keep; openPanel(to, null); } return; }
-      var g = t.closest("#genrePicker button"); if (g) { chooseGenre(g.dataset.g); return; }
+      var g = t.closest("#genrePicker button, .cover"); if (g) { chooseGenre(g.dataset.g); return; }
+      var sh = t.closest(".shot"); if (sh) { lightbox(photosOf(themeById(state.genre)), Number(sh.dataset.shot)); return; }
       var s = t.closest("#howSteps li"); if (s && !reduced) { how.start = performance.now() - Number(s.dataset.step) * how.STEP; how.step = -1; return; }
       var i = t.closest("#ideaTabs button");
       if (i) { state.idea = Number(i.dataset.idea); $$("#ideaTabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b === i)); });
                renderIdeaInfo(); idea.start = performance.now(); idea.beat = -1; if (reduced) startReelLoops(); return; }
       var l = t.closest("#libTabs button"); if (l) { state.lib = l.dataset.lib; renderLibrary(); var nb = $('#libTabs [data-lib="' + state.lib + '"]'); if (nb) nb.focus(); }
     });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && state.panel) closePanel(); });
+    document.addEventListener("keydown", function (e) {
+      if (lbOpen()) { if (e.key === "Escape") closeLb(); else if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); return; }
+      if (e.key === "Escape" && state.panel) closePanel();
+    });
     $("#skipEntrance").addEventListener("click", finishEntrance);
     $("#langToggle").addEventListener("click", function () {
       lang = lang === "zh" ? "en" : "zh";
