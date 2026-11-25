@@ -216,7 +216,7 @@
     } else {
       html += '<p class="real-note">' + esc(u("realNote")) + "</p>";
     }
-    return html + '<a class="pin" href="' + pin + '" target="_blank" rel="noopener">' + u("seeReal") + "</a></section>";
+    return html + "</section>";
   }
   var pinLoading = false;
   function buildPins() {
@@ -258,30 +258,50 @@
 
   /* =================== reel challenge =================== */
   var loops = { how: null, idea: null };
-  function frameOf(img, f) { return 'url("' + img + '")'; }
+
+  // The elf and the snowman act out each challenge on the phone.
+  // Props appear per beat (0, 1, 2) through CSS: see "mini scenes" in room.css.
+  var PAW = '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="26" rx="11" ry="9" fill="#fff4ea" stroke="#c9a38a" stroke-width="2"/><g fill="#f2a7b5"><ellipse cx="20" cy="27" rx="6" ry="4.5"/><circle cx="10" cy="15" r="4"/><circle cx="17" cy="10" r="4"/><circle cx="24" cy="10" r="4"/><circle cx="31" cy="15" r="4"/></g></svg>';
+  var HAT = '<svg viewBox="0 0 60 50"><path d="M8 40 Q20 6 46 4 Q40 18 52 40z" fill="#c62f36"/><rect x="2" y="38" width="56" height="10" rx="5" fill="#fff"/><circle cx="47" cy="5" r="5" fill="#fff"/></svg>';
+  var SHADES = '<svg viewBox="0 0 60 20"><rect x="2" y="3" width="24" height="14" rx="6" fill="#1b1b1b"/><rect x="34" y="3" width="24" height="14" rx="6" fill="#1b1b1b"/><path d="M26 8h8" stroke="#1b1b1b" stroke-width="3"/><path d="M7 6l8 0" stroke="#fff" stroke-width="2" opacity=".6"/></svg>';
+  var OAR = '<svg viewBox="0 0 20 120"><rect x="8" y="0" width="5" height="88" rx="2" fill="#8a5a32"/><path d="M3 86h15l-2 30q-6 6-11 0z" fill="#b07a45"/></svg>';
+  var HEART = '<svg viewBox="0 0 24 22"><path d="M12 21C5 15 1 11 1 6.5A5.5 5.5 0 0 1 12 4a5.5 5.5 0 0 1 11 2.5C23 11 19 15 12 21z" fill="#e0607e"/></svg>';
+  function props(who) {
+    return '<i class="p paw paw-l">' + PAW + '</i><i class="p paw paw-r">' + PAW + "</i>" +
+      '<i class="p hat">' + HAT + '</i><i class="p q">?</i><i class="p grr">GRR!</i><i class="p pfft">pfft…</i>' +
+      '<i class="p heart">' + HEART + "</i>" + (who === "elf" ? '<i class="p shades">' + SHADES + "</i>" : '<i class="p oar">' + OAR + "</i>");
+  }
+  function miniScene(scene, beat, extra) {
+    return '<div class="mini ' + (extra || "") + '" data-idea="' + esc(scene || "meow") + '" data-beat="' + (beat || 0) + '">' +
+      '<div class="mini-bg"></div><i class="corners"></i>' +
+      '<div class="ch ch-elf"><img src="assets/room/elf.png" alt="">' + props("elf") + "</div>" +
+      '<div class="ch ch-snow"><img src="assets/room/snowman.png" alt="">' + props("snow") + "</div>" +
+      '<i class="sparks"></i></div>';
+  }
+  function setBeat(box, scene, beat) {
+    var m = box.firstElementChild;
+    if (!m || m.dataset.idea !== scene) { box.innerHTML = miniScene(scene, beat); return; }
+    m.dataset.beat = beat;
+  }
 
   function renderReels() {
     var r = R.reels;
     $("#howSteps").innerHTML = (r.facts || []).map(function (f, i) {
       return '<li data-step="' + i + '"><b>' + esc(tx(f.label)) + "</b><span>" + esc(tx(f.text)) + "</span><i></i></li>";
     }).join("");
-    $("#reelRoles").innerHTML = (r.roles || []).map(function (x) { return "<li><b>" + esc(tx(x)) + "</b><span>" + esc(tx(x.note)) + "</span></li>"; }).join("");
-    $("#reelPlan").innerHTML = '<div class="bar">' + (r.plan || []).map(function (p, i) {
-        return '<span class="seg s' + (i % 5) + '" style="flex:' + (Number(p.min) || 1) + '">' + esc(p.min) + "</span>"; }).join("") +
-      "</div><ol>" + (r.plan || []).map(function (p, i) {
-        return '<li><i class="dot s' + (i % 5) + '"></i><b>' + esc(p.min) + " " + u("min") + "</b> " + esc(tx(p)) + "</li>"; }).join("") + "</ol>";
     $("#ideaTabs").innerHTML = (r.ideas || []).map(function (d, i) {
       return '<button type="button" role="tab" data-idea="' + i + '" aria-selected="' + (state.idea === i) + '">' +
-        '<span class="thumb" style="background-image:url(&quot;' + esc(d.image) + '&quot;)"></span><b>' + esc(tx(d.name)) + "</b></button>";
+        '<span class="thumb">' + miniScene(d.scene, 1, "still") + "</span><b>" + esc(tx(d.name)) + "</b></button>";
     }).join("");
     renderIdeaInfo();
     renderLibrary();
     $("#reelTips").innerHTML = (tx(r.tips) || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
+    var d0 = (r.ideas || [])[0]; if (d0) setBeat($("#howFrame"), d0.scene, 0);
   }
 
   function renderIdeaInfo() {
     var d = (R.reels.ideas || [])[state.idea]; if (!d) return;
-    $("#ideaFrame").style.backgroundImage = frameOf(d.image);
+    setBeat($("#ideaFrame"), d.scene, 0);
     $("#ideaInfo").innerHTML = "<h4>" + esc(tx(d.name)) + '</h4><p class="beats">' +
       (tx(d.beats) || []).map(function (b) { return "<span>" + esc(b) + "</span>"; }).join("") + "</p>" +
       "<p>" + esc(tx(d.how)) + '</p><p class="chips"><span>' + esc(d.length || "") + "</span>" + (d.seated ? "<span>" + u("seated") + "</span>" : "") + "</p>" +
@@ -304,31 +324,34 @@
 
   function mmss(sec) { sec = Math.floor(sec); return "00:" + (sec < 10 ? "0" : "") + sec; }
 
-  // "How it works": the phone records 0→30s while the four steps light up in turn
-  var how = { start: 0, step: 0, STEP: 3200 };
+  // "How it works": the phone records 0→30s while the four steps light up in turn,
+  // and the elf and snowman run through a challenge on screen.
+  var how = { start: 0, step: -1, beat: -1, STEP: 3600 };
   function howTick(now) {
-    var facts = R.reels.facts || [], n = facts.length || 1, total = how.STEP * n;
+    var facts = R.reels.facts || [], n = facts.length || 1, total = how.STEP * n, ideas = R.reels.ideas || [];
     var e = (now - how.start) % total, step = Math.floor(e / how.STEP);
-    if (step !== how.step || !$("#howSteps li.on")) {
+    var f = Math.floor((e % how.STEP) / (how.STEP / 3));
+    if (step !== how.step) {
       how.step = step;
       $$("#howSteps li").forEach(function (li, i) { li.classList.toggle("on", i === step); li.style.setProperty("--dur", (how.STEP / 1000) + "s"); });
-      var d = (R.reels.ideas || [])[step % (R.reels.ideas || [1]).length];
-      if (d) $("#howFrame").style.backgroundImage = frameOf(d.image);
     }
-    var f = Math.floor((e % how.STEP) / (how.STEP / 3));
-    $("#howFrame").style.backgroundPosition = (f * 50) + "% 50%";
+    if (f !== how.beat || step !== how.stepShown) {
+      how.beat = f; how.stepShown = step;
+      var d = ideas[step % (ideas.length || 1)];
+      if (d) setBeat($("#howFrame"), d.scene, f);
+    }
     $("#howTimer").textContent = mmss(e / total * 30);
     $("#howBar").style.width = (e / total * 100).toFixed(1) + "%";
     loops.how = requestAnimationFrame(howTick);
   }
-  // Challenge idea: the storyboard plays like a flipbook with its three beats
-  var idea = { start: 0, beat: -1, BEAT: 1700 };
+  // Challenge idea: the elf and snowman perform its three beats
+  var idea = { start: 0, beat: -1, BEAT: 1800 };
   function ideaTick(now) {
     var d = (R.reels.ideas || [])[state.idea]; if (!d) return;
     var total = idea.BEAT * 3, e = (now - idea.start) % total, b = Math.floor(e / idea.BEAT);
     if (b !== idea.beat) {
       idea.beat = b;
-      $("#ideaFrame").style.backgroundPosition = (b * 50) + "% 50%";
+      setBeat($("#ideaFrame"), d.scene, b);
       var beat = $("#ideaBeat"); beat.textContent = (tx(d.beats) || [])[b] || "";
       beat.classList.remove("pop"); void beat.offsetWidth; beat.classList.add("pop");
     }
@@ -341,11 +364,11 @@
     stopReelLoops();
     if (reduced) {
       $$("#howSteps li").forEach(function (li) { li.classList.add("on"); });
-      var d0 = (R.reels.ideas || [])[0]; if (d0) $("#howFrame").style.backgroundImage = frameOf(d0.image);
-      var d = (R.reels.ideas || [])[state.idea]; if (d) $("#ideaBeat").textContent = (tx(d.beats) || []).join(" → ");
+      var d0 = (R.reels.ideas || [])[0]; if (d0) setBeat($("#howFrame"), d0.scene, 1);
+      var d = (R.reels.ideas || [])[state.idea]; if (d) { setBeat($("#ideaFrame"), d.scene, 1); $("#ideaBeat").textContent = (tx(d.beats) || []).join(" → "); }
       return;
     }
-    how.start = performance.now(); how.step = -1; idea.start = performance.now(); idea.beat = -1;
+    how.start = performance.now(); how.step = -1; how.beat = -1; how.stepShown = -1; idea.start = performance.now(); idea.beat = -1;
     loops.how = requestAnimationFrame(howTick); loops.idea = requestAnimationFrame(ideaTick);
   }
   function stopReelLoops() { cancelAnimationFrame(loops.how); cancelAnimationFrame(loops.idea); }

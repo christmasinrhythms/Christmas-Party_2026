@@ -27,7 +27,7 @@ If a picture is missing, the page shows its own illustration instead, so nothing
 | `theme-disco.jpg` | "Reference look" for Disco Vibe | 3:4 |
 | `theme-kpop.jpg` | "Reference look" for K-pop | 3:4 |
 | `theme-jazz.jpg` | "Reference look" for Jazz & Classic | 3:4 |
-| `reel-….jpg` | The challenge storyboards (3 frames side by side) | 1600×450 |
+| `looks/rock-1.jpg` … `looks/jazz-2.jpg` | Real-life looks for each genre (listed in `room-content.js` under photos) | any |
 
 ## How to edit `room-content.js`
 

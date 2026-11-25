@@ -169,11 +169,11 @@ window.ROOM = {
       { min: 5, en: "Review and retake",             zh: "檢視及補拍" }
     ],
 
-    // Challenge ideas. Each storyboard picture has 3 frames side by side.
+    // Challenge ideas. The elf and the snowman act out each one on the phone.
     ideasTitle: { en: "Challenge ideas", zh: "挑戰點子" },
     ideas: [
       {
-        image: "assets/room/reel-meow-poker-face.jpg",
+        scene: "meow",   // which elf & snowman animation plays on the phone
         name:  { en: "Meow Poker Face", zh: "貓爪忍笑" },
         beats: { en: ["Deadpan", "Cat paws", "Hold the laugh"], zh: ["冷面", "貓爪", "忍笑定格"] },
         how:   { en: "5s everyone deadpan, 5s one person suddenly makes cat paws and the rest copy, 5s stay serious while trying not to laugh.",
@@ -182,7 +182,7 @@ window.ROOM = {
         watch: "https://www.youtube.com/watch?v=BcZStyz6KcQ&t=234s"
       },
       {
-        image: "assets/room/reel-expectation-vs-reality.jpg",
+        scene: "expect",   // which elf & snowman animation plays on the phone
         name:  { en: "Expectation vs Reality", zh: "期望與現實" },
         beats: { en: ["Perfect photo", "Prop reveal", "Confident freeze"], zh: ["完美合照", "道具出錯", "自信定格"] },
         how:   { en: "4s elegant photo pose, 7s pull back to reveal upside-down props or mismatched hats, 4s everyone freezes, totally confident.",
@@ -191,7 +191,7 @@ window.ROOM = {
         watch: "https://www.youtube.com/watch?v=nV02ig0Ahog"
       },
       {
-        image: "assets/room/reel-grrr-call-response.jpg",
+        scene: "grrr",   // which elf & snowman animation plays on the phone
         name:  { en: "Grrr Call & Response", zh: "Grrr反差接力" },
         beats: { en: ["Puzzled", "Deadpan paws", "Cute freeze"], zh: ["疑惑", "冷面貓爪", "可愛定格"] },
         how:   { en: "5s half the table looks puzzled, 5s the other half answers with deadpan claws, 5s everyone switches to an over-the-top cute freeze.",
@@ -200,7 +200,7 @@ window.ROOM = {
         watch: "https://www.youtube.com/watch?v=wHlAnhkLUvw"
       },
       {
-        image: "assets/room/reel-aura-captain.jpg",
+        scene: "aura",   // which elf & snowman animation plays on the phone
         name:  { en: "Aura Captain", zh: "冷面隊長" },
         beats: { en: ["Calm captain", "Pretend rowing", "Freeze"], zh: ["冷面隊長", "假划船", "一起定格"] },
         how:   { en: "A seated captain in sunglasses makes two slow hand moves while everyone behind mimes rowing, then the whole table freezes deadpan.",
