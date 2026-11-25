@@ -31,6 +31,10 @@ html[lang=zh-Hant] .door-entry-sign [lang=zh-Hant] { display: block; }
 }
 .scene-nav #enterHouse:is(:hover,:focus-visible) { background: #0e3529; }
 #doorLock:focus-visible .door-entry-sign { outline: 3px solid #fff4cd; outline-offset: 4px; }
+@media (max-width: 700px) {
+  .scene-nav #enterHouse { flex: 0 0 auto; }
+  .scene-nav > button { min-width: max-content; }
+}
 @media (max-width: 699px) {
   .door-entry-sign { left: auto; right: 0; }
 }
