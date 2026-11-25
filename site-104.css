@@ -1,0 +1,284 @@
+/* A centered, fully browsable gallery over each room's own artwork. */
+.room-exhibits {
+  width: min(100%, 1420px);
+  margin: 0 auto;
+  padding: 0 var(--edge) clamp(25px, 4dvh, 46px);
+}
+.outfit-gallery { display: grid; justify-items: center; gap: 9px; text-align: center; }
+.outfit-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  width: 100%;
+  height: clamp(340px, 51dvh, 560px);
+  perspective: 920px;
+  touch-action: pan-y;
+  cursor: grab;
+  border-radius: 25px;
+  background: radial-gradient(ellipse at 50% 48%, color-mix(in srgb,var(--house-accent) 18%,#20121870), #170c172e 65%, transparent 85%);
+}
+.outfit-stage[data-pulling] { cursor: grabbing; }
+.outfit-stage:focus-visible { outline: 2px solid #ffe8b3; outline-offset: -3px; }
+#houseInterior .outfit-card {
+  position: absolute;
+  display: block;
+  top: 48%;
+  left: 50%;
+  width: max-content;
+  max-width: 71%;
+  padding: clamp(4px, .5vw, 8px);
+  border: 1px solid color-mix(in srgb,var(--cabinet-edge) 77%,#2c2024);
+  border-radius: var(--wall-radius, 4px);
+  background: var(--wall-finish);
+  box-shadow: 6px 10px 0 #100913, 0 18px 28px #0f0812b5, inset 0 0 0 1px #ffeed28c;
+  backface-visibility: hidden;
+  opacity: var(--fan-light,0);
+  transform: translate(-50%,-50%) translate3d(var(--fan-x,0),var(--fan-y,0),var(--fan-depth,0)) rotateY(var(--fan-turn,0deg)) rotateZ(var(--fan-angle,0deg));
+  transition: transform .44s cubic-bezier(.2,.68,.25,1), opacity .33s ease, box-shadow .26s ease;
+  user-select: none;
+}
+#houseInterior .outfit-stage[data-pulling] .outfit-card { transition: none; cursor: grabbing; }
+#houseInterior .outfit-card[data-offstage] { visibility: hidden; }
+#houseInterior .outfit-card[data-current] { box-shadow: 4px 8px 0 #100913, 0 20px 33px #0e0814d4, 0 0 20px color-mix(in srgb,var(--house-accent) 39%,transparent); }
+#houseInterior .outfit-card[data-current]:hover { box-shadow: 4px 9px 0 #100913,0 18px 42px #0d0811,0 0 23px var(--house-accent); }
+#houseInterior .outfit-card img {
+  width: auto;
+  height: auto;
+  max-width: clamp(132px, 29vw, 409px);
+  max-height: clamp(218px, 42dvh, 460px);
+  object-fit: contain;
+  pointer-events: none;
+}
+#houseInterior[data-still="true"] .outfit-card { transition: none; }
+.outfit-nav {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 7px #140812;
+}
+.outfit-nav [data-outfit-count] { min-width: 65px; }
+#houseInterior .outfit-gallery #outfit-hint { font-size: 13px; color: #fff1da; }
+#houseInterior .outfit-gallery .room-wall-status:empty { display: none; }
+#houseInterior .exhibit-jump { margin-top: 4px; }
+.room-screening {
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  gap: clamp(17px, 3dvh, 34px);
+  margin: clamp(30px,6dvh,68px) auto 0;
+}
+.room-screening .room-television { width: min(100%, 516px); }
+.room-screening .room-mirror { width: clamp(152px, 22vw, 254px); }
+#houseInterior .room-screening .room-video-status {
+  position: static;
+  width: fit-content;
+  max-width: 100%;
+  margin: 4px auto 0;
+}
+#houseInterior .tv-focus > :is(h2,.house-kicker) { text-align: center; }
+#houseInterior .tv-examples summary { text-align: center; }
+#houseInterior .focus-content > .fashion-focus {
+  width: min(100%, 950px);
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 11px;
+  text-align: center;
+}
+#houseInterior .fashion-focus > div {
+  background: none;
+  box-shadow: none;
+  color: #fff1d8;
+  border: none;
+  padding: 8px 0 14px;
+}
+#houseInterior .fashion-focus > div::before { content: none; }
+#houseInterior .fashion-focus img { max-width: 100%; max-height: min(65dvh,620px); margin: auto; }
+#houseInterior .fashion-focus h2,
+#houseInterior .fashion-focus .photo-index { color: #fff0ce; }
+#houseInterior .fashion-focus .house-photo-controls { justify-content: center; }
+
+#houseInterior .chair-ceremony {
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+  width: min(100%, 970px);
+  text-align: center;
+}
+#houseInterior .chair-ceremony .dress-code-choices {
+  margin: 0;
+  padding: 0 0 7px;
+  color: #fff1d2;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  text-shadow: 0 2px 7px #271610;
+}
+#houseInterior .chair-ceremony .dress-code-choices li img {
+  width: clamp(34px, 5vw, 57px);
+  filter: drop-shadow(0 3px 5px #1d0e125c);
+}
+#houseInterior .chair-ceremony .dress-code-choices p { color: #ffe9c3; }
+.chair-cutout {
+  position: relative;
+  isolation: isolate;
+  height: clamp(248px, 42dvh, 431px);
+  aspect-ratio: 661 / 1160;
+}
+.chair-cutout::before {
+  position: absolute;
+  z-index: -1;
+  inset: -12% -51% -8%;
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 47%, #f9d89d66, #b5752e12 54%, transparent 71%);
+  opacity: .65;
+}
+.chair-cutout::after {
+  position: absolute;
+  z-index: -1;
+  inset: 96% -4% -5%;
+  content: "";
+  background: radial-gradient(ellipse, #251511c2, transparent 69%);
+}
+#houseInterior .cutout-chair { width: 100%; height: 100%; }
+#houseInterior .cutout-guest {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  height: 66.5%;
+  width: auto;
+  translate: -50% 0;
+}
+#houseInterior .cutout-hat {
+  position: absolute;
+  left: 50%;
+  bottom: 34%;
+  width: 69%;
+  height: auto;
+  translate: -50% 0;
+  filter: drop-shadow(0 4px 4px #3017108a);
+}
+#houseInterior .chair-cutout.is-seated .cutout-hat { bottom: 64.5%; }
+#houseInterior[data-still="false"] .is-revealing .cutout-hat { animation: hat-ponder 1.82s ease-out both; }
+#houseInterior[data-still="false"] .is-revealing .chair-cutout::before { animation: hat-build 1.8s ease-out both; }
+@keyframes hat-ponder {
+  0% { translate: -50% -33px; rotate: -13deg; }
+  31% { translate: -50% -5px; rotate: 6deg; }
+  66% { translate: -50% -1px; rotate: -5deg; }
+  100% { translate: -50% 0; rotate: 0deg; }
+}
+@keyframes hat-build { from { opacity: .2; } to { opacity: 1; } }
+#houseInterior .chair-words {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  justify-self: center;
+  width: min(100%, 890px);
+  text-align: center;
+}
+#houseInterior .chair-words h2 {
+  color: #fff1d2;
+  font-size: clamp(27px, 4.6vw, 49px);
+  text-shadow: 0 3px 12px #211017, 0 1px 5px #211119;
+}
+#houseInterior .chair-words .house-email {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: min(100%, 365px);
+}
+#houseInterior .chair-words .house-email label { color: #ffe7bd; }
+#houseInterior .chair-words .house-email input {
+  width: 100%;
+  min-height: 47px;
+  border: 1px solid #d6ad75;
+  border-radius: 9px;
+  background: #fff6e8;
+  color: #372522;
+  text-align: center;
+}
+#houseInterior .chair-words #house-email-error { min-height: 0; color: #ffe5c1; margin: 0; }
+#houseInterior .chair-words #house-email-error:empty { display: none; }
+#houseInterior .chair-words .house-email-actions { margin-top: 5px; }
+#houseInterior .chair-words .chair-method { color: #fff1d4; }
+#houseInterior .team-announcement .team-result-label {
+  font: 700 clamp(14px, 2vw, 24px)/1.23 Georgia, serif;
+  color: #f2ce97;
+  text-shadow: 0 2px 7px #25101b;
+}
+#houseInterior .team-announcement h2 {
+  color: #ffe4a5;
+  font: 700 clamp(40px, 8vw, 104px)/.98 "Bodoni 72", Georgia, "Songti TC", serif;
+  letter-spacing: -.045em;
+  word-spacing: .10em;
+  text-shadow: 0 2px #7c542a, 0 10px 26px #190911eb, 0 0 28px #dda35769;
+}
+#houseInterior:lang(zh-Hant) .team-announcement h2 { letter-spacing: 0; }
+#houseInterior[data-still="false"] .team-announcement h2 { animation: team-arrives .62s cubic-bezier(.2,.7,.23,1) both; }
+@keyframes team-arrives {
+  from { opacity: 0; transform: translateY(14px) scale(.87); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.chair-reveal-trail { display: flex; gap: 7px; padding: 3px 0 10px; }
+.chair-reveal-trail i { width: 5px; aspect-ratio: 1; border-radius: 50%; background: #ffdd94; box-shadow: 0 0 8px #dcb160; }
+#houseInterior[data-still="false"] .chair-reveal-trail i { animation: chair-spark .68s ease-out infinite alternate; }
+.chair-reveal-trail i:nth-child(2) { animation-delay: .12s !important; }
+.chair-reveal-trail i:nth-child(3) { animation-delay: .24s !important; }
+@keyframes chair-spark { from { opacity: .45; } to { opacity: 1; scale: 1.35; } }
+
+body.inside-house:not(:has(.house-focus)) #soundPlayer {
+  display: block;
+  z-index: 450;
+  width: 100px;
+  left: max(12px,env(safe-area-inset-left));
+  bottom: max(12px,env(safe-area-inset-bottom));
+}
+body.inside-house:not(:has(.house-focus)) #soundPlayer .sound-caption { display: none; }
+body.inside-house:not(:has(.house-focus)) #soundPlayer .sound-summary { gap: 3px; }
+@media (max-width: 810px) {
+  #houseInterior .room-scene .house-heading { margin-top: 44px; max-width: 96%; }
+  #houseInterior .room-scene .house-heading img { width: 35px; }
+  .room-exhibits { padding-inline: max(10px,env(safe-area-inset-left)); }
+  .outfit-stage { height: clamp(285px, 43dvh, 425px); perspective: 700px; }
+  #houseInterior .outfit-card img { max-height: clamp(192px, 34dvh, 349px); max-width: 55vw; }
+  #houseInterior .fashion-focus img { max-height: 58dvh; }
+  .chair-cutout { height: clamp(220px, 35dvh, 318px); }
+  #houseInterior .chair-ceremony .dress-code-choices p { font-size: 12px; }
+  body.inside-house:has(#houseInterior[data-scene="lobby"]):not(:has(.house-focus)) #soundPlayer { bottom: max(77px,10dvh); }
+}
+@media (max-width: 360px) {
+  body.inside-house:not(:has(.house-focus)) #soundPlayer { bottom: 65px; }
+}
+
+.room-screening .room-mirror { width: clamp(178px, 27vw, 294px); }
+#houseInterior .room-mirror-link .mirror-steam {
+  padding: .25em;
+  border: 0;
+  background: transparent;
+  color: #fffaf3;
+  font-size: clamp(19px, 3vw, 33px);
+  transform: rotate(-6deg);
+  text-shadow: 0 1px 4px #322335, 0 0 12px #fff9ed80;
+}
+#houseInterior .mirror-preview {
+  display: grid;
+  justify-items: center;
+  align-self: center;
+  gap: clamp(12px, 2.7dvh, 25px);
+  width: min(100%, 560px);
+  margin: auto;
+  text-align: center;
+  color: #fff1da;
+}
+#houseInterior .mirror-preview h2 {
+  font: 700 clamp(24px, 5.2vw, 42px)/1.1 Georgia, 'Songti TC', serif;
+  text-shadow: 0 2px 7px #1f1420;
+}
+#houseInterior .mirror-preview .room-mirror {
+  width: min(76vw, clamp(152px, 25dvh, 292px));
+  margin-inline: auto;
+  transform: none;
+}
+#houseInterior .mirror-preview .mirror-steam { font-size: clamp(20px, 4.9vw, 35px); }

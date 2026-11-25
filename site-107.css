@@ -1,0 +1,267 @@
+#houseInterior[data-room="true"] { touch-action: pan-y; }
+#houseInterior .room-scene {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  transform: none;
+}
+#houseInterior .room-scene .house-top {
+  position: relative;
+  inset: auto;
+  padding: var(--top) var(--edge) 12px;
+  background: linear-gradient(#231419d9, #23141900);
+}
+#houseInterior .room-scene .house-top-actions {
+  position: absolute;
+  top: var(--top);
+  left: var(--edge);
+}
+#houseInterior .room-scene .house-heading {
+  justify-content: center;
+  margin: 3px auto 0;
+  max-width: min(70%, 1150px);
+  padding: 0;
+  text-align: center;
+}
+#houseInterior .room-scene .house-heading img { width: clamp(34px, 4.8vw, 64px); height: auto; }
+#houseInterior .room-scene .house-heading h2 { font-size: clamp(22px, 3.6vw, 52px); }
+#houseInterior .house-focus { grid-template-rows: minmax(0, 1fr) auto; }
+#houseInterior .focus-content { overscroll-behavior: contain; padding-top: clamp(18px, 4dvh, 42px); }
+#houseInterior .focus-content > :is(.house-rundown,.fashion-focus,.tv-focus) { margin-top: 0; }
+#houseInterior .interior-return {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px var(--edge) var(--bottom);
+  background: linear-gradient(0deg, #1d1317ed, #1d1317b0 72%, transparent);
+}
+#houseInterior .interior-return .return-button {
+  min-height: 46px;
+  padding-inline: 22px;
+  color: var(--hall-ink);
+  background: var(--hall-finish);
+  border-color: #aa8854;
+  box-shadow: 0 5px 14px #160d15b0, inset 0 1px #fff5d7;
+}
+#houseInterior .interior-return .return-button:hover { background: #fff1ce; }
+
+.room-scroll {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #a77d61 #21161b83;
+}
+#houseInterior .fashion-focus img {
+  max-width: min(62vw, 940px);
+  max-height: calc(100dvh - 145px);
+  object-fit: contain;
+}
+
+#houseInterior[data-scene="rock"] {
+  --cabinet-finish: repeating-linear-gradient(135deg, #fff0 0 3px, #b8b0b009 3px 4px), linear-gradient(115deg,#4b4245,#211c20 38%,#332630 77%,#181519);
+  --cabinet-edge:#977575; --cabinet-trim:#bd6063; --cabinet-glow:#fc7a6b;
+  --cabinet-key:linear-gradient(#5c4a51,#211b21); --cabinet-radius:12px; --speaker-face:#2a2327; --grain:#766164;
+  --wall-finish:linear-gradient(145deg,#ccb3ae,#613834 48%,#2e2024 73%,#aa8586);
+  --mirror-frame:linear-gradient(120deg,#a99ea3,#4a373c 40%,#744044 65%,#bfa9b3);
+  --room-reflection:url('assets/interior/rock.webp');
+}
+#houseInterior[data-scene="disco"] {
+  --cabinet-finish:linear-gradient(150deg,#faebb8 1%,#a37843 18%,#f6dda2 39%,#8d5f37 73%,#e8be77);
+  --cabinet-edge:#e6c784; --cabinet-trim:#cfa567; --cabinet-glow:#ffdf82;
+  --cabinet-key:linear-gradient(#e0bc78,#5d392b); --cabinet-radius:26px; --speaker-face:#553a30; --grain:#bb9660;
+  --wall-finish:linear-gradient(140deg,#fff1b2,#8c552e 43%,#efcd83 65%,#b28448);
+  --mirror-frame:linear-gradient(120deg,#ffebad,#9c673a 38%,#e3d1a2 67%,#f9cf83);
+  --room-reflection:url('assets/interior/disco.webp');
+}
+#houseInterior[data-scene="kpop"] {
+  --cabinet-finish:linear-gradient(142deg,#f9d7ff,#a884cc 26%,#696292 65%,#c28fce 100%);
+  --cabinet-edge:#e5b8f2; --cabinet-trim:#b3a3ef; --cabinet-glow:#a8f4ff;
+  --cabinet-key:linear-gradient(#b6a3ec,#635480); --cabinet-radius:32px; --speaker-face:#745887; --grain:#c7abe2;
+  --wall-finish:linear-gradient(145deg,#ffe0ff,#7a508d 50%,#d5a8ed 75%,#9680ce); --wall-radius:7px;
+  --mirror-frame:linear-gradient(120deg,#f8d0fa,#845ab5 37%,#ab9aea 65%,#edb7e7);
+  --room-reflection:url('assets/interior/kpop.webp');
+}
+#houseInterior[data-scene="jazz"] {
+  --cabinet-finish:repeating-linear-gradient(99deg,#d5915117 0 2px,#28191527 3px 6px, transparent 7px 11px),linear-gradient(140deg,#a5663d,#55302a 46%,#362125 77%,#784739);
+  --cabinet-edge:#ba825b; --cabinet-trim:#d7aa77; --cabinet-glow:#ffd08a;
+  --cabinet-key:linear-gradient(#9d6037,#472b25); --cabinet-radius:29px; --speaker-face:#4e3128; --grain:#b78962;
+  --wall-finish:linear-gradient(145deg,#c3986c,#533126 48%,#271e21 70%,#ae7b52);
+  --mirror-frame:linear-gradient(125deg,#d9ab71,#704127 39%,#91684d 61%,#d3a877);
+  --room-reflection:url('assets/interior/jazz.webp');
+}
+.room-television { min-width: 0; }
+.room-tv-player { position: relative; }
+.room-tv-cabinet {
+  position: relative;
+  padding: clamp(8px, 1.3vw, 22px);
+  background: var(--cabinet-finish);
+  border: 2px solid var(--cabinet-edge);
+  border-radius: var(--cabinet-radius);
+  box-shadow: 5px 10px 0 #130e15, 12px 17px 21px #0c060cc4, inset 0 1px #f8e9ceaa, inset 2px -3px #150e213d;
+}
+.room-tv-bezel {
+  padding: clamp(5px, .66vw, 12px);
+  background: linear-gradient(155deg,#0f0c12,#332834);
+  border: 1px solid var(--cabinet-trim);
+  border-radius: clamp(13px, 2vw, 30px);
+  box-shadow: inset 0 3px 6px #080509, 0 0 0 2px #21172187;
+}
+#houseInterior .room-tv-cabinet .house-tv-screen {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px solid #0e0a13;
+  border-radius: clamp(9px, 1.2vw, 18px);
+}
+.room-tv-panel {
+  display: grid;
+  grid-template-columns: auto minmax(9px, 1fr) auto;
+  gap: clamp(5px, 1vw, 14px);
+  align-items: center;
+  margin-top: clamp(8px, 1vw, 14px);
+  padding: 3px clamp(4px, .7vw, 11px);
+  background: #1c10194c;
+  border: 1px solid #1e131d8c;
+  border-radius: 10px;
+  box-shadow: inset 0 1px #fff2c534, inset 0 -1px #110a158a;
+}
+.tv-power {
+  width: 8px;
+  aspect-ratio: 1;
+  border: 1px solid #fff2d891;
+  border-radius: 50%;
+  background: var(--cabinet-glow);
+  box-shadow: 0 0 9px var(--cabinet-glow);
+}
+.tv-speaker {
+  height: 31px;
+  border-radius: 6px;
+  background: radial-gradient(circle, #1b1518 27%, transparent 43%) left top / 5px 5px, var(--speaker-face);
+  box-shadow: inset 0 0 4px #130a11, 0 1px #edbb8560;
+}
+.tv-hardware { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 4px; }
+#houseInterior .tv-key {
+  display: inline-grid;
+  place-items: center;
+  white-space: nowrap;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 3px 8px;
+  border: 1px solid var(--cabinet-trim);
+  border-radius: 8px;
+  color: #fff8ea;
+  font: 730 clamp(10px, 1vw, 13px)/1.15 system-ui, sans-serif;
+  text-decoration: none;
+  background: var(--cabinet-key);
+  text-shadow: 0 1px 3px #241821;
+  box-shadow: inset 0 1px #fff3cb70, inset 0 -2px #160914a0, 0 2px #1b1017;
+}
+#houseInterior .tv-key:hover { filter: brightness(1.24); }
+#houseInterior .tv-key:active { transform: translateY(2px); box-shadow: inset 0 2px 3px #160914b0; }
+#houseInterior[data-scene="disco"] .tv-key { border-radius: 22px; }
+#houseInterior[data-scene="kpop"] .tv-key { border-radius: 14px; }
+#houseInterior[data-scene="jazz"] .tv-key { border-radius: 5px 5px 8px 8px; }
+#houseInterior[data-scene="rock"] .room-tv-cabinet::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background: radial-gradient(circle, #d1b8b2 0 1px, #181217 2px 4px, transparent 5px)
+    left top / 9px 9px no-repeat, radial-gradient(circle, #d1b8b2 0 1px, #181217 2px 4px, transparent 5px)
+    right bottom / 9px 9px no-repeat;
+  pointer-events: none;
+}
+#houseInterior[data-scene="disco"] .tv-speaker {
+  background: repeating-linear-gradient(#6c4a34 0 2px,#24171a 2px 5px);
+}
+#houseInterior[data-scene="kpop"] .tv-speaker {
+  background: repeating-linear-gradient(90deg,#64486e 0 2px,#d4a4e1 2px 3px,#a98acc 3px 5px);
+}
+#houseInterior[data-scene="jazz"] .tv-speaker {
+  background: repeating-linear-gradient(90deg,#d2a16b 0 1px,#43291f 1px 4px,#271815 4px 6px);
+}
+.cabinet-feet {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  height: 15px;
+  margin: 0 auto;
+}
+.cabinet-feet::before, .cabinet-feet::after {
+  content: "";
+  width: 15%;
+  background: linear-gradient(#2a1a25,#100a11);
+  border-radius: 0 0 55% 35%;
+  box-shadow: 0 6px 9px #0c060bd9;
+}
+#houseInterior .room-video-status { z-index: 2; background: #201522ec; }
+
+.room-mirror {
+  position: relative;
+  display: grid;
+  align-self: end;
+  width: 100%;
+  margin: 0 0 5px;
+  padding: clamp(5px, .9vw, 12px);
+  border-radius: 48% 48% 11% 11% / 25% 25% 5% 5%;
+  border: 1px solid var(--cabinet-trim);
+  background: var(--mirror-frame);
+  transform: perspective(1000px) rotateY(-11deg);
+  box-shadow: inset 1px 1px #fff3c9c2, inset -2px -3px #2115208c, 4px 5px #21151d, 6px 13px 17px #120913bd;
+}
+.mirror-surface {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  aspect-ratio: .48;
+  border: 1px solid #270f25a8;
+  border-radius: inherit;
+  background: linear-gradient(145deg,#d8c5c4,#887b94 45%,#453749);
+  box-shadow: inset 0 0 0 2px #fff5e943, inset 0 0 13px #432a47ad;
+}
+.mirror-surface::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: -3%;
+  background: var(--room-reflection) center / auto 103%;
+  filter: blur(2px) saturate(.55);
+  transform: scaleX(-1);
+  opacity: .41;
+}
+.mirror-surface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(ellipse at 46% 52%, #eee3e6b9, #e0d8de68 42%, transparent 77%),
+    linear-gradient(122deg, transparent 21%, #fffcf24d 27%, transparent 39% 47%, #fffaee3c 49% 51%, transparent 62%),
+    radial-gradient(ellipse at 29% 33%, #fff6ec69 3%, transparent 9%) 3px 5px / 21px 29px,
+    radial-gradient(ellipse at 76% 53%, #fef4df51 2%, transparent 7%) 0 0 / 19px 23px;
+  opacity: .85;
+}
+.mirror-steam {
+  max-width: 92%;
+  color: #fff6e9;
+  font: 700 italic clamp(15px, 1.9vw, 27px)/1.12 "Bradley Hand", "Segoe Print", Georgia, serif;
+  transform: rotate(-6deg);
+  text-shadow: 0 1px 2px #46334fcc, 0 0 7px #ffebdd80;
+  text-align: center;
+}
+#houseInterior[data-still="false"] .mirror-surface::after { animation: mirror-mist 7s ease-in-out infinite alternate; }
+@keyframes mirror-mist {
+  from { opacity: .63; }
+  to { opacity: .85; }
+}
+
+
+.room-mirror-link { text-decoration: none; transition: filter .18s ease; }
+.room-mirror-link:hover, .room-mirror-link:focus-visible { filter: brightness(1.2); }
+.room-mirror-link .mirror-steam {
+  background: #321722df;
+  border: 1px solid #e8c98b80;
+  border-radius: 9px;
+  padding: .45em .42em;
+  color: #ffe6b9;
+  transform: none;
+  font-size: clamp(14px, 1.4vw, 20px);
+}

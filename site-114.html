@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Christmas in Rhythms · Grand Hall</title>
+  <script>
+    const current = new URL(location.href);
+    const house = new URL('./', current);
+    if (current.searchParams.get('lang') === 'zh') house.searchParams.set('lang', 'zh');
+    const room = current.searchParams.get('room');
+    if (['rock', 'disco', 'kpop', 'jazz'].includes(room)) house.searchParams.set('room', room);
+    if (current.hash === '#reels') {
+      if (!house.searchParams.has('room')) house.searchParams.set('room', 'rock');
+      house.searchParams.set('watch', '1');
+    } else if (!house.searchParams.has('room')) {
+      house.searchParams.set('entry', 'hall');
+    }
+    location.replace(house);
+  </script>
+</head>
+<body>
+  <p><a href="./?entry=hall">Enter the Grand Hall</a></p>
+  <p><a href="./?room=rock&amp;watch=1">Watch the Xmas Video Challenge</a></p>
+</body>
+</html>
