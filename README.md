@@ -1,35 +1,43 @@
-# 🎄 Holiday Harmony — Christmas Party Page
+# 🎄 Christmas in Rhythms — Party Website
 
-Live page: `https://longtat2704.github.io/Christmas-Party_2026/`
+Live page: https://christmasinrhythms.github.io/Christmas-Party_2026/
+
+**How it flows:** opening video → the Christmas house → tap the **door lock** → the doors open and you walk into **the ballroom** (`room.html`). In the ballroom, the elf by the **mirror and clothes rail** leads to *How should I dress?* (a character changes outfit for each genre, plus real-life looks), and the snowman by the **camera** leads to the *Reel challenge* (how it works, challenge ideas and reference links). The floor plan is hidden until `show: true` in `room-content.js`.
+
+Direct links for emails: `room.html#dress`, `room.html#reels` (add `?lang=zh` before the # for Chinese).
 
 ## Where to edit
 
-| I want to change…                          | Open this file    |
-|--------------------------------------------|-------------------|
-| Schedule times, activities, notes          | **`event.js`**    |
-| Date, venue, theme, RSVP text              | **`event.js`**    |
-| Show the schedule on the page              | **`event.js`** → set `scheduleConfirmed: true` |
-| Turn Santa on/off or change how often      | **`event.js`** → `santa`, `santaEvery` |
-| The poster image                           | `images/poster.jpg` (upload a new one with the same name) |
-| Colours or fonts                           | `style.css` (top section only) |
-| Page layout                                | `index.html` (ask before changing) |
-| Animations                                 | `script.js` (ask before changing) |
+| I want to change… | File |
+|---|---|
+| Anything written in the ballroom (outfits, reel steps and ideas, video links, floor-plan notes, "last updated") | **`room-content.js`** |
+| The floor plan picture | `assets/room/floor-plan.png` (upload a new one with the same name) |
+| Higgsfield pictures for the inside page | `assets/room/` — see the names below |
+| Party date/time for the countdown & calendar, RSVP link | `assets/scene-manifest.json` |
+| Words on the signs outside the house | Picture labels in `assets/labels/` (ask the designer) |
+| House layout, animations, music | Leave these to the designer |
 
-**99% of edits happen in `event.js`.**
+### Picture names for `assets/room/`
+If a picture is missing, the page shows its own illustration instead, so nothing breaks.
 
-## How to edit `event.js`
+| File name | Where it shows | Shape |
+|---|---|---|
+| `entrance.mp4` | Plays instead of the door animation when you walk in (keep under 15 MB) | 16:9 video |
+| `theme-rock.jpg` | "Reference look" for Rock & Punk in the dressing room | 3:4 |
+| `theme-disco.jpg` | "Reference look" for Disco Vibe | 3:4 |
+| `theme-kpop.jpg` | "Reference look" for K-pop | 3:4 |
+| `theme-jazz.jpg` | "Reference look" for Jazz & Classic | 3:4 |
+| `reel-….jpg` | The challenge storyboards (3 frames side by side) | 1600×450 |
 
-1. Click `event.js`, then the ✏️ pencil icon.
-2. Change only the text inside the "quotes". Keep every comma, `[ ]` and `{ }`.
-3. To add a schedule item, copy a whole `{ time: ..., icon: "..." },` line and paste it where you want it.
-4. Update `lastUpdated` to today's date.
-5. Click **Commit changes** and write a short note (e.g. "Update lunch time").
-6. Wait 1–2 minutes, then refresh the live page.
+## How to edit `room-content.js`
 
-Icon options: `bell`, `drinks`, `food`, `music`, `fashion`, `gift`, `star`, `camera`, `tree`.
+1. Click `room-content.js`, then the ✏️ pencil.
+2. Change only the text inside the "quotes". `en` = English, `zh` = 繁體中文.
+3. Every line ending in `"…"` needs a **comma** after it.
+4. Update `lastUpdated` at the top.
+5. Click **Commit changes**. Refresh the page after 1–2 minutes.
 
-## If the page looks blank after an edit
+**If the ballroom says "Content is being updated"**, a comma or quote is missing in `room-content.js`. Open the file → **History** → compare with the previous version.
 
-A comma or quote probably went missing in `event.js`. Open the file → **History** → compare with the previous version, or ask the page owner.
-
-Before editing, tell the team which file you're working on so you don't overwrite each other.
+## Not used any more
+`event.js`, `script.js`, `style.css`, `existing-site.html` and `Poster.jpg` are left over from the first version and can be deleted.
