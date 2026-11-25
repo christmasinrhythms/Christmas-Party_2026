@@ -33,7 +33,7 @@ const words={
   date:['24 December 2026 · HKT','2026 年 12 月 24 日 · 香港時間'],
   photos:['Outfit gallery','穿搭相簿'],photo:['Outfit photo','穿搭相片'],galleryHint:['Drag to browse, or select the centre photo to enlarge it.','拖動瀏覽，或按中央相片放大。'],viewTv:['Reels TV','Reels 電視'],viewGallery:['Back to the gallery','返回相簿'],loadPhotosError:['Could not load the wall photos.','未能載入牆上相片。'],
   previous:['Previous photo','上一張相片'],next:['Next photo','下一張相片'],
-  mirror:['Try-On Mirror','虛擬試穿鏡'],mirrorLater:['Coming Soon','即將推出'],
+  mirror:['Try-On Mirror','虛擬試穿鏡'],openMirror:['Open Camera','開啟試穿相機'],
   rules:['Challenge rules','挑戰規則'],rulesShort:['Rules','規則'],deadline:['Submit by 1:00 p.m.','下午 1 時前提交'],everyone:['Everyone is encouraged to take part.','鼓勵每位隊員參與。'],
   watch:['Watch original','觀看原片'],sourceLink:['Original','原片'],instagramPlay:['Use the Instagram player or select Original.','請使用 Instagram 播放器，或選擇原片。'],
   clips:['Clips','短片'],examples:['Choose a Reel','選擇短片'],examplesOpen:['Open source','開啟來源'],playExample:['Play on the TV','在電視播放'],
@@ -169,15 +169,6 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     if(scene===room&&!transitioning)refreshGallery();
   }
-  function mirrorGlass(){
-    return `<span class="mirror-surface"><span class="mirror-steam">${copy('mirrorLater')}</span></span>`;
-  }
-  function displayMirror(){
-    return `<div class="mirror-preview">
-      <h2 data-panel-heading tabindex="-1">${copy('mirror')}</h2>
-      <div class="room-mirror">${mirrorGlass()}</div>
-    </div>`;
-  }
   function renderRoom(){
     return `<main class="room-scroll" data-room-scroll>
       <div class="room-layout room-exhibits">
@@ -194,9 +185,9 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
         </section>
         <section class="room-feature room-screening" data-room-exhibit="tv" aria-label="${copy('viewTv')}">
           <div class="room-television" data-room-tv>${roomTv.render(scene,!panel&&!transitioning)}</div>
-          <button type="button" class="room-mirror room-mirror-link" data-house="mirror" aria-label="${copy('mirror')}" aria-haspopup="dialog">
-            ${mirrorGlass()}
-          </button>
+          <a class="room-mirror room-mirror-link" href="tryon.html?genre=${scene}${zh()?'&amp;lang=zh':''}" aria-label="${copy('mirror')}">
+            <span class="mirror-surface"><span class="mirror-steam">${copy('openMirror')} ↗</span></span>
+          </a>
           ${btn('jump-gallery','↑ '+copy('viewGallery'),'house-action exhibit-jump')}
         </section>
       </div>
@@ -264,7 +255,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
         ${room?renderRoom():renderHall()}
         ${room?`<footer class="interior-return">${btn('lobby','‹ '+copy('back'),'house-action return-button')}</footer>`:`<footer class="hall-nav" aria-label="${copy('insideHint')}">${btn('pan-left','‹','house-action compact')}<span>${copy('insideHint')}</span>${btn('pan-right','›','house-action compact')}</footer>`}
       </div>
-      ${panel?`<section class="house-focus" role="dialog" aria-modal="true" aria-labelledby="interior-dialog-title"><div class="focus-content">${panel==='rundown'?displayRundown():panel==='chair'?displayChair():panel==='photo'?displayPhoto():panel==='mirror'?displayMirror():displayTv()}</div><footer class="interior-return">${btn('close','‹ '+returnLabel(),'house-action return-button')}</footer></section>`:''}
+      ${panel?`<section class="house-focus" role="dialog" aria-modal="true" aria-labelledby="interior-dialog-title"><div class="focus-content">${panel==='rundown'?displayRundown():panel==='chair'?displayChair():panel==='photo'?displayPhoto():displayTv()}</div><footer class="interior-return">${btn('close','‹ '+returnLabel(),'house-action return-button')}</footer></section>`:''}
       ${transitioning?'<div class="house-passage" aria-hidden="true"><i></i><i></i></div>':''}`;
     root.querySelector('[data-panel-heading]')?.setAttribute('id','interior-dialog-title');
     if(room){
@@ -299,7 +290,6 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     if(action==='pan-left'||action==='pan-right'){stepHall(action==='pan-left'?-1:1);return;}
     if(action==='room'){go(button.dataset.value);return;}
     if(action==='close'){closePanel();return;}
-    if(action==='mirror'){focusPanel('mirror',action);return;}
     if(action==='motion'){if(motionQuery.matches||document.body.classList.contains('calm'))return;paused=!paused;center();render();root.querySelector('[data-house=motion]').focus();return;}
     if(action==='gallery-prev'||action==='gallery-next'){outfitGallery.step(action==='gallery-prev'?-1:1);return;}
     if(action==='jump-tv'||action==='jump-gallery'){

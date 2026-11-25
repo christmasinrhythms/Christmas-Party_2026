@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Rock &amp; Punk Try-On</title>
+<script>
+  const query = new URLSearchParams(location.search);
+  query.set('genre', 'rock');
+  location.replace('tryon.html?' + query.toString() + location.hash);
+</script>
+<a href="tryon.html?genre=rock">Open Rock &amp; Punk Try-On</a>
+</html>

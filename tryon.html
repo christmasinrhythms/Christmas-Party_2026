@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-tryon-camera>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#16100f">
+  <meta name="description" content="Try on a Christmas look in your camera and save a photo or a short clip.">
+  <title>Rock &amp; Punk 3D Camera · Christmas in Rhythms</title>
+  <link rel="stylesheet" href="tryon.css?v=ar-release-20261125">
+  <link rel="icon" href="data:,">
+  <link rel="preload" as="image" href="assets/logo.png">
+  <style>
+    .back-link { white-space: nowrap; }
+    .view-bottom { background: linear-gradient(transparent, #160d0c65 65%); padding-bottom: max(52px, 17cqw); }
+    .viewfinder:not(.has-source) {
+      background: linear-gradient(transparent, var(--tryon-tint, #24100e) 86%), var(--tryon-room-art, url('assets/tryon/rock-3d/christmas-rock-frame.webp')) center / cover no-repeat, #24100e;
+    }
+  </style>
+</head>
+<body>
+  <header class="studio-header">
+    <a class="header-control back-link" id="back-link" href="index.html?room=rock"><span aria-hidden="true">‹</span><span data-text="back">Rock Room</span></a>
+    <h1 data-text="title">Try-on Camera</h1>
+    <button class="header-control language" id="language" type="button">繁中</button>
+  </header>
+
+  <main class="studio">
+    <section class="viewfinder" aria-label="Try-on preview" data-label="preview">
+      <video id="camera-video" playsinline muted aria-hidden="true"></video>
+      <canvas id="view" width="720" height="1280" aria-hidden="true"></canvas>
+      <div class="view-top" id="view-top" hidden>
+        <button class="pill" id="fit-open" type="button" aria-controls="fit-panel" aria-expanded="false" data-text="adjust">Adjust fit</button>
+        <span class="live-dot" id="record-clock" hidden></span>
+        <button class="pill" id="flip-camera" type="button" data-text="flip" hidden>Flip camera</button>
+      </div>
+
+      <div class="welcome" id="welcome">
+        <span class="focus-brackets" aria-hidden="true"></span>
+        <strong data-text="welcome">Your Christmas look</strong>
+        <p data-text="framing">Keep both shoulders in view.</p>
+        <button id="start-camera" type="button" class="action" data-text="startCamera">Open camera</button>
+        <button class="plain" id="welcome-gallery" type="button" data-text="gallery">Choose a photo</button>
+      </div>
+
+      <div class="view-bottom">
+        <p class="view-status" id="status" aria-live="polite" role="status"></p>
+        <div id="capture-controls" hidden>
+          <div class="modes" role="group" aria-label="Capture mode" data-label="captureMode">
+            <button type="button" data-mode="photo" aria-pressed="true" data-text="photo">Photo</button>
+            <button type="button" data-mode="video" aria-pressed="false" data-text="video">Video</button>
+          </div>
+          <button type="button" class="shutter" id="shutter" aria-label="Take photo"><span aria-hidden="true"></span></button>
+        </div>
+        <section id="fit-panel" class="fit-panel" aria-label="Adjust fit" data-label="adjust" hidden>
+          <div class="fit-toolbar">
+            <div class="modes" role="group" aria-label="Adjust effect" data-label="fitEffect">
+              <button type="button" data-fit-target="vest" data-text="tracking" aria-pressed="true">3D vest</button>
+              <button type="button" data-fit-target="face" data-text="facePaint" aria-pressed="false">Face paint</button>
+            </div>
+            <button type="button" class="fit-done" id="fit-done" data-text="fitDone">Done</button>
+          </div>
+          <p data-text="drag">Drag on the preview to move the selected effect.</p>
+          <div class="fit-sliders">
+            <div>
+              <label for="scale"><span data-text="size">Size</span><output id="scale-value" for="scale">100%</output></label>
+              <input id="scale" type="range" min="35" max="200" step="1" value="100">
+            </div>
+            <div>
+              <label for="rotate"><span data-text="angle">Angle</span><output id="rotate-value" for="rotate">0°</output></label>
+              <input id="rotate" type="range" min="-45" max="45" step="1" value="0">
+            </div>
+          </div>
+          <div class="fit-toolbar">
+            <label class="toggle"><input type="checkbox" id="fit-lock"><span data-text="fitLock">Lock position</span></label>
+            <button type="button" class="fit-reset" id="reset-fit" data-text="reset">Reset fit</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tools" aria-labelledby="looks-title">
+      <div class="tools-heading">
+        <h2 id="looks-title" data-text="looks">Looks</h2>
+        <div class="source-options">
+          <button type="button" class="subtle" id="back-to-camera" data-text="startCamera" hidden>Open camera</button>
+          <button type="button" class="subtle" id="gallery-button" data-text="gallery">Choose a photo</button>
+        </div>
+        <input type="file" id="gallery-input" accept="image/*" hidden>
+      </div>
+      <div class="looks" id="look-list" role="group" aria-labelledby="looks-title"></div>
+      <div class="switches">
+        <label class="toggle"><input id="track-pose" type="checkbox" checked><span data-text="tracking">Follow shoulders</span></label>
+        <label class="toggle" id="head-effect-control"><input id="show-face-paint" type="checkbox" checked><span data-text="facePaint">Face paint</span></label>
+        <label class="toggle"><input id="show-frame" type="checkbox" checked><span data-text="frame">Christmas frame</span></label>
+      </div>
+      <p class="privacy" data-text="privacy">Photos and videos stay on this device.</p>
+    </section>
+  </main>
+
+  <dialog id="result" aria-labelledby="result-title">
+    <div class="result-header"><h2 id="result-title"></h2><button type="button" class="header-control" id="result-close" aria-label="Close" data-label="close">×</button></div>
+    <img id="result-photo" hidden alt="Captured try-on photo" data-alt="capturedPhoto">
+    <video id="result-video" hidden controls playsinline></video>
+    <div class="result-actions">
+      <a class="action" id="download" download data-text="download">Download</a>
+      <button class="header-control" id="share" type="button" data-text="share" hidden>Share</button>
+    </div>
+  </dialog>
+  <script type="importmap">
+    {"imports":{"three":"./assets/tryon/vendor/three/three.module.min.js"}}
+  </script>
+  <script type="module" src="tryon.mjs?v=rigged-streetwear"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@ import {INVITE_ART,isPhoneLayout,inviteGeometry,phoneInviteWidth,fitPhoneInvite,
 import {createSoundControls} from './audio-ui.mjs?v=wave-20261112';
 import {WoodenFlipClock} from './flip-clock.mjs';
 import {countdown,cameraFrame,focusCamera,icsContent} from './domain.mjs';
-import {mountHouseInterior} from './interior.mjs?v=pages-enter-atrium-20261125';
+import {mountHouseInterior} from './interior.mjs?v=ar-release-20261125';
 import {schools} from './interior-content.mjs';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const entryParams=new URLSearchParams(location.search);
