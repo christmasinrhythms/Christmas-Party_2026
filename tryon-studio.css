@@ -19,7 +19,7 @@ body {
   filter: drop-shadow(0 3px 9px #0e0809ab);
 }
 .studio-header h1 {
-  font-size: clamp(26px, 3.8vw, 42px);
+  font-size: clamp(28px, 4.15vw, 48px);
   text-align: left;
   text-wrap: balance;
 }
@@ -29,18 +29,9 @@ body {
 }
 .viewfinder {
   border-color: var(--studio-trim);
-  border-radius: 44% 44% 24px 24px / 11% 11% 24px 24px;
+  border-radius: 22px;
   box-shadow: 0 0 0 4px #211114, 0 0 0 5px color-mix(in srgb,var(--studio-trim) 63%,#221013),
     0 25px 64px #080505b0;
-}
-.viewfinder::after {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  z-index: 2;
-  pointer-events: none;
-  border: 1px solid #ffe1a984;
-  border-radius: inherit;
 }
 .welcome {
   inset: auto 7% 14%;
@@ -89,9 +80,9 @@ body {
 @media (max-width: 660px) {
   .studio-header { min-height: 0; padding-bottom: 12px; gap: 6px 8px; }
   .studio-title { grid-column: 1 / -1; grid-row: 2; }
-  .studio-header h1 { font-size: clamp(23px, 6vw, 34px); }
+  .studio-header h1 { font-size: clamp(28px, 7.3vw, 38px); }
   .studio { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  .viewfinder { border-radius: 39% 39% 19px 19px / 9% 9% 19px 19px; }
+  .viewfinder { border-radius: 17px; }
   .welcome { bottom: 8%; gap: 7px; }
   .welcome p { font-size: 13px; }
   .tools { margin-top: 0; }

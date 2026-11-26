@@ -177,41 +177,46 @@ export async function createRockVest(width, height) {
     const roll = new THREE.Quaternion().setFromAxisAngle(front, -offset.rotation * Math.PI / 180);
     vest.quaternion.premultiply(roll);
     const inverse = vest.quaternion.clone().invert();
-    // At arm's length BlazePose shoulder joints project below the visible
-    // shoulder ridge. The face sets a neck baseline when hips are out of shot.
-    const close = head ? clamp((head.height / height - .11) / .14, 0, 1) : 0;
+    // Shoulder joint centers are narrower than the clothes on top of them.
+    // In close selfies, the face still gives a width reference past the crop.
+    const close = head ? clamp((head.width / width - .26) / .22, 0, 1) : 0;
     const anchor = shoulderCenter.clone();
-    let shoulderSpan = measuredSpan;
+    let shoulderSpan = measuredSpan * 1.09;
     if (head) {
-      const chinDrop = head.height * (hips ? .25 : .17);
+      const chinDrop = head.height * ((hips ? .29 : .36) + close * .15);
       const neckBaseY = head.chin.y - chinDrop;
       const raisedRidgeY = shoulderCenter.y + head.height * .09;
       const headWeight = pose ? (hips ? .30 : .54) + close * (hips ? .25 : .46) : 1;
       anchor.y = raisedRidgeY + (neckBaseY - raisedRidgeY) * headWeight;
       anchor.x += clamp(head.chin.x - anchor.x, -measuredSpan * .25, measuredSpan * .25) *
         (pose ? .12 + close * .20 : 1);
-      const fittedWidth = clamp(measuredSpan, head.width * 1.37, head.width * (hips ? 2.8 : 2.18));
-      shoulderSpan = fittedWidth * (1 - close * .095);
+      const faceWidth = head.width * (1.86 + close * .29);
+      const orientedWidth = faceWidth / Math.max(across.x, .74);
+      shoulderSpan = Math.max(shoulderSpan, orientedWidth);
       if (shoulderOutline) {
         // The modeled shoulder caps sit at the vest origin. Keep the
         // jaw/pose estimate as a prior if an arm or the frame cuts the silhouette.
-        const correction = clamp(shoulderOutline.y - anchor.y, -head.height * .16, head.height * .27);
+        const correction = clamp(shoulderOutline.y - anchor.y, -head.height * .11, head.height * .26);
         anchor.y += correction * .72;
         if (shoulderOutline.width) {
           const screenSpan = Math.max(across.x, .62);
-          const silhouetteSpan = shoulderOutline.width / (1.24 * screenSpan);
-          const bounded = clamp(silhouetteSpan, shoulderSpan * .83, shoulderSpan * 1.12);
-          shoulderSpan += (bounded - shoulderSpan) * .52;
+          const silhouetteSpan = shoulderOutline.width / (1.10 * screenSpan);
+          const bounded = clamp(silhouetteSpan, shoulderSpan * .93, shoulderSpan * 1.21);
+          shoulderSpan += (bounded - shoulderSpan) * .64;
         }
       }
+      anchor.y = Math.min(anchor.y, head.chin.y - head.height * (.17 + close * .13));
+      shoulderSpan = Math.min(shoulderSpan, head.width * (3.05 + close * .20));
     }
     if (-anchor.y > height + shoulderSpan * .10) return false;
     const scale = shoulderSpan * offset.scale;
     const torsoLength = hips ? Math.abs(shoulderCenter.clone().sub(hips).dot(vertical)) : rawWidth * 1.15;
+    // Widening the shoulders should not make tall lapels grow up toward the face.
+    const verticalScale = clamp(torsoLength, shoulderSpan * .75, shoulderSpan * 1.42) * offset.scale;
     vest.position.copy(anchor);
     vest.position.x += offset.x;
     vest.position.y -= offset.y + scale * (look.paint ? .018 : -.025);
-    vest.scale.set(scale, clamp(torsoLength / measuredSpan, .86, 1.48) * scale, scale);
+    vest.scale.set(scale, verticalScale, scale);
     vest.visible = true;
     const hipAxis = hips ? pose[24].clone().sub(pose[23]) : null;
     if (hipAxis && hipAxis.x < 0) hipAxis.negate();

@@ -1,5 +1,5 @@
-import { tryonSchools } from './tryon-looks.mjs?v=refit-lookbook-20261126';
-import { createSchoolFrame } from './tryon-frame.mjs?v=room-polish-20261126';
+import { tryonSchools } from './tryon-looks.mjs?v=mirror-fit-20261126';
+import { createSchoolFrame } from './tryon-frame.mjs?v=mirror-fit-20261126';
 
 const copy = {
   en: {
@@ -107,8 +107,17 @@ const looks = school.looks.map((entry) => {
   button.className = 'look';
   button.dataset.look = entry.id;
   thumb.className = `thumbnail ${genre}`;
-  if (entry.photo) thumb.classList.add('look-photo');
-  image.src = entry.src;
+  if (schoolCamera) {
+    thumb.classList.add('look-photo');
+    image.src = entry.reference;
+    if (entry.focus) {
+      image.style.objectPosition = entry.focus;
+      image.style.setProperty('--reference-focus', entry.focus);
+      image.style.setProperty('--reference-zoom', entry.previewZoom);
+    }
+  } else {
+    image.src = entry.src;
+  }
   image.alt = '';
   image.decoding = 'async';
   thumb.append(image);
@@ -202,7 +211,7 @@ if (schoolCamera) {
     rockLogo = logo;
     paintOnce();
   }).catch(() => {});
-  import('./rock-vest-3d.mjs?v=rigged-models')
+  import('./rock-vest-3d.mjs?v=mirror-fit-20261126')
     .then(({ createRockVest }) => createRockVest(W, H))
     .then((vest) => {
       rockVest = vest;
@@ -284,7 +293,11 @@ function setLanguage() {
   document.documentElement.lang = language === 'zh' ? 'zh-Hant' : 'en';
   document.title = t('title') + ' · Christmas in Rhythms';
   document.querySelectorAll('[data-text]').forEach((el) => { el.textContent = t(el.dataset.text); });
-  document.querySelectorAll('[data-label]').forEach((el) => el.setAttribute('aria-label', t(el.dataset.label)));
+  document.querySelectorAll('[data-label]').forEach((el) => {
+    const label = t(el.dataset.label);
+    el.setAttribute('aria-label', label);
+    if (el.classList.contains('camera-icon')) el.title = label;
+  });
   document.querySelectorAll('[data-alt]').forEach((el) => { el.alt = t(el.dataset.alt); });
   const button = byId('language');
   button.textContent = t('language');
@@ -326,10 +339,10 @@ function updateControls() {
   byId('start-camera').disabled = cameraPending;
   document.querySelectorAll('[data-mode]').forEach((btn) => {
     const isVideo = btn.dataset.mode === 'video';
-    btn.hidden = isVideo && source === 'photo';
+    btn.hidden = source === 'photo';
     btn.disabled = fitBusy || (isVideo && !canRecord);
     btn.setAttribute('aria-pressed', String(mode === btn.dataset.mode));
-    if (isVideo && !canRecord) btn.title = t('recordingUnavailable');
+    btn.title = t(isVideo && !canRecord ? 'recordingUnavailable' : btn.dataset.mode);
   });
   shutter.classList.toggle('video', mode === 'video');
   shutter.classList.toggle('recording', Boolean(recording));
@@ -573,7 +586,8 @@ function setTrackingMode(mode) {
   modeChange = modeChange.catch(() => {}).then(async () => {
     if (mode === trackerMode) return;
     const [body, face] = await Promise.allSettled([
-      tracker?.setOptions({ runningMode: mode }),
+      // Static frames do not need the GPU-backed mask readback.
+      tracker?.setOptions({ runningMode: mode, outputSegmentationMasks: schoolCamera && mode === 'VIDEO' }),
       faceTracker?.setOptions({ runningMode: mode }),
     ]);
     if (body.status === 'rejected') {
@@ -802,11 +816,11 @@ function drawFrame() {
     ctx.textAlign = 'center';
     ctx.shadowColor = '#180507';
     ctx.shadowBlur = 7;
-    ctx.fillStyle = '#f5d49c';
-    ctx.font = 'bold 42px Georgia, serif';
-    ctx.fillText(school.marque, W / 2, genre === 'rock' ? 72 : 61);
+    ctx.fillStyle = '#fff0c2';
+    ctx.font = 'bold 60px Georgia, serif';
+    ctx.fillText(school.marque, W / 2, 73, W * .81);
     if (rockLogo) {
-      const logoWidth = W * .48;
+      const logoWidth = W * .56;
       const logoHeight = logoWidth * rockLogo.naturalHeight / rockLogo.naturalWidth;
       ctx.shadowBlur = 10;
       ctx.shadowColor = '#160807';
@@ -863,6 +877,28 @@ function drawFrame() {
   ctx.restore();
 }
 
+// Ordered MediaPipe face perimeter, from the hairline around the jaw.
+const faceOval = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377,
+  152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109];
+
+function drawGarment(fixed) {
+  ctx.save();
+  if (facePoints) {
+    // Keep the real lower face in front of the clothing, including during a manual refit.
+    const jaw = new Path2D();
+    jaw.rect(0, 0, W, H);
+    for (const [index, id] of faceOval.entries()) {
+      const point = facePoints[id];
+      if (index === 0) jaw.moveTo(point.x, point.y);
+      else jaw.lineTo(point.x, point.y);
+    }
+    jaw.closePath();
+    ctx.clip(jaw, 'evenodd');
+  }
+  rockVest.draw(ctx, offsets.vest, fixed?.snapshot);
+  ctx.restore();
+}
+
 function paint(layout) {
   const media = source === 'camera' ? video : source === 'photo' ? imageSource : null;
   const placement = media && (layout || imageLayout(media));
@@ -887,7 +923,7 @@ function paint(layout) {
     if (fittedVestReady()) {
       const fixed = fixedFits.vest;
       if (fixed && !fixed.snapshot) fixed.snapshot = rockVest.fittedSnapshot();
-      rockVest.draw(ctx, offsets.vest, fixed?.snapshot);
+      drawGarment(fixed);
     }
     if (paintedFaceReady()) {
       const fixed = fixedFits.face;
