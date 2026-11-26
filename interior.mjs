@@ -3,7 +3,7 @@ import {reelDirectory,sharedReels} from './room-reels.mjs';
 import {createRoomTv} from './room-tv.mjs?v=atrium-mirror-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
 import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=atrium-mirror-20261126';
-import {playRoomLighting} from './room-lighting.mjs?v=atrium-lighting-20261126';
+import {playRoomLighting} from './room-lighting.mjs?v=rock-kpop-stage-20261126';
 
 const dir='assets/interior/';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));

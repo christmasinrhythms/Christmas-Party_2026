@@ -18,16 +18,18 @@ function bloom(ctx, x, y, radius, rgb, strength, squash = 1) {
   ctx.restore();
 }
 
-function spotlight(ctx, x, y, targetX, targetY, spread, rgb) {
+function spotlight(ctx, x, y, targetX, targetY, spread, rgb, strength) {
   const length = Math.hypot(targetX - x, targetY - y);
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(Math.atan2(targetY - y, targetX - x) - Math.PI / 2);
   const light = ctx.createLinearGradient(-spread, 0, spread, 0);
   light.addColorStop(0, colour(rgb, 0));
-  light.addColorStop(.22, colour(rgb, .04));
-  light.addColorStop(.5, colour(rgb, .22));
-  light.addColorStop(.78, colour(rgb, .04));
+  light.addColorStop(.18, colour(rgb, .09 * strength));
+  light.addColorStop(.36, colour(rgb, .29 * strength));
+  light.addColorStop(.5, colour(rgb, .64 * strength));
+  light.addColorStop(.64, colour(rgb, .29 * strength));
+  light.addColorStop(.82, colour(rgb, .09 * strength));
   light.addColorStop(1, colour(rgb, 0));
   ctx.fillStyle = light;
   ctx.beginPath();
@@ -37,8 +39,11 @@ function spotlight(ctx, x, y, targetX, targetY, spread, rgb) {
   ctx.lineTo(2, 0);
   ctx.fill();
   ctx.restore();
-  bloom(ctx, targetX, targetY, spread * 1.35, rgb, .35, .33);
-  bloom(ctx, x, y, spread * .24, warmWhite, .52);
+  bloom(ctx, targetX, targetY, spread * 1.55, rgb, .76 * strength, .32);
+  bloom(ctx, targetX, targetY, spread * .52, warmWhite, .51 * strength, .27);
+  bloom(ctx, targetX, targetY + spread * .23, spread * .35, rgb, .42 * strength, 1.72);
+  bloom(ctx, x, y, spread * .27, rgb, .9 * strength);
+  bloom(ctx, x, y, spread * .073, warmWhite, .98 * strength);
 }
 
 function paperPieces(isDisco) {
@@ -113,47 +118,100 @@ function discoScene() {
 
 function stageScene() {
   const confetti = paperPieces(false);
-  const fixtures = [[.39,.19,cyan],[.6,.19,pink],[.52,.165,'213,172,255']];
+  const fixtures = [
+    [.375,.185,'96,204,255'],[.625,.185,'255,97,211'],
+    [.454,.177,'180,124,255'],[.546,.177,'228,243,255'],
+  ];
   return (ctx, view, seconds) => {
     ctx.globalCompositeOperation = 'screen';
+    const crossfade=.5+.5*Math.sin(seconds*.66);
+    bloom(ctx,view.x(.43),view.y(.59),view.height*.46,'102,113,255',.13+crossfade*.23,.78);
+    bloom(ctx,view.x(.57),view.y(.62),view.height*.46,'255,76,196',.13+(1-crossfade)*.24,.8);
     fixtures.forEach(([x,y,rgb], index) => {
-      const swing = Math.sin(seconds * (.46+index*.07) + index*2.1);
-      spotlight(ctx,view.x(x),view.y(y),view.x(x+ swing*.21),view.y(.94),view.height*(.1+index*.016),rgb);
+      const phase=seconds*(.63+index*.095)+index*1.67;
+      const travel=Math.sin(phase);
+      const focus=.79+.21*Math.cos(phase*.73);
+      const spread=Math.min(view.height*(.097+index*.012),view.width*.29);
+      spotlight(ctx,view.x(x),view.y(y),view.x(.5+travel*(.13+index*.017)),
+        view.y(.89+.044*Math.sin(phase*.94)),spread,rgb,focus);
     });
+    // Stage-edge LEDs cross the open sightlines beside the photo display.
+    for (const side of [-1,1]) {
+      const phase=seconds*.85+side*1.2;
+      const wash=side<0?'97,229,255':'255,111,222';
+      const edge=view.width*(.5+side*.335);
+      const spill=view.width*(.5+side*(.38+.24*Math.sin(phase)));
+      const spread=Math.min(view.height*.071,view.width*.21);
+      spotlight(ctx,edge,view.y(.815),spill,view.y(.27),spread,wash,.86);
+      bloom(ctx,edge,view.y(.847),spread*1.8,wash,.56,.26);
+    }
     ctx.globalCompositeOperation = 'source-over';
     drawPaper(ctx,view,seconds,confetti,false);
   };
 }
 
-function mistPatch(tinted) {
+function mistPatch(rgb, density) {
   const patch = document.createElement('canvas');
   patch.width = 240;
   patch.height = 92;
   const ctx = patch.getContext('2d');
-  for (let i=0;i<45;i++) {
+  for (let i=0;i<54;i++) {
     const x = between(0,240);
     const envelope = Math.sin(x/240*Math.PI);
-    const radius = between(8,30);
-    bloom(ctx,x,between(27,65),radius,tinted ? '219,133,128' : '189,176,187',
-      envelope*between(.055,.18),between(.44,.86));
+    const radius = between(8,35);
+    bloom(ctx,x,between(24,67),radius,rgb,envelope*density*between(.1,.31),between(.5,.91));
   }
   return patch;
 }
 
 function rockScene() {
-  const patches = [mistPatch(false), mistPatch(true)];
-  const wisps = Array.from({length:12}, (_,i) => ({
-    y:between(.66,.90), width:between(.24,.54), phase:i/12, duration:between(16,29),
-    opacity:between(.43,.8), patch:patches[i%2]
+  const ground = [mistPatch('177,165,180',1),mistPatch('171,96,108',.94),
+    mistPatch('198,187,204',1.12)];
+  const steam = [mistPatch('225,215,231',1.46),mistPatch('205,160,178',1.34)];
+  const wisps = Array.from({length:15}, (_,i) => ({
+    y:between(.69,.94), width:between(.25,.53), phase:i/15, duration:between(13,24),
+    opacity:between(.63,.98), patch:ground[i%ground.length], direction:i%4===0?-1:1
   })).sort((a,b)=>a.y-b.y);
+  const vents = [
+    {x:.34,y:.78,dir:-1,period:8.6}, {x:.425,y:.86,dir:-1,period:6.5},
+    {x:.58,y:.87,dir:1,period:7.4}, {x:.66,y:.78,dir:1,period:9.3},
+  ];
   return (ctx, view, seconds) => {
+    bloom(ctx,view.x(.40),view.y(.85),view.height*.41,'194,102,119',.21,.36);
+    bloom(ctx,view.x(.60),view.y(.89),view.height*.39,'168,125,145',.22,.36);
+    for (const [index, vent] of vents.entries()) {
+      for(let puff=0;puff<5;puff++){
+        const life=(seconds/vent.period+index*.23+puff*.195)%1;
+        const rise = life**.77;
+        const baseX=Math.max(view.width*.10,Math.min(view.width*.9,view.x(vent.x)));
+        const drift=vent.dir*rise*view.width*.14+Math.sin(life*10+index)*rise*view.width*.068;
+        const x=baseX+drift;
+        const y=view.y(vent.y-rise*.43);
+        const width=view.height*(.055+rise*.26);
+        ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(-vent.dir*(.40+Math.sin(life*10)*.31));
+        ctx.globalAlpha=Math.sin(life*Math.PI)**.75*(1-.27*life)*.87;
+        ctx.drawImage(steam[index%2],-width/2,-width*.39,width,width*.78);
+        ctx.restore();
+      }
+    }
     for (const wisp of wisps) {
       const flow=(seconds/wisp.duration+wisp.phase)%1;
       const width=view.artWidth*wisp.width;
-      const x=view.x(flow*1.65-.5);
-      const y=view.y(wisp.y+Math.sin(seconds*.48+wisp.phase*8)*.026);
+      const x=view.x((wisp.direction===1?flow:1-flow)*1.61-.48);
+      const y=view.y(wisp.y+Math.sin(seconds*.48+wisp.phase*8)*.022)-width*.09;
       ctx.globalAlpha=wisp.opacity*Math.sin(flow*Math.PI);
-      ctx.drawImage(wisp.patch,x,y,width,width*(wisp.y>.76?.31:.24));
+      ctx.drawImage(wisp.patch,x,y,width,width*(wisp.y>.82?.28:.22));
+    }
+    // Keep a denser, cool bank visible across the front of the stage.
+    for (let band=0;band<4;band++) {
+      const roll=seconds*(.46+band*.07)+band*1.5;
+      const width=view.width*(1.24+band*.17);
+      const x=(view.width-width)/2+view.width*.22*Math.sin(roll);
+      const y=view.y(.85+band*.04)+Math.sin(roll*.8+1)*view.height*.025;
+      ctx.globalAlpha=.72+band*.071;
+      ctx.drawImage(ground[band%ground.length],x,y-width*.16,width,width*.26);
     }
     ctx.globalAlpha = 1;
   };
