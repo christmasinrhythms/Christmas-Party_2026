@@ -1,9 +1,12 @@
 const models = 'assets/tryon/models/';
 const fittedModels = models + 'tripo/';
+const upperBodyModels = fittedModels + 'upper-body/';
 const referencePhotos = 'assets/interior/wall-photos/';
 const lookImages = 'assets/tryon/looks/';
 
-const head = (id, label, size = 1, rise = 0) => ({ model: fittedModels + id + '.glb', label, size, rise });
+const head = (id, label, size = 1, rise = 0, { directory = fittedModels, ...fit } = {}) => ({
+  model: directory + id + '.glb', label, size, rise, ...fit,
+});
 const look = (id, label, reference, options = {}) => ({
   id, label, reference, src: lookImages + id + '.webp', model: fittedModels + id + '.glb', sleeves: true, ...options,
 });
@@ -44,18 +47,24 @@ export const tryonSchools = {
     tint: '#34135b', trim: '#ffc3f0', accent: '#bd42db', highlight: '#43e8e7',
     looks: [
       look('kpop-gold', ['Black & Gold Idol', '黑金偶像舞台裝'], referencePhotos + 'kpop/images (87).jpeg'),
-      look('kpop-night', ['Dark Stage Armor', '暗黑金屬舞台裝'], referencePhotos + 'kpop/images (91).jpeg', {
-        head: head('kpop-crimson-hair', ['Crimson streaks', '酒紅挑染長髮'], 1.08, .02),
+      look('kpop-night', ['Dark Stage Armor + Crimson Hair', '暗黑舞台裝配酒紅挑染'], referencePhotos + 'kpop/images (91).jpeg', {
+        head: head('kpop-crimson-hair', ['Crimson Hair', '酒紅挑染長髮'], 1.12, -.035, {
+          directory: upperBodyModels, setback: .62, longHair: true,
+        }),
       }),
       look('kpop-pink', ['Pink Royal Stage', '粉紅皇冠舞台裝'], referencePhotos + 'kpop/images (92).jpeg', {
         head: head('kpop-crown', ['Pink crown', '粉紅皇冠'], .99, .075),
       }),
-      look('kpop-jersey', ['42 Street Jersey', '42 街頭球衣'], referencePhotos + 'kpop/ce01e5690f53743945ee4faf486da4f9.jpg', {
-        src: referencePhotos + 'kpop/ce01e5690f53743945ee4faf486da4f9.jpg',
-        head: head('kpop-snapback', ['Red cap and hair', '紅色平頂帽連髮型'], 1.04, .015),
+      look('kpop-jersey', ['42 Street Jersey + Red Cap', '42 街頭球衣配紅帽'], referencePhotos + 'kpop/ce01e5690f53743945ee4faf486da4f9.jpg', {
+        model: upperBodyModels + 'kpop-jersey.glb',
+        preview: upperBodyModels + 'kpop-jersey.webp',
+        upperBody: true,
+        head: head('kpop-snapback', ['Red cap and hair', '紅色平頂帽連髮型'], 1.04, .015, { directory: upperBodyModels, setback: .49 }),
       }),
-      look('kpop-tracksuit', ['Old-school Tracksuit', '復古黑金運動套裝'], referencePhotos + 'kpop/images (80) copy.jpeg', {
-        src: referencePhotos + 'kpop/images (80) copy.jpeg',
+      look('kpop-tracksuit', ['Black & Gold Track Jacket', '復古黑金運動外套'], referencePhotos + 'kpop/images (80) copy.jpeg', {
+        model: upperBodyModels + 'kpop-tracksuit.glb',
+        preview: upperBodyModels + 'kpop-tracksuit.webp',
+        upperBody: true,
         head: head('kpop-bucket-hat', ['Black bucket hat', '黑色漁夫帽'], 1.02, .046),
       }),
     ],
@@ -67,7 +76,12 @@ export const tryonSchools = {
       look('disco-magenta', ['Magenta Sequins', '桃紅閃片西裝'], referencePhotos + 'disco/images (79).jpeg', {
         head: head('disco-silver-hair', ['Silver hair plate', '銀色亮片髮甲'], 1.02, .031),
       }),
-      look('disco-silver-shirt', ['Silver Lamé Shirt', '銀色喇叭領恤衫'], referencePhotos + 'disco/ballroom-01.jpg', { focus: 'left top' }),
+      look('disco-silver-shirt', ['Silver Lamé Shirt', '銀色尖領恤衫'], referencePhotos + 'disco/ballroom-01.jpg', {
+        model: upperBodyModels + 'disco-silver-shirt.glb',
+        preview: upperBodyModels + 'disco-silver-shirt.webp',
+        upperBody: true,
+        openCollar: true,
+      }),
       look('disco-silver-jumpsuit', ['Silver Halter', '銀閃掛頸連身裝'], referencePhotos + 'disco/ballroom-01.jpg', { focus: 'right top', previewZoom: 1.38, sleeves: false }),
     ],
   },

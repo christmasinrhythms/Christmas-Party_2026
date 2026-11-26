@@ -49,8 +49,13 @@ export async function createRockVest(width, height) {
     const waist = vest.getObjectByName('Waist');
     const bones = look.sleeves ? [...pads, ...forearms, waist] : [...pads, waist];
     if (bones.some((bone) => !bone?.isBone)) throw new Error('Garment rig is missing bones');
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(look.paint ? .20 : .134, look.paint ? .225 : .163, .34, 24), occlusionMaterial);
-    neck.position.set(0, .115, look.paint ? .04 : -.006);
+    // Recess the neck mask on the fitted tops so it hides the inner back
+    // collar without cutting through the photographed front of the garment.
+    const neckDimensions = look.openCollar ? [.12, .02, .53]
+      : look.upperBody ? [.089, .108, .25]
+      : look.paint ? [.20, .225, .34] : [.134, .163, .34];
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(...neckDimensions, 24), occlusionMaterial);
+    neck.position.set(0, look.openCollar ? -.09 : .115, look.upperBody ? -.063 : look.paint ? .04 : -.006);
     neck.renderOrder = -1;
     vest.add(neck);
     return { vest, waist, pads, forearms, look };
@@ -216,7 +221,7 @@ export async function createRockVest(width, height) {
     vest.position.copy(anchor);
     vest.position.x += offset.x;
     vest.position.y -= offset.y + scale * (look.paint ? .018 : -.025);
-    vest.scale.set(scale, verticalScale, scale);
+    vest.scale.set(scale * (look.upperBody ? 1.09 : 1), verticalScale, scale);
     vest.visible = true;
     const hipAxis = hips ? pose[24].clone().sub(pose[23]) : null;
     if (hipAxis && hipAxis.x < 0) hipAxis.negate();

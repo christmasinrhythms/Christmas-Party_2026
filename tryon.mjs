@@ -1,4 +1,4 @@
-import { tryonSchools } from './tryon-looks.mjs?v=mirror-fit-20261126';
+import { tryonSchools } from './tryon-looks.mjs?v=mirror-upper-body-20261126';
 import { createSchoolFrame } from './tryon-frame.mjs?v=mirror-fit-20261126';
 
 const copy = {
@@ -109,8 +109,8 @@ const looks = school.looks.map((entry) => {
   thumb.className = `thumbnail ${genre}`;
   if (schoolCamera) {
     thumb.classList.add('look-photo');
-    image.src = entry.reference;
-    if (entry.focus) {
+    image.src = entry.preview ?? entry.reference;
+    if (entry.focus && !entry.preview) {
       image.style.objectPosition = entry.focus;
       image.style.setProperty('--reference-focus', entry.focus);
       image.style.setProperty('--reference-zoom', entry.previewZoom);
@@ -211,7 +211,7 @@ if (schoolCamera) {
     rockLogo = logo;
     paintOnce();
   }).catch(() => {});
-  import('./rock-vest-3d.mjs?v=mirror-fit-20261126')
+  import('./rock-vest-3d.mjs?v=mirror-upper-body-20261126')
     .then(({ createRockVest }) => createRockVest(W, H))
     .then((vest) => {
       rockVest = vest;
@@ -236,7 +236,7 @@ if (schoolCamera) {
 }
 
 async function loadHeadwear(path) {
-  const { createHeadwear } = await import('./tryon-headwear.mjs');
+  const { createHeadwear } = await import('./tryon-headwear.mjs?v=mirror-upper-body-20261126');
   headwear ??= createHeadwear(W, H, rockVest.renderLayer);
   return headwear.load(path);
 }

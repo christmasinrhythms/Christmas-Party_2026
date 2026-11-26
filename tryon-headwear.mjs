@@ -19,6 +19,16 @@ export function createHeadwear(width, height, renderLayer) {
   side.position.set(4, 2, -4);
   scene.add(fill, key, side);
 
+  const depthMaterial = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, side: THREE.DoubleSide });
+  const headVolume = new THREE.SphereGeometry(1, 28, 16);
+  const scalpMask = new THREE.Mesh(headVolume, depthMaterial);
+  const neckMask = new THREE.Mesh(headVolume, depthMaterial);
+  for (const mask of [scalpMask, neckMask]) {
+    mask.visible = false;
+    mask.renderOrder = -1;
+    scene.add(mask);
+  }
+
   let depth;
   const topology = fetch(new URL('./assets/tryon/rock-3d/face-topology.json', import.meta.url))
     .then((response) => {
@@ -30,9 +40,7 @@ export function createHeadwear(width, height, renderLayer) {
       const vertexCount = uv.length / 2;
       geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertexCount * 3), 3)
         .setUsage(THREE.DynamicDrawUsage));
-      depth = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
-        colorWrite: false, depthWrite: true, side: THREE.DoubleSide,
-      }));
+      depth = new THREE.Mesh(geometry, depthMaterial);
       depth.frustumCulled = false;
       depth.renderOrder = -1;
       depth.visible = false;
@@ -69,15 +77,28 @@ export function createHeadwear(width, height, renderLayer) {
       anchor.clear();
       anchor.add(model);
     }
-    anchor.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(across, up, forward));
+    const basis = new THREE.Matrix4().makeBasis(across, up, forward);
+    anchor.quaternion.setFromRotationMatrix(basis);
     const roll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -offset.rotation * Math.PI / 180);
     anchor.quaternion.premultiply(roll);
     anchor.scale.setScalar(span * offset.scale * fit.size);
     anchor.position.copy(forehead)
-      .addScaledVector(forward, -span * .43)
+      .addScaledVector(forward, -span * (fit.setback ?? .43))
       .addScaledVector(up, span * fit.rise);
     anchor.position.x += offset.x;
     anchor.position.y -= offset.y;
+
+    // The tracked face mesh stops at the hairline and jaw. Mask the backs
+    // of long hairstyles behind the scalp and neck while leaving the front locks visible.
+    scalpMask.visible = neckMask.visible = Boolean(fit.longHair && liveFace);
+    if (scalpMask.visible) {
+      scalpMask.quaternion.setFromRotationMatrix(basis);
+      scalpMask.position.copy(forehead).addScaledVector(up, span * .10).addScaledVector(forward, -span * .24);
+      scalpMask.scale.set(span * .43, span * .35, span * .23);
+      neckMask.quaternion.copy(scalpMask.quaternion);
+      neckMask.position.copy(chin).addScaledVector(up, -span * .24).addScaledVector(forward, -span * .17);
+      neckMask.scale.set(span * .32, span * .39, span * .20);
+    }
 
     if (depth) {
       const position = depth.geometry.attributes.position;
