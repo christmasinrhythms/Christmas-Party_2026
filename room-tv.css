@@ -180,26 +180,58 @@
 #houseInterior .atrium-tv-focus .room-video-stage > video { object-fit: contain; }
 #houseInterior .atrium-tv-focus .house-tv-screen:has(.room-video-stage)::after { content: none; }
 #houseInterior .atrium-tv-focus .tv-briefing {
-  gap: clamp(6px, 1.9svh, 12px);
-  padding: 9px clamp(9px, 3vw, 18px);
+  --tv-brief-gap: 12px;
+  --tv-brief-title: clamp(18px, 3.4svh, 28px);
+  --tv-brief-copy: clamp(12px, 1.85svh, 16px);
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  justify-items: stretch;
+  gap: var(--tv-brief-gap);
+  padding: clamp(16px, 4svh, 28px) clamp(10px, 3vw, 20px);
   background: radial-gradient(ellipse at 50% 40%, #694f37, #2c201a 80%);
-  align-content: safe center;
+  text-align: start;
   overflow: auto;
 }
-#houseInterior .atrium-tv-focus .tv-briefing p {
+#houseInterior .atrium-tv-focus .tv-briefing-heading {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+#houseInterior .atrium-tv-focus .tv-briefing-kicker {
+  color: #ffda90;
   font-size: clamp(10px, 1.65svh, 13px);
-  letter-spacing: .08em;
+  font-weight: 750;
+  letter-spacing: .025em;
+  line-height: 1.2;
+  text-transform: none;
+}
+#houseInterior .atrium-tv-focus .tv-briefing-title {
+  margin: 0;
+  font: 700 var(--tv-brief-title)/1.12 "Bodoni 72", Georgia, "Songti TC", serif;
   text-wrap: balance;
 }
-#houseInterior .atrium-tv-focus .tv-briefing strong {
-  font-size: clamp(18px, 3.4svh, 29px);
-  line-height: 1.08;
-  text-wrap: balance;
+#houseInterior .atrium-tv-focus .tv-briefing-title:lang(zh-Hant) {
+  font-family: "Songti TC", "PingFang TC", serif;
+  line-height: 1.25;
+  line-break: strict;
 }
-#houseInterior .atrium-tv-focus .tv-briefing > span {
-  font-size: clamp(12px, 1.85svh, 16px);
+#houseInterior .atrium-tv-focus .tv-briefing:lang(zh-Hant) {
+  line-break: strict;
+}
+#houseInterior .atrium-tv-focus .tv-briefing-kicker:lang(zh-Hant) { letter-spacing: normal; }
+#houseInterior .atrium-tv-focus .tv-briefing-copy {
+  color: inherit;
+  font-size: var(--tv-brief-copy);
+  font-weight: 450;
+  letter-spacing: normal;
   line-height: 1.35;
-  text-wrap: pretty;
+  text-transform: none;
+  text-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+#houseInterior .atrium-tv-focus .tv-briefing-copy.tv-filming-note {
+  color: #ffe39f;
+  font-weight: 650;
 }
 #houseInterior .atrium-tv-focus .room-tv-panel {
   grid-template-columns: minmax(0, 1fr);
@@ -238,15 +270,16 @@
 #houseInterior .atrium-tv-focus .tv-seek:is(:hover, :focus-visible) { opacity: 1; }
 #houseInterior .atrium-tv-focus .room-video-stage:is(:fullscreen, [role="dialog"]) .tv-seek { display: none; }
 #houseInterior .atrium-tv-focus .tv-clip-caption {
-  padding: 7px 6px 0;
+  padding: 4px 6px 0;
   color: #fff1d7;
   font-size: 12px;
   line-height: 1.25;
   text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 #houseInterior .atrium-tv-focus .room-video-status:empty { display: none; }
 #houseInterior .atrium-tv-focus .tv-rule-sheet {
-  padding: 12px 16px;
+  padding: 10px 16px 13px;
   color: var(--hall-ink);
   background: none;
   font-size: 15px;
@@ -283,7 +316,7 @@
     /* Budget for the frame and both rows of controls, including the phone's safe areas. */
     --tv-screen-height: clamp(195px, calc((100svh - 203px - var(--tv-top-space) - var(--tv-bottom-space)) / 1.425), 520px);
     --tv-screen-width: min(calc(var(--tv-screen-height) * 9 / 16), calc((100vw - 12px) / 1.49));
-    padding: 5px 8px 12px;
+    padding: 4px 8px 12px;
     border: 1px solid var(--hall-brass);
     border-radius: 14px;
     background: var(--hall-paper);
@@ -294,14 +327,20 @@
     inset: 7px;
   }
   #houseInterior[data-panel="tv"] .atrium-tv-focus h2 {
-    margin-bottom: 4px !important;
+    margin-bottom: 3px !important;
     color: var(--hall-ink);
     text-shadow: none;
   }
+  #houseInterior .atrium-tv-focus .room-television { width: 100%; }
+  #houseInterior .atrium-tv-focus .room-tv-cabinet {
+    width: min(100%, var(--tv-cabinet-width));
+    margin-inline: auto;
+  }
   #houseInterior .atrium-tv-focus .room-tv-panel { padding: 3px 5px; }
   #houseInterior .atrium-tv-focus .tv-hardware { row-gap: 3px; }
+  #houseInterior .atrium-tv-focus .tv-examples { margin-top: 24px; }
   #houseInterior .atrium-tv-focus .tv-clip-caption {
-    padding-top: 4px;
+    padding-top: 3px;
     color: var(--hall-ink);
     text-shadow: none;
   }
@@ -311,26 +350,29 @@
   }
 }
 @media (max-width: 350px) {
+  #houseInterior[data-panel="tv"] .atrium-tv-focus h2 { font-size: 21px; }
   #houseInterior .atrium-tv-focus .tv-briefing {
-    gap: 4px;
-    padding: 6px 5px;
+    --tv-brief-gap: 6px;
+    --tv-brief-title: 16px;
+    --tv-brief-copy: 11px;
+    padding: 8px 6px;
   }
-  #houseInterior .atrium-tv-focus .tv-briefing strong { font-size: 17px; }
-  #houseInterior .atrium-tv-focus .tv-briefing > span { font-size: 11px; line-height: 1.28; }
-  #houseInterior .atrium-tv-focus .tv-categories li { font-size: 10px; }
+  #houseInterior .atrium-tv-focus .tv-briefing-heading { gap: 3px; }
   #houseInterior .atrium-tv-focus .tv-clip-caption {
-    width: calc(100% + 20px);
-    margin-inline: -10px;
     padding: 3px 0 0;
     font-size: 11px;
   }
 }
-@media (max-width: 700px) and (min-height: 730px) {
-  #houseInterior .atrium-tv-focus .tv-briefing {
-    gap: 14px;
-    padding-inline: 23px;
+@media (max-width: 700px) and (max-height: 510px) {
+  #houseInterior[data-panel="tv"] .atrium-tv-focus {
+    --tv-screen-height: clamp(180px, calc((100svh - 203px - var(--tv-top-space) - var(--tv-bottom-space)) / 1.425), 520px);
   }
-  #houseInterior .atrium-tv-focus .tv-categories { row-gap: 7px; }
+  #houseInterior .atrium-tv-focus .tv-briefing {
+    --tv-brief-gap: 6px;
+    --tv-brief-title: 16px;
+    --tv-brief-copy: 11px;
+    padding: 8px 6px;
+  }
 }
 @media (min-width: 701px) {
   #houseInterior[data-scene="lobby"] {
@@ -405,14 +447,42 @@
   #houseInterior .tv-key { min-width: 44px; min-height: 44px; }
 }
 
-/* Xmas Video Challenge panel: three category chips on the TV, rules always visible,
-   and TV + rules side by side on wide screens. */
-#houseInterior .tv-categories { display: grid; justify-items: start; gap: clamp(4px,.7vw,8px); margin: clamp(2px,.6vw,6px) 0 0; padding: 0; list-style: none; }
-#houseInterior .tv-categories li { display: inline-flex; align-items: center; gap: .4em; padding: .3em .75em .3em .35em; border: 1px solid #e9c78a80; border-radius: 999px; background: #fff3d914; color: #fff4d8; font: 650 clamp(11px,1.65svh,15px)/1.2 system-ui, sans-serif; white-space: nowrap; }
-#houseInterior .tv-categories b { display: grid; place-items: center; width: 1.55em; height: 1.55em; border-radius: 50%; background: #f4c982; color: #3a2316; font-size: .85em; }
-#houseInterior .tv-examples h3 { margin: 0; min-height: 40px; padding: 10px 14px 8px; border-bottom: 1px solid #a787602e; font: 750 16px/1.3 system-ui, sans-serif; color: var(--hall-ink); text-align: center; }
-#houseInterior .atrium-tv-focus .tv-rule-sheet { padding: 10px 16px 12px; }
-#houseInterior .atrium-tv-focus .tv-rule-sheet ol { gap: .35em; }
-#houseInterior .atrium-tv-focus .tv-rule-sheet p { margin-top: .6em; padding-top: .5em; }
+#houseInterior .atrium-tv-focus .tv-categories {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#houseInterior .atrium-tv-focus .tv-categories li {
+  display: grid;
+  grid-template-columns: 1.3em minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
+  min-width: 0;
+  color: #fff4d8;
+  font: 650 var(--tv-brief-copy)/1.3 system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+#houseInterior .atrium-tv-focus .tv-categories b {
+  display: grid;
+  min-height: 1.3em;
+  place-items: center;
+  border-radius: 50%;
+  background: #f4c982;
+  color: #3a2316;
+  font-size: .86em;
+  line-height: 1.3;
+}
+#houseInterior .atrium-tv-focus [data-tv-details="rules"] h3 {
+  margin: 0;
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid #a787602e;
+  color: var(--hall-ink);
+  font: 750 16px/1.3 system-ui, sans-serif;
+  text-align: start;
+}
+#houseInterior .atrium-tv-focus .tv-rule-sheet ol { gap: 6px; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet p { margin-top: 10px; padding-top: 8px; }
 #houseInterior .atrium-tv-focus .tv-examples ul { margin: 0; }
 #houseInterior .atrium-tv-focus .tv-examples li:last-child .tv-example-choice { border-bottom: 0; }

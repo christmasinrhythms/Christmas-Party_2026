@@ -1,4 +1,4 @@
-import {challengeSlides, challengeTitle, reelDirectory, sharedReels} from './room-reels.mjs?v=video-challenge-20261126b';
+import {challengeSlides, challengeTitle, reelDirectory, sharedReels} from './room-reels.mjs?v=tv-copy-layout-20261126';
 
 const length = challengeSlides.length + sharedReels.length;
 const escapeHtml = text => text.replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'})[char]);
@@ -48,10 +48,13 @@ export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
     const screen=live&&clip
       ? `<div class="room-video-stage">${media(clip,path,deck.muted)}${path?`<input class="tv-seek" type="range" min="0" max="1000" value="0" aria-label="${t("seek")}" disabled>`:''}<button class="house-action room-video-exit" type="button" data-house="tv-exit">${t('exit')}</button></div>`
       : `<div class="tv-briefing" aria-live="polite">
-          <p>${local(challengeTitle)}</p><strong>${local(slide.title)}</strong>
-          ${slide.body?`<span>${local(slide.body)}</span>`:''}
-          ${slide.categories?`<ul class="tv-categories">${slide.categories.map((c,i)=>`<li><b>${i+1}</b>${local(c)}</li>`).join('')}</ul>`:''}
-          ${slide.note?`<span class="tv-filming-note">${local(slide.note)}</span>`:''}
+          <header class="tv-briefing-heading">
+            <p class="tv-briefing-kicker">${local(challengeTitle)}</p>
+            <h3 class="tv-briefing-title">${local(slide.title)}</h3>
+          </header>
+          ${slide.categories?`<ol class="tv-categories">${slide.categories.map((c,i)=>`<li><b aria-hidden="true">${i+1}</b><span>${local(c)}</span></li>`).join('')}</ol>`:''}
+          ${slide.body?`<p class="tv-briefing-copy">${local(slide.body)}</p>`:''}
+          ${slide.note?`<p class="tv-briefing-copy tv-filming-note">${local(slide.note)}</p>`:''}
         </div>`;
     return `<div class="room-tv-player${clip&&!path?' has-youtube':''}" ${live?'data-tv-live':''}>
       <div class="room-tv-cabinet">
@@ -76,7 +79,7 @@ export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
           </div>
         </div>
       </div>
-      ${live&&clip?`<p class="tv-clip-caption">${escapeHtml(clip.title)}</p>`:''}
+      ${live&&clip?`<p class="tv-clip-caption" lang="en">${escapeHtml(clip.title)}</p>`:''}
       <p class="room-video-status" role="status">${live&&instagram?t('instagram'):''}</p>
     </div>`;
   }
