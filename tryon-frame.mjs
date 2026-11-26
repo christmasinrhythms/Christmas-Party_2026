@@ -30,12 +30,12 @@ export async function createSchoolFrame(genre, school, width, height) {
   ctx.fillStyle = school.tint;
   ctx.fillRect(0, 0, width, height);
   ctx.restore();
-  const shade = ctx.createLinearGradient(0, height - 116, 0, height);
+  const shade = ctx.createLinearGradient(0, height - 175, 0, height);
   shade.addColorStop(0, 'transparent');
   shade.addColorStop(.72, school.tint + 'cd');
   shade.addColorStop(1, school.tint);
   ctx.fillStyle = shade;
-  ctx.fillRect(20, height - 114, width - 40, 114);
+  ctx.fillRect(20, height - 173, width - 40, 173);
   ctx.strokeStyle = school.trim;
   ctx.lineWidth = 3;
   ctx.stroke(opening);
@@ -44,7 +44,7 @@ export async function createSchoolFrame(genre, school, width, height) {
   ctx.strokeRect(9, 9, width - 18, height - 18);
   ctx.globalAlpha = 1;
   for (const sign of [-1, 1]) {
-    const x = width / 2 + sign * 155;
+    const x = width / 2 + sign * 217;
     for (const [distance, size] of [[0, 7], [25, 4], [45, 2]]) {
       const at = x + sign * distance;
       ctx.beginPath();

@@ -34,6 +34,7 @@ export function attachOutfitGallery(root, currentRoom) {
   function select(index) {
     const gallery = currentRoom();
     if (!gallery?.photos.length) return;
+    root.querySelector('[data-outfit-stage]')?.removeAttribute('data-unfold');
     gallery.focused = cycle(index,gallery.photos.length);
     draw();
   }
@@ -57,6 +58,7 @@ export function attachOutfitGallery(root, currentRoom) {
     if (!drag.active) {
       if (Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)) { drag=null;return; }
       if (Math.abs(dx)<8) return;
+      drag.stage.removeAttribute('data-unfold');
       drag.stage.setPointerCapture(event.pointerId);
       drag.active=true;
     }

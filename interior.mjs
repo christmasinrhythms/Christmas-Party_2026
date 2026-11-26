@@ -1,8 +1,8 @@
 import {schools,rundown,reelRules} from './interior-content.mjs';
 import {challengeTitle,reelDirectory,sharedReels} from './room-reels.mjs';
-import {createRoomTv} from './room-tv.mjs';
-import {attachOutfitGallery} from './outfit-gallery.mjs';
-import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs';
+import {createRoomTv} from './room-tv.mjs?v=room-polish-20261126';
+import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
+import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=room-polish-20261126';
 
 const dir='assets/interior/';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));
@@ -46,7 +46,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   let scene='outside',panel='',look=0,assignment=null,lookupValue='',lookupMethod='email',error='',checking=false,revealing=false,paused=false,transitioning=false,origin='',sequence=0;
   let exteriorTrigger=trigger,revealTimer,showClips=false;
   let hallPan=0,hallDrag=null,jumpToTv=false;
-  const galleries=new Map(Object.keys(schools).map(id=>[id,{photos:[],scroll:0,focused:0,message:''}]));
+  const galleries=new Map(Object.keys(schools).map(id=>[id,{photos:[],scroll:0,focused:0,message:'',opening:false}]));
   const motion=()=>paused||motionQuery.matches||document.body.classList.contains('calm');
   const zh=()=>document.documentElement.lang==='zh-Hant';
   const copy=key=>words[key][+zh()];
@@ -84,12 +84,14 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       document.body.classList.remove('inside-house');exteriorTrigger.focus({preventScroll:true});return;
     }
     if(from==='outside'){
+      if(next==='lobby')void publishedPhotos().catch(()=>{});
       hallPan=0;
       root.hidden=false;root.inert=false;outside.inert=true;outside.setAttribute('aria-hidden','true');
       document.body.classList.add('inside-house');onEnter();
     }
     scene=next;transitioning=!motion();
     if(schools[next]){
+      galleries.get(next).opening=true;
       roomTv.reset(next);
       roomTv.setFiles(next,localReels);
     }
@@ -156,13 +158,17 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     root.querySelector('.room-wall-status').textContent=gallery.message?copy(gallery.message):'';
     for(const control of root.querySelectorAll('[data-house="gallery-prev"],[data-house="gallery-next"]'))control.disabled=gallery.photos.length<2;
     outfitGallery.draw();
+    if(gallery.opening&&gallery.photos.length&&!transitioning){
+      gallery.opening=false;
+      frames.setAttribute('data-unfold','');
+    }
   }
   async function loadRoomMedia(room){
     const gallery=galleries.get(room);
     try{
       const photos=await publishedPhotos();
       gallery.photos=photos[room]||[];
-      gallery.focused=Math.min(gallery.focused,Math.max(0,photos.length-1));
+      gallery.focused=Math.min(gallery.focused,Math.max(0,gallery.photos.length-1));
       gallery.message='';
     }catch{
       gallery.message='loadPhotosError';
@@ -344,7 +350,8 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     root.style.setProperty('--sway-y',`${(0.5-event.clientY/innerHeight)*12}px`);
   }
   function center(){root.style.removeProperty('--sway-x');root.style.removeProperty('--sway-y');}
-  function releaseHall(){
+  function releaseHall(event){
+    if(hallDrag?.id!==event.pointerId)return;
     hallDrag=null;
     delete root.dataset.dragging;
   }
@@ -364,12 +371,15 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       }
       if(hallDrag.moved){placeHall(hallDrag.pan+delta);return;}
     }
-    if(event.pointerType==='mouse'||event.buttons||event.pointerType==='touch')sway(event);
+    if(event.pointerType==='mouse')sway(event);
   });
   root.addEventListener('pointerleave',center);
-  root.addEventListener('pointerup',event=>{releaseHall();if(event.pointerType!=='mouse')center();});
-  root.addEventListener('pointercancel',()=>{releaseHall();center();});
-  root.addEventListener('lostpointercapture',releaseHall);
+  root.addEventListener('pointerup',event=>{releaseHall(event);if(event.pointerType!=='mouse')center();});
+  root.addEventListener('pointercancel',event=>{releaseHall(event);center();});
+  root.addEventListener('lostpointercapture',event=>{
+    // A touched door loses its implicit capture when the hall takes over the drag.
+    if(event.target===root)releaseHall(event);
+  });
   root.addEventListener('focusin',event=>{
     if(scene!=='lobby'||panel||!event.target.matches(':is(.school-door,.house-prop):focus-visible'))return;
     const bounds=(event.target.querySelector('.door-sign')||event.target).getBoundingClientRect();

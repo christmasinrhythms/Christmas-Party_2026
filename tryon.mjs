@@ -1,5 +1,5 @@
 import { tryonSchools } from './tryon-looks.mjs?v=rigged-streetwear';
-import { createSchoolFrame } from './tryon-frame.mjs';
+import { createSchoolFrame } from './tryon-frame.mjs?v=room-polish-20261126';
 
 const copy = {
   en: {
@@ -707,10 +707,10 @@ function drawFrame() {
     ctx.shadowColor = '#180507';
     ctx.shadowBlur = 7;
     ctx.fillStyle = '#f5d49c';
-    ctx.font = 'bold 31px Georgia, serif';
-    ctx.fillText(school.marque, W / 2, genre === 'rock' ? 66 : 55);
+    ctx.font = 'bold 42px Georgia, serif';
+    ctx.fillText(school.marque, W / 2, genre === 'rock' ? 72 : 61);
     if (rockLogo) {
-      const logoWidth = W * .32;
+      const logoWidth = W * .48;
       const logoHeight = logoWidth * rockLogo.naturalHeight / rockLogo.naturalWidth;
       ctx.shadowBlur = 10;
       ctx.shadowColor = '#160807';

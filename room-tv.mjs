@@ -59,12 +59,14 @@ export function createRoomTv(root, chinese) {
           <span class="tv-power" aria-hidden="true"></span><i class="tv-speaker" aria-hidden="true"></i>
           <div class="tv-hardware">
             <div class="tv-transport">
-              ${key('tv-prev','‹',t('previous'))}
-              <span class="tv-slide-count" aria-live="polite">${deck.index+1} / ${length}</span>
-              ${key('tv-next','›',t('next'))}
-              ${instagram?'':key('tv-pause',t(deck.paused?'play':'pause'))}
+              <div class="tv-pagination">
+                ${key('tv-prev','‹',t('previous'))}
+                <span class="tv-slide-count" aria-live="polite">${deck.index+1} / ${length}</span>
+                ${key('tv-next','›',t('next'))}
+              </div>
             </div>
             <div class="tv-options">
+              ${instagram?'':key('tv-pause',t(deck.paused?'play':'pause'))}
               ${instagram?'':key('tv-sound',t(deck.muted?'silent':'audible'),t(deck.muted?'unmute':'mute'),`aria-pressed="${!deck.muted}"`)}
               ${live&&clip?key('tv-fullscreen','⛶',t('full')):''}
               ${key('tv-rules',t('rules'))}

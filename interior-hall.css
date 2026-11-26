@@ -219,8 +219,22 @@
 
 @media (max-width: 700px) {
   #houseInterior[data-scene="lobby"] {
+    --hall-width: max(129svh, 184vw);
     --hall-floor: calc((var(--hall-height) - 100dvh) / 2 + max(85px,11.5dvh));
-    --hall-furniture-height: clamp(151px, 25dvh, 214px);
+    --hall-furniture-height: clamp(124px, 20dvh, 182px);
+  }
+  #houseInterior[data-scene="lobby"]::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -24px;
+    background: linear-gradient(#2a1a16bd, #211518df),
+      url('assets/interior/atrium.webp') center / cover no-repeat;
+    filter: blur(15px);
+    pointer-events: none;
+  }
+  #houseInterior[data-scene="lobby"] .house-background {
+    mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 91%, transparent);
   }
   #houseInterior[data-scene="lobby"] .school-door .door-sign {
     width: min(94%, 27.5vw);

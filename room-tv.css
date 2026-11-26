@@ -49,13 +49,28 @@
 }
 #houseInterior .tv-hardware { align-items: center; }
 .tv-transport, .tv-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; }
+.tv-pagination {
+  display: grid;
+  grid-template-columns: 44px minmax(48px, auto) 44px;
+  align-items: center;
+  gap: 4px;
+}
 #houseInterior .tv-key[aria-pressed="true"] { box-shadow: inset 0 0 10px #ffdc9e66, 0 2px #24151a; }
 #houseInterior .tv-key[data-house="tv-prev"],
 #houseInterior .tv-key[data-house="tv-next"] { font-size: 20px; }
-@media (max-width: 560px) {
-  #houseInterior .tv-hardware { display: grid; justify-items: center; }
-  .room-tv-panel { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 700px) {
+  #houseInterior .tv-hardware {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 6px;
+  }
+  #houseInterior .room-tv-panel {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 5px;
+  }
   .room-tv-panel > :is(.tv-speaker,.tv-power) { display: none; }
+  .tv-options .tv-key { flex: 0 0 auto; }
 }
 
 @media (pointer: coarse) {

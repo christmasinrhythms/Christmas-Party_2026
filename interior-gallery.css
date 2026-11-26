@@ -34,8 +34,14 @@
   backface-visibility: hidden;
   opacity: var(--fan-light,0);
   transform: translate(-50%,-50%) translate3d(var(--fan-x,0),var(--fan-y,0),var(--fan-depth,0)) rotateY(var(--fan-turn,0deg)) rotateZ(var(--fan-angle,0deg));
-  transition: transform .44s cubic-bezier(.2,.68,.25,1), opacity .33s ease, box-shadow .26s ease;
+  transition: transform .22s cubic-bezier(.18,.79,.27,1), opacity .18s ease, box-shadow .18s ease;
   user-select: none;
+}
+#houseInterior[data-still="false"] .outfit-stage[data-unfold] .outfit-card:not([data-offstage]) {
+  animation: outfit-unfold .26s cubic-bezier(.16,.82,.28,1);
+}
+@keyframes outfit-unfold {
+  from { transform: translate(-50%,-50%) scale(.88); opacity: .15; }
 }
 #houseInterior .outfit-stage[data-pulling] .outfit-card { transition: none; cursor: grabbing; }
 #houseInterior .outfit-card[data-offstage] { visibility: hidden; }

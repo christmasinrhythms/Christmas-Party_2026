@@ -1,4 +1,6 @@
 .hall-companions {
+  --actor-inset: 30;
+  --actor-step: 5;
   position: absolute;
   z-index: 3;
   inset: 0;
@@ -19,8 +21,8 @@
   touch-action: none;
   transform: translateX(-50%);
 }
-#houseInterior .actor-elf { left: 30%; }
-#houseInterior .actor-snowman { left: 70%; --pose-y: 100%; }
+#houseInterior .actor-elf { left: calc(var(--actor-inset) * 1%); }
+#houseInterior .actor-snowman { left: calc(100% - var(--actor-inset) * 1%); --pose-y: 100%; }
 .actor-sprite {
   position: absolute;
   inset: 0;
@@ -124,11 +126,10 @@
 
 @media (max-width: 700px) {
   #houseInterior .hall-actor {
-    --sprite-width: clamp(83px, 27vw, 130px);
+    --sprite-width: clamp(80px, 24vw, 122px);
     bottom: max(67px,9dvh);
   }
-  #houseInterior .actor-elf { left: 39%; }
-  #houseInterior .actor-snowman { left: 61%; }
+  .hall-companions { --actor-inset: 24; --actor-step: 2; }
 }
 @media (min-width: 361px) and (max-width: 700px) {
   #houseInterior[data-scene="lobby"] .house-board { translate: -10px 0; }

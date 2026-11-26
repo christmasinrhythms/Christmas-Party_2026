@@ -80,9 +80,9 @@ export function attachAtriumCharacters(root, {chinese, still}) {
 
   function walk(actor, leftSide, comingIn) {
     if ('aiming' in actor.dataset || actor.dataset.pose) return;
-    const narrow=field.clientWidth<=700;
-    const distance=narrow?2:5;
-    const home=narrow?39:30;
+    const style=getComputedStyle(field);
+    const distance=Number(style.getPropertyValue('--actor-step'));
+    const home=Number(style.getPropertyValue('--actor-inset'));
     const target=home+(comingIn?distance:-distance);
     const x=leftSide?target:100-target;
     const stage=field.getBoundingClientRect();
