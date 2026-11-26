@@ -116,10 +116,12 @@
   scroll-padding-block: 12px;
 }
 #houseInterior[data-panel="tv"] .atrium-tv-focus {
-  --tv-screen-height: clamp(235px, calc(100svh - 284px), 595px);
+  --tv-screen-height: clamp(234px, calc((100svh - 257px) / 1.425), 480px);
   --tv-screen-width: calc(var(--tv-screen-height) * 9 / 16);
-  --tv-frame: 9px;
-  --tv-cabinet-width: max(242px, calc(var(--tv-screen-width) + 2 * var(--tv-frame) + 2px));
+  --tv-crown: calc(var(--tv-screen-width) * .39);
+  --tv-base: calc(var(--tv-screen-width) * .365);
+  --tv-pillar: calc(var(--tv-screen-width) * .245);
+  --tv-cabinet-width: max(242px, calc(var(--tv-screen-width) + 2 * var(--tv-pillar)));
   width: min(100%, 760px);
   padding: 0;
   border: 0;
@@ -140,20 +142,29 @@
   margin-inline: auto;
 }
 #houseInterior .atrium-tv-focus .room-tv-cabinet {
-  padding: var(--tv-frame);
-  border: 1px solid var(--cabinet-edge);
-  border-radius: var(--cabinet-radius);
-  background: var(--cabinet-finish);
-  box-shadow: inset 0 0 0 2px #f3d5a726, 0 10px 28px #150b09b0;
+  padding: var(--tv-crown) 0 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 #houseInterior .atrium-tv-focus .atrium-tv-art {
   position: relative;
   width: min(100%, var(--tv-screen-width));
   aspect-ratio: 9 / 16;
   margin-inline: auto;
-  border-radius: 3px;
+  margin-bottom: var(--tv-base);
+  border-radius: 6px;
   background: #0c090d;
-  box-shadow: 0 0 0 1px var(--cabinet-trim), 0 0 0 4px #352219;
+}
+#houseInterior .atrium-tv-focus .atrium-tv-art::before {
+  /* Keep the carved crown and feet intact while the wooden pillars span the taller screen. */
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--tv-crown)) calc(-1 * var(--tv-pillar)) calc(-1 * var(--tv-base));
+  border: solid transparent;
+  border-width: var(--tv-crown) var(--tv-pillar) var(--tv-base);
+  border-image: url('assets/interior/atrium-television.png') 220 165 250 165 stretch;
+  pointer-events: none;
 }
 #houseInterior .atrium-tv-focus .room-tv-cabinet .house-tv-screen {
   position: absolute;
@@ -162,7 +173,7 @@
   height: auto;
   aspect-ratio: auto;
   border: 0;
-  border-radius: 3px;
+  border-radius: 6px;
   outline: 0;
   background: #0c090d;
 }
@@ -172,6 +183,7 @@
   gap: clamp(6px, 1.9svh, 12px);
   padding: 9px clamp(9px, 3vw, 18px);
   background: radial-gradient(ellipse at 50% 40%, #694f37, #2c201a 80%);
+  align-content: safe center;
   overflow: auto;
 }
 #houseInterior .atrium-tv-focus .tv-briefing p {
@@ -191,8 +203,10 @@
 }
 #houseInterior .atrium-tv-focus .room-tv-panel {
   grid-template-columns: minmax(0, 1fr);
-  margin-top: 8px;
-  padding: 3px;
+  margin-top: 2px;
+  padding: 5px;
+  border-color: var(--cabinet-edge);
+  background: var(--cabinet-finish);
 }
 #houseInterior .atrium-tv-focus .room-tv-panel > :is(.tv-speaker,.tv-power) { display: none; }
 #houseInterior .atrium-tv-focus .tv-hardware {
@@ -260,7 +274,42 @@
   #houseInterior[data-panel="tv"] .focus-content {
     padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
   }
+  #houseInterior[data-panel="tv"] .atrium-tv-focus {
+    padding: 8px 8px 12px;
+    border: 1px solid var(--hall-brass);
+    border-radius: 14px;
+    background: var(--hall-paper);
+    box-shadow: inset 0 0 0 4px #fff9eb, 0 15px 40px #21120988;
+  }
+  #houseInterior[data-panel="tv"] .atrium-tv-focus::before {
+    content: "";
+    inset: 7px;
+  }
+  #houseInterior[data-panel="tv"] .atrium-tv-focus h2 {
+    margin-bottom: 6px !important;
+    color: var(--hall-ink);
+    text-shadow: none;
+  }
+  #houseInterior .atrium-tv-focus .tv-clip-caption {
+    color: var(--hall-ink);
+    text-shadow: none;
+  }
   #houseInterior[data-panel="tv"] .interior-return { padding-top: 5px; }
+}
+@media (max-width: 350px) {
+  #houseInterior .atrium-tv-focus .tv-briefing {
+    gap: 4px;
+    padding: 6px 5px;
+  }
+  #houseInterior .atrium-tv-focus .tv-briefing strong { font-size: 17px; }
+  #houseInterior .atrium-tv-focus .tv-briefing > span { font-size: 11px; line-height: 1.28; }
+  #houseInterior .atrium-tv-focus .tv-categories li { font-size: 10px; }
+  #houseInterior .atrium-tv-focus .tv-clip-caption {
+    width: calc(100% + 20px);
+    margin-inline: -10px;
+    padding: 3px 0 0;
+    font-size: 11px;
+  }
 }
 @media (max-width: 700px) and (min-height: 730px) {
   #houseInterior .atrium-tv-focus .tv-briefing {
