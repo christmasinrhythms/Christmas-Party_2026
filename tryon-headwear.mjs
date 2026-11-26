@@ -8,6 +8,10 @@ export function createHeadwear(width, height, renderLayer) {
   const loader = new GLTFLoader();
   const models = new Map();
   const scene = new THREE.Scene();
+  const probe = document.createElement('canvas');
+  probe.width = probe.height = 21;
+  const probeContext = probe.getContext('2d', { willReadFrequently: true });
+  let drawnLayer;
   const anchor = new THREE.Group();
   scene.add(anchor);
   const camera = new THREE.OrthographicCamera(0, width, 0, -height, 1, 5000);
@@ -58,6 +62,7 @@ export function createHeadwear(width, height, renderLayer) {
   }
 
   function draw(ctx, model, points, offset, liveFace, fit) {
+    drawnLayer = null;
     const forehead = vector(points[10]);
     const chin = vector(points[152]);
     const temples = [vector(points[234]), vector(points[454])].sort((a, b) => a.x - b.x);
@@ -111,8 +116,22 @@ export function createHeadwear(width, height, renderLayer) {
         position.needsUpdate = true;
       }
     }
-    renderLayer(scene, camera, ctx);
+    drawnLayer = renderLayer(scene, camera, ctx);
   }
 
-  return { load, draw };
+  function hitTest(x, y) {
+    if (!drawnLayer || x < 0 || x > width || y < 0 || y > height) return false;
+    const left = Math.round(x) - 10;
+    const top = Math.round(y) - 10;
+    probeContext.clearRect(0, 0, 21, 21);
+    probeContext.drawImage(drawnLayer, -left, -top);
+    const pixels = probeContext.getImageData(0, 0, 21, 21).data;
+    let covered = 0;
+    for (let i = 3; i < pixels.length; i += 4) {
+      if (pixels[i] > 48 && ++covered >= 6) return true;
+    }
+    return false;
+  }
+
+  return { load, draw, hitTest };
 }

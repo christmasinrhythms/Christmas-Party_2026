@@ -276,6 +276,7 @@ export async function createRockVest(width, height) {
   function renderLayer(layerScene, layerCamera, target) {
     renderer.render(layerScene, layerCamera);
     target.drawImage(renderer.domElement, 0, 0);
+    return renderer.domElement;
   }
 
   function reset() {

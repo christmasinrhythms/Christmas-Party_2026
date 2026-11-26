@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#16100f">
   <meta name="description" content="Try on a Christmas look in your camera and save a photo or a short clip.">
-  <title>Rock &amp; Punk 3D Camera · Christmas in Rhythms</title>
-  <link rel="stylesheet" href="tryon.css?v=mirror-gestures-20261126">
-  <link rel="stylesheet" href="tryon-studio.css?v=mirror-fit-20261126">
+  <title>MAGIC MIRROR · Christmas in Rhythms</title>
+  <link rel="stylesheet" href="tryon.css?v=mirror-center-headwear-20261126">
+  <link rel="stylesheet" href="tryon-studio.css?v=mirror-center-headwear-20261126">
   <link rel="icon" href="data:,">
   <link rel="preload" as="image" href="assets/logo.png">
   <style>
@@ -19,12 +19,14 @@
 </head>
 <body>
   <header class="studio-header">
-    <a class="header-control back-link" id="back-link" href="index.html?room=rock"><span aria-hidden="true">‹</span><span data-text="back">Rock Room</span></a>
     <div class="studio-title">
       <img class="studio-crest" id="studio-crest" src="assets/interior/school-crest-rock.png" alt="">
-      <h1 data-text="title">Try-on Camera</h1>
+      <h1 data-text="title">MAGIC MIRROR</h1>
     </div>
-    <button class="header-control language" id="language" type="button">繁中</button>
+    <div class="header-actions">
+      <a class="header-control back-link" id="back-link" href="index.html?room=rock"><span aria-hidden="true">‹</span><span data-text="back">Rock Room</span></a>
+      <button class="header-control language" id="language" type="button">繁中</button>
+    </div>
   </header>
 
   <main class="studio">
@@ -45,7 +47,7 @@
       <div class="camera-dock">
         <p class="view-status" id="status" aria-live="polite" role="status"></p>
         <div class="camera-actions" id="view-top" hidden>
-          <button class="subtle reset-outfit" id="reset-mapping" type="button" data-text="resetMapping" data-label="resetOutfitLabel">Reset</button>
+          <button class="subtle reset-outfit" id="reset-mapping" type="button" data-text="resetMapping" data-label="resetFitLabel">Reset</button>
           <div class="camera-zoom" id="camera-zoom" role="group" data-label="zoom" aria-label="Camera zoom" hidden>
             <button type="button" data-camera-zoom="wide" data-text="wide" aria-pressed="true">Wide</button>
             <button type="button" data-camera-zoom="1" aria-pressed="false">1×</button>
@@ -58,7 +60,7 @@
           <button type="button" class="shutter" id="shutter" aria-label="Take photo"><span aria-hidden="true"></span></button>
           <button class="camera-icon" type="button" data-mode="video" aria-pressed="false" data-label="video" aria-label="Video"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg></button>
         </div>
-        <p class="gesture-hint" id="outfit-gesture-hint" data-text="gestureHint" hidden>Drag to move. Pinch to resize.</p>
+        <p class="gesture-hint" id="outfit-gesture-hint" data-text="gestureHint" hidden>Drag the outfit or headwear to move it. Pinch to resize.</p>
       </div>
     </div>
 
@@ -93,6 +95,6 @@
   <script type="importmap">
     {"imports":{"three":"./assets/tryon/vendor/three/three.module.min.js"}}
   </script>
-  <script type="module" src="tryon.mjs?v=mirror-gestures-20261126"></script>
+  <script type="module" src="tryon.mjs?v=mirror-center-headwear-20261126"></script>
 </body>
 </html>

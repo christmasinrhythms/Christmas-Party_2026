@@ -59,9 +59,9 @@ const schoolCopy = {
     fitLoading: 'Starting face and body tracking…', fitSearching: 'Bring your face and shoulders into view.',
     fitUnavailable: 'Body tracking is unavailable in this browser.',
     fitManual: '', tracking: '3D vest', facePaint: 'Face paint', frame: 'Rock Christmas frame',
-    gestureHint: 'Drag to move. Pinch to resize.',
-    fitCanvas: 'Adjust outfit. Drag or use the arrow keys to move. Pinch or use plus and minus to resize.',
-    resetMapping: 'Reset', resetOutfitLabel: 'Reset outfit position and size', remapping: 'Detecting your face and shoulders again…',
+    gestureHint: 'Drag the outfit or headwear to move it. Pinch to resize.',
+    fitCanvas: 'Adjust the outfit or headwear. Press O for outfit or H for headwear. Use arrows to move and plus or minus to resize.',
+    resetMapping: 'Reset', resetFitLabel: 'Reset outfit and headwear position and size', remapping: 'Detecting your face and shoulders again…',
     fitPhotoMissing: 'Choose a photo that shows your face and both shoulders.',
   },
   zh: {
@@ -71,9 +71,9 @@ const schoolCopy = {
     fitLoading: '正在啟動面部同身體追蹤…', fitSearching: '請將面部同兩邊肩膊移入鏡頭。',
     fitUnavailable: '目前瀏覽器未能使用身體追蹤。',
     fitManual: '', tracking: '3D 背心', facePaint: '搖滾面妝', frame: '搖滾聖誕相框',
-    gestureHint: '拖動服裝可移位，雙指捏合可縮放。',
-    fitCanvas: '調整服裝。拖動或用方向鍵移位，雙指捏合或用加減鍵縮放。',
-    resetMapping: '重設', resetOutfitLabel: '重設服裝位置同大小', remapping: '正在重新偵測面部同肩膊…',
+    gestureHint: '拖動服裝或頭飾可移位，雙指捏合可縮放。',
+    fitCanvas: '按 O 揀服裝，按 H 揀頭飾。方向鍵移位，加減鍵縮放。',
+    resetMapping: '重設', resetFitLabel: '重設服裝同頭飾嘅位置及大小', remapping: '正在重新偵測面部同肩膊…',
     fitPhotoMissing: '請選一張見到面部同兩邊肩膊嘅相。',
   },
 };
@@ -134,7 +134,7 @@ let look = selectedFromGenre || looks[0];
 const hasHeadEffect = () => Boolean(look.paint || look.head);
 const t = (key) => {
   if (key === 'back') return localized(school.back);
-  if (key === 'title') return localized(school.name) + (language === 'zh' ? ' 3D 試穿' : ' 3D Camera');
+  if (key === 'title') return language === 'zh' ? '魔法試衣鏡' : 'MAGIC MIRROR';
   if (key === 'welcome') return (language === 'zh' ? '試穿 ' : 'Try on ') + localized(school.name);
   if (key === 'tracking' && !look.paint) return language === 'zh' ? '3D 服裝' : '3D outfit';
   if (key === 'facePaint' && look.head) return localized(look.head.label);
@@ -162,6 +162,7 @@ let drawRockPaint = null;
 let schoolFrame = null;
 let headAsset = null;
 let headwear = null;
+let headwearRendered = false;
 let appearanceRequest = 0;
 let rockLogo = null;
 let previousVideoTime = -1;
@@ -171,8 +172,7 @@ let lastTrackingAt = -Infinity;
 let bodyFit = null;
 let frozenFit = defaultFit;
 const newOffset = () => ({ x: 0, y: 0, scale: 1, rotation: 0 });
-let outfitOffset = newOffset();
-const headOffset = newOffset();
+const fitOffsets = { outfit: newOffset(), headwear: newOffset() };
 let manualFit = null;
 let hudStatus = '';
 let previewError = '';
@@ -181,7 +181,9 @@ let saving = false;
 let resultFile = null;
 let resultUrl = '';
 let loop = 0;
-const outfitPointers = new Map();
+const fitPointers = new Map();
+let fitTarget = 'outfit';
+let gestureMoved = false;
 let rockVest = null;
 let vestStatus = 'loading';
 if (schoolCamera) {
@@ -204,7 +206,7 @@ if (schoolCamera) {
     rockLogo = logo;
     paintOnce();
   }).catch(() => {});
-  import('./rock-vest-3d.mjs?v=mirror-upper-body-20261126')
+  import('./rock-vest-3d.mjs?v=mirror-center-headwear-20261126')
     .then(({ createRockVest }) => createRockVest(W, H))
     .then((vest) => {
       rockVest = vest;
@@ -228,7 +230,7 @@ if (schoolCamera) {
 }
 
 async function loadHeadwear(path) {
-  const { createHeadwear } = await import('./tryon-headwear.mjs?v=mirror-upper-body-20261126');
+  const { createHeadwear } = await import('./tryon-headwear.mjs?v=mirror-center-headwear-20261126');
   headwear ??= createHeadwear(W, H, rockVest.renderLayer);
   return headwear.load(path);
 }
@@ -263,6 +265,8 @@ const fittedVestReady = () => trackingOn() && Boolean(rockVest && vestStatus ===
 const paintedFaceReady = () => facePaintOn() && Boolean((look.paint ? drawRockPaint : headAsset) && facePoints);
 const fitBusy = () => Boolean(recording || saving || cameraPending || mappingResetting);
 const canAdjustOutfit = () => Boolean(source && trackingOn() && garmentReady() && !fitBusy());
+const canAdjustHeadwear = () => Boolean(source && look.head && paintedFaceReady() && !fitBusy());
+const canAdjust = (target) => target === 'headwear' ? canAdjustHeadwear() : canAdjustOutfit();
 const garmentReady = () => schoolCamera ? vestStatus === 'ready' :
   look.image.complete && look.image.naturalWidth > 0;
 const captureReady = () => schoolCamera
@@ -303,7 +307,7 @@ function setLanguage() {
 function updateControls() {
   const active = Boolean(source);
   const busy = fitBusy();
-  const canAdjust = canAdjustOutfit();
+  const canEdit = canAdjustOutfit() || canAdjustHeadwear();
   byId('welcome').hidden = active || cameraPending;
   viewfinder.classList.toggle('has-source', active);
   viewfinder.classList.toggle('is-recording', Boolean(recording));
@@ -317,12 +321,12 @@ function updateControls() {
     button.setAttribute('aria-pressed', String(button.dataset.cameraZoom === cameraZoom));
   }
   byId('reset-mapping').disabled = busy;
-  byId('outfit-gesture-hint').hidden = !canAdjust;
-  viewfinder.classList.toggle('can-adjust', canAdjust);
-  canvas.tabIndex = canAdjust ? 0 : -1;
-  canvas.setAttribute('aria-hidden', String(!canAdjust));
+  byId('outfit-gesture-hint').hidden = !canEdit;
+  viewfinder.classList.toggle('can-adjust', canEdit);
+  canvas.tabIndex = canEdit ? 0 : -1;
+  canvas.setAttribute('aria-hidden', String(!canEdit));
   canvas.setAttribute('aria-label', t('fitCanvas'));
-  if (!canAdjust) clearOutfitGesture();
+  if (!canAdjust(fitTarget)) clearFitGesture();
   byId('gallery-button').disabled = busy;
   byId('back-to-camera').hidden = source !== 'photo';
   byId('back-to-camera').disabled = busy;
@@ -359,9 +363,9 @@ function releaseCamera() {
   video.srcObject = null;
 }
 
-function clearOutfitGesture() {
-  const pointers = [...outfitPointers.keys()];
-  outfitPointers.clear();
+function clearFitGesture() {
+  const pointers = [...fitPointers.keys()];
+  fitPointers.clear();
   for (const id of pointers) {
     if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
   }
@@ -369,8 +373,10 @@ function clearOutfitGesture() {
 }
 
 function resetPosition() {
-  clearOutfitGesture();
-  outfitOffset = newOffset();
+  clearFitGesture();
+  fitOffsets.outfit = newOffset();
+  fitOffsets.headwear = newOffset();
+  fitTarget = 'outfit';
   manualFit = null;
 }
 
@@ -392,7 +398,7 @@ function resetTracking() {
 
 function setSource(value) {
   source = value;
-  clearOutfitGesture();
+  clearFitGesture();
   resetTracking();
   previewError = '';
   if (value !== 'camera') mode = 'photo';
@@ -754,8 +760,9 @@ function cameraFrame(now) {
   if (source !== 'camera') return;
   const layout = imageLayout(video);
   const couldCapture = schoolCamera && captureReady();
+  const couldAdjustHeadwear = canAdjustHeadwear();
   if (!mappingResetting) trackShoulders(now, layout);
-  if (schoolCamera && couldCapture !== captureReady()) updateControls();
+  if (schoolCamera && (couldCapture !== captureReady() || couldAdjustHeadwear !== canAdjustHeadwear())) updateControls();
   paint(layout);
   refreshStatus();
   loop = requestAnimationFrame(cameraFrame);
@@ -847,11 +854,12 @@ function drawGarment() {
     jaw.closePath();
     ctx.clip(jaw, 'evenodd');
   }
-  rockVest.draw(ctx, outfitOffset, manualFit);
+  rockVest.draw(ctx, fitOffsets.outfit, manualFit);
   ctx.restore();
 }
 
 function paint(layout) {
+  headwearRendered = false;
   const media = source === 'camera' ? video : source === 'photo' ? imageSource : null;
   const placement = media && (layout || imageLayout(media));
   ctx.fillStyle = source ? '#281918' : '#352326';
@@ -875,10 +883,13 @@ function paint(layout) {
     if (fittedVestReady()) drawGarment();
     if (paintedFaceReady()) {
       if (look.paint) drawRockPaint(ctx, facePoints, mirrorOn());
-      else headwear.draw(ctx, headAsset, facePoints, headOffset, facePoints, look.head);
+      else {
+        headwear.draw(ctx, headAsset, facePoints, fitOffsets.headwear, facePoints, look.head);
+        headwearRendered = true;
+      }
     }
   } else if (garmentReady()) {
-    const offset = outfitOffset;
+    const offset = fitOffsets.outfit;
     const fit = (source === 'camera' && trackingOn() && bodyFit) || frozenFit;
     const width = fit.width * offset.scale;
     const height = width * look.image.naturalHeight / look.image.naturalWidth;
@@ -1094,7 +1105,7 @@ byId('reset-mapping').addEventListener('click', () => {
 });
 
 function gestureFrame() {
-  const [first, second] = outfitPointers.values();
+  const [first, second] = fitPointers.values();
   return second ? {
     x: (first.x + second.x) / 2,
     y: (first.y + second.y) / 2,
@@ -1102,30 +1113,53 @@ function gestureFrame() {
   } : { ...first, span: 0 };
 }
 
-function adjustOutfit(dx, dy, ratio = 1) {
-  if (schoolCamera && !bodyFit && !manualFit) manualFit = rockVest.fittedSnapshot();
-  outfitOffset.x = clamp(outfitOffset.x + dx, -W, W);
-  outfitOffset.y = clamp(outfitOffset.y + dy, -H * .85, H * .85);
-  outfitOffset.scale = clamp(outfitOffset.scale * ratio, .35, 2);
+function hitsHeadwear(clientX, clientY) {
+  if (!headwearRendered || !canAdjustHeadwear()) return false;
+  const bounds = canvas.getBoundingClientRect();
+  const zoom = cameraScale(imageLayout(video));
+  const x = ((clientX - bounds.left) * W / bounds.width - W / 2) / zoom + W / 2;
+  const y = ((clientY - bounds.top) * H / bounds.height - H / 2) / zoom + H / 2;
+  return headwear.hitTest(x, y);
+}
+
+function adjustFit(target, dx, dy, ratio = 1) {
+  if (target === 'outfit' && schoolCamera && !bodyFit && !manualFit) manualFit = rockVest.fittedSnapshot();
+  const offset = fitOffsets[target];
+  offset.x = clamp(offset.x + dx, -W, W);
+  offset.y = clamp(offset.y + dy, -H * .85, H * .85);
+  offset.scale = clamp(offset.scale * ratio, .35, 2);
   paintOnce();
   if (manualFit && !bodyFit && shutter.disabled) updateControls();
 }
 
 canvas.addEventListener('pointerdown', (event) => {
-  if (!canAdjustOutfit() || event.button !== 0 || outfitPointers.size >= 2) return;
-  outfitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (event.button !== 0 || fitPointers.size >= 2) return;
+  const overHeadwear = hitsHeadwear(event.clientX, event.clientY);
+  if (!fitPointers.size) {
+    fitTarget = overHeadwear || !canAdjustOutfit() ? 'headwear' : 'outfit';
+    gestureMoved = false;
+  } else if (!gestureMoved && fitTarget !== 'headwear') {
+    const [first] = fitPointers.values();
+    if (overHeadwear || hitsHeadwear((first.x + event.clientX) / 2, (first.y + event.clientY) / 2)) {
+      fitTarget = 'headwear';
+    }
+  }
+  if (!canAdjust(fitTarget)) return;
+  fitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   canvas.setPointerCapture(event.pointerId);
   viewfinder.classList.add('dragging');
 });
 canvas.addEventListener('pointermove', (event) => {
-  if (!outfitPointers.has(event.pointerId)) return;
+  if (!fitPointers.has(event.pointerId) || !canAdjust(fitTarget)) return;
   const before = gestureFrame();
-  outfitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  fitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   const after = gestureFrame();
   const bounds = canvas.getBoundingClientRect();
   const zoom = cameraScale(imageLayout(video));
   const ratio = before.span > 6 && after.span > 6 ? after.span / before.span : 1;
-  adjustOutfit(
+  gestureMoved = true;
+  adjustFit(
+    fitTarget,
     (after.x - before.x) * W / (bounds.width * zoom),
     (after.y - before.y) * H / (bounds.height * zoom),
     ratio,
@@ -1133,24 +1167,35 @@ canvas.addEventListener('pointermove', (event) => {
 });
 for (const name of ['lostpointercapture', 'pointercancel', 'pointerup']) {
   canvas.addEventListener(name, (event) => {
-    outfitPointers.delete(event.pointerId);
-    if (!outfitPointers.size) viewfinder.classList.remove('dragging');
+    fitPointers.delete(event.pointerId);
+    if (!fitPointers.size) viewfinder.classList.remove('dragging');
   });
 }
 canvas.addEventListener('keydown', (event) => {
-  if (!canAdjustOutfit()) return;
+  const key = event.key.toLowerCase();
+  if (!fitPointers.size && (key === 'h' || key === 'o')) {
+    const target = key === 'h' ? 'headwear' : 'outfit';
+    if (canAdjust(target)) fitTarget = target;
+    return;
+  }
+  if (!canAdjust(fitTarget)) {
+    fitTarget = canAdjustOutfit() ? 'outfit' : 'headwear';
+    if (!canAdjust(fitTarget)) return;
+  }
   const directions = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
   const direction = directions[event.key];
   const ratio = event.key === '+' || event.key === '=' ? 1.05 : event.key === '-' ? 1 / 1.05 : 1;
   if (!direction && ratio === 1) return;
   event.preventDefault();
   const step = (event.shiftKey ? 20 : 5) / cameraScale(imageLayout(video));
-  adjustOutfit((direction?.[0] || 0) * step, (direction?.[1] || 0) * step, ratio);
+  adjustFit(fitTarget, (direction?.[0] || 0) * step, (direction?.[1] || 0) * step, ratio);
 });
 canvas.addEventListener('wheel', (event) => {
-  if (!event.ctrlKey || !canAdjustOutfit()) return;
+  if (!event.ctrlKey || fitPointers.size) return;
+  const target = hitsHeadwear(event.clientX, event.clientY) || !canAdjustOutfit() ? 'headwear' : 'outfit';
+  if (!canAdjust(target)) return;
   event.preventDefault();
-  adjustOutfit(0, 0, Math.exp(clamp(-event.deltaY * .012, -.25, .25)));
+  adjustFit(target, 0, 0, Math.exp(clamp(-event.deltaY * .012, -.25, .25)));
 }, { passive: false });
 shutter.addEventListener('click', capture);
 byId('result-close').addEventListener('click', () => result.close());
