@@ -6,7 +6,7 @@ const copy = {
     back: 'Ballroom', title: 'Try-on Camera', preview: 'Try-on preview', flip: 'Flip camera',
     welcome: 'Your Christmas look', framing: 'Keep both shoulders in view.',
     startCamera: 'Open camera', gallery: 'Choose a photo', captureMode: 'Capture mode',
-    photo: 'Photo', video: 'Video', looks: 'Looks', rock: 'Rock', disco: 'Disco', jazz: 'Jazz',
+    photo: 'Photo', video: 'Video', zoom: 'Camera zoom', wide: 'Wide', looks: 'Looks', rock: 'Rock', disco: 'Disco', jazz: 'Jazz',
     tracking: 'Follow shoulders', frame: 'Christmas frame', adjust: 'Adjust fit',
     drag: 'Drag the look on the preview to position it.', size: 'Size', angle: 'Angle', reset: 'Reset fit',
     privacy: 'Photos and videos stay on this device.', close: 'Close', download: 'Download', share: 'Share',
@@ -29,7 +29,7 @@ const copy = {
     back: '宴會廳', title: '試穿相機', preview: '試穿預覽', flip: '轉換鏡頭',
     welcome: '試吓你嘅聖誕造型', framing: '請將兩邊肩膊一齊入鏡。',
     startCamera: '開啟相機', gallery: '從相簿選相', captureMode: '拍攝模式',
-    photo: '拍照', video: '錄影', looks: '試穿造型', rock: '搖滾', disco: '迪斯可', jazz: '爵士',
+    photo: '拍照', video: '錄影', zoom: '相機縮放', wide: '廣角', looks: '試穿造型', rock: '搖滾', disco: '迪斯可', jazz: '爵士',
     tracking: '跟住肩位', frame: '聖誕相框', adjust: '微調衣服', drag: '在預覽畫面拖動衣服，就可以調整位置。',
     size: '大小', angle: '角度', reset: '重設位置', privacy: '相片同短片保留喺你嘅裝置。',
     close: '關閉', download: '下載', share: '分享', capturedPhoto: '試穿相片', capturedVideo: '試穿短片',
@@ -107,6 +107,9 @@ const looks = school.looks.map((entry) => {
 const selectedFromGenre = looks.find((entry) => entry.id === params.get('look'));
 const W = canvas.width;
 const H = canvas.height;
+const phoneCamera = matchMedia('(max-width: 700px)');
+const zoomGroup = byId('camera-zoom');
+const zoomButtons = [...zoomGroup.querySelectorAll('button')];
 const limitSeconds = 15;
 const defaultFit = { x: W * .5, y: H * .36, width: W * .67, angle: 0 };
 
@@ -125,6 +128,7 @@ let mode = 'photo';
 let source = null;
 let camera = null;
 let facing = 'user';
+let cameraZoom = 'wide';
 let sourceInput = 0;
 let cameraPending = false;
 let poseStatus = 'idle';
@@ -286,6 +290,11 @@ function updateControls() {
   byId('flip-camera').hidden = source !== 'camera';
   byId('flip-camera').disabled = Boolean(recording) || saving;
   byId('capture-controls').hidden = !active || editingFit;
+  zoomGroup.hidden = source !== 'camera' || !phoneCamera.matches;
+  for (const button of zoomButtons) {
+    button.disabled = Boolean(recording) || saving || cameraPending;
+    button.setAttribute('aria-pressed', String(button.dataset.cameraZoom === cameraZoom));
+  }
   if (schoolCamera) {
     byId('fit-panel').hidden = !active || !editingFit;
     byId('fit-open').disabled = Boolean(recording) || saving || cameraPending;
@@ -426,16 +435,26 @@ async function openCamera(nextFacing = 'user') {
   updateControls();
   let acquired;
   try {
+    const constraints = phoneCamera.matches
+      ? { width: { ideal: 1280 }, resizeMode: { ideal: 'none' } }
+      : { width: { ideal: 720 }, height: { ideal: 1280 } };
     acquired = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: nextFacing }, width: { ideal: 720 }, height: { ideal: 1280 } },
+      video: { facingMode: { ideal: nextFacing }, ...constraints },
       audio: false,
     });
     if (id !== sourceInput) return stopTracks(acquired);
     camera = acquired;
+    const track = acquired.getVideoTracks()[0];
+    if (phoneCamera.matches) {
+      const minZoom = track.getCapabilities?.()?.zoom?.min;
+      if (Number.isFinite(minZoom) && minZoom < (track.getSettings().zoom ?? 1)) {
+        await track.applyConstraints({ ...track.getConstraints(), advanced: [{ zoom: minZoom }] }).catch(() => {});
+      }
+    }
+    if (id !== sourceInput) return stopTracks(acquired);
     video.srcObject = acquired;
     await video.play();
     if (id !== sourceInput) return stopTracks(acquired);
-    const track = acquired.getVideoTracks()[0];
     facing = track.getSettings().facingMode || nextFacing;
     track.addEventListener('ended', () => {
       if (camera !== acquired) return;
@@ -445,6 +464,7 @@ async function openCamera(nextFacing = 'user') {
       previewError = 'cameraEnded';
       refreshStatus();
     });
+    cameraZoom = 'wide';
     resetPosition();
     setSource('camera');
     if (trackingNeeded()) prepareCameraTracking();
@@ -559,10 +579,16 @@ function imageLayout(image) {
   const width = image.videoWidth || image.naturalWidth;
   const height = image.videoHeight || image.naturalHeight;
   if (!width || !height) return null;
-  const scale = Math.max(W / width, H / height);
+  const cover = Math.max(W / width, H / height);
+  const scale = image === video && phoneCamera.matches ? Math.min(W / width, H / height, cover * .85) : cover;
   const w = width * scale;
   const h = height * scale;
   return { x: (W - w) / 2, y: (H - h) / 2, w, h };
+}
+
+function cameraScale(layout) {
+  if (source !== 'camera' || !phoneCamera.matches || cameraZoom === 'wide' || !layout) return 1;
+  return Number(cameraZoom) * Math.max(W / layout.w, H / layout.h);
 }
 
 function mirrorOn() {
@@ -774,6 +800,11 @@ function paint(layout) {
   ctx.fillRect(0, 0, W, H);
   if (!placement || (source === 'camera' && video.readyState < 2)) return;
 
+  // Scale the already aligned camera and filters together. The Christmas frame stays fixed.
+  const zoom = cameraScale(placement);
+  ctx.save();
+  ctx.translate(W * (1 - zoom) / 2, H * (1 - zoom) / 2);
+  ctx.scale(zoom, zoom);
   ctx.save();
   if (mirrorOn()) {
     ctx.translate(W, 0);
@@ -815,6 +846,7 @@ function paint(layout) {
     ctx.drawImage(look.image, -width / 2, -.145 * height, width, height);
     ctx.restore();
   }
+  ctx.restore();
   if (byId('show-frame').checked) drawFrame();
 }
 
@@ -978,6 +1010,13 @@ byId('language').addEventListener('click', () => {
 byId('start-camera').addEventListener('click', () => void openCamera());
 byId('back-to-camera').addEventListener('click', () => void openCamera());
 byId('flip-camera').addEventListener('click', () => void openCamera(facing === 'user' ? 'environment' : 'user'));
+for (const button of zoomButtons) {
+  button.addEventListener('click', () => {
+    cameraZoom = button.dataset.cameraZoom;
+    updateControls();
+  });
+}
+phoneCamera.addEventListener('change', updateControls);
 byId('welcome-gallery').addEventListener('click', selectPhoto);
 byId('gallery-button').addEventListener('click', selectPhoto);
 byId('gallery-input').addEventListener('change', (event) => {
@@ -1034,8 +1073,9 @@ canvas.addEventListener('pointerdown', (event) => {
 canvas.addEventListener('pointermove', (event) => {
   if (!drag || event.pointerId !== drag.id) return;
   const bounds = canvas.getBoundingClientRect();
-  drag.offset.x = clamp(drag.startX + (event.clientX - drag.x) * W / bounds.width, -W, W);
-  drag.offset.y = clamp(drag.startY + (event.clientY - drag.y) * H / bounds.height, -H * .85, H * .85);
+  const zoom = cameraScale(imageLayout(video));
+  drag.offset.x = clamp(drag.startX + (event.clientX - drag.x) * W / (bounds.width * zoom), -W, W);
+  drag.offset.y = clamp(drag.startY + (event.clientY - drag.y) * H / (bounds.height * zoom), -H * .85, H * .85);
   paintOnce();
 });
 canvas.addEventListener('keydown', (event) => {
@@ -1044,7 +1084,7 @@ canvas.addEventListener('keydown', (event) => {
   if (!editingFit || !direction) return;
   event.preventDefault();
   const offset = selectedOffset();
-  const step = event.shiftKey ? 20 : 5;
+  const step = (event.shiftKey ? 20 : 5) / cameraScale(imageLayout(video));
   offset.x = clamp(offset.x + direction[0] * step, -W, W);
   offset.y = clamp(offset.y + direction[1] * step, -H * .85, H * .85);
   paintOnce();

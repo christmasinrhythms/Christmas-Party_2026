@@ -18,6 +18,9 @@ export class Soundscape {
     this.baseUrl=new URL(baseUrl,import.meta.url);this.music=new Audio();this.music.preload='none';this.music.setAttribute('playsinline','');
     this._index=0;this._status='paused';this._intent=false;this._blocked=false;this._error=null;this._token=0;this._destroyed=false;this._resume=false;this._failed=new Set();this._subscribers=new Set();this._voices=new Set();this._lastSfx=new Map();this._gesture=false;this._sfxContext=null;this._sfxGain=null;this._bufferCache=new Map();this._fetches=new Set();this._sfxEpoch=0;this._lastSfxPlayed=null;this._sfxError=null;this._sfxReady=false;this._sfxBlocked=false;
     this._musicVolume=clamp(musicVolume);this._sfxVolume=clamp(sfxVolume);this._musicMuted=false;this._sfxMuted=false;this._masterMuted=false;
+    this.music.volume=.5;
+    this._nativeMusicVolume=this.music.volume===.5;
+    this._musicGain=null;
     this._handlers={
       playing:()=>{if(this._destroyed||!this._intent||document.hidden){this.music.pause();return}this._status='playing';this._blocked=false;this._error=null;this._emit()},
       pause:()=>{if(this._status==='playing')this._status=this._resume?'visibility-paused':'paused';this._emit()},
@@ -32,7 +35,13 @@ export class Soundscape {
   subscribe(fn){if(typeof fn!=='function')throw new TypeError('Listener must be a function');this._subscribers.add(fn);fn(this.getState());return()=>this._subscribers.delete(fn)}
   _emit(){const state=this.getState();for(const fn of this._subscribers){try{fn(state)}catch(error){console.error('Soundscape subscriber error',error)}}}
   _select(index){this._token++;this._index=index;this.music.pause();this.music.src=new URL(MUSIC_TRACKS[index].file,this.baseUrl).href;this.music.preload='none';this._status='paused';this._blocked=false;this._error=null;this._emit();}
-  _volume(){this.music.volume=this._musicVolume;this.music.muted=this._musicMuted||this._masterMuted;if(this._sfxGain){const ctx=this._sfxContext;this._sfxGain.gain.setValueAtTime(this._sfxMuted||this._masterMuted?0:this._sfxVolume,ctx.currentTime);}}
+  _volume(){
+    const muted=this._musicMuted||this._masterMuted;
+    if(this._nativeMusicVolume)this.music.volume=this._musicVolume;
+    this.music.muted=muted||this._musicVolume===0;
+    if(this._musicGain)this._musicGain.gain.setTargetAtTime(muted?0:this._musicVolume,this._sfxContext.currentTime,.045);
+    if(this._sfxGain)this._sfxGain.gain.setValueAtTime(this._sfxMuted||this._masterMuted?0:this._sfxVolume,this._sfxContext.currentTime);
+  }
   async _attempt(token){
     if(this._destroyed||!this._intent||token!==this._token)return false;
     if(document.hidden){this._resume=true;this._status='visibility-paused';this._emit();return false}
@@ -60,6 +69,16 @@ export class Soundscape {
   _syncSfxState(){
     if(this._destroyed)return;
     this._sfxReady=this._sfxContext?.state==='running';
+    if(this._sfxReady&&!this._nativeMusicVolume&&!this._musicGain){
+      const context=this._sfxContext;
+      try{
+        const gain=context.createGain();
+        gain.gain.value=this._musicMuted||this._masterMuted?0:this._musicVolume;
+        gain.connect(context.destination);
+        context.createMediaElementSource(this.music).connect(gain);
+        this._musicGain=gain;
+      }catch{}
+    }
     this._sfxBlocked=Boolean(this._sfxContext)&&!this._sfxReady;
     if(this._sfxReady){this._sfxError=null;for(const name of Object.keys(EAGER_SFX))void this._getBuffer(name).catch(()=>{});}
     this._emit();

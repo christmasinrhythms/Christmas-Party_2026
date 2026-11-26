@@ -125,13 +125,26 @@
 #houseInterior[data-still="true"] .snow-burst b { animation: none; transform: translate(var(--flake-x), var(--flake-y)); }
 
 @media (max-width: 700px) {
-  #houseInterior .hall-actor {
-    --sprite-width: clamp(80px, 24vw, 122px);
-    bottom: max(67px,9dvh);
+  /* Match the furniture's hall camera so the companions stay alongside it while panning. */
+  #houseInterior[data-scene="lobby"] .hall-companions {
+    --actor-step: 0;
+    --actor-gap: 9px;
+    inset: 50% auto auto 50%;
+    width: var(--hall-width);
+    height: var(--hall-height);
+    transform: var(--hall-camera);
+    transition: transform .36s cubic-bezier(.2,.75,.3,1);
   }
-  .hall-companions { --actor-inset: 24; --actor-step: 2; }
-}
-@media (min-width: 361px) and (max-width: 700px) {
-  #houseInterior[data-scene="lobby"] .house-board { translate: -10px 0; }
-  #houseInterior[data-scene="lobby"] .house-chair { translate: 10px 0; }
+  #houseInterior[data-dragging="true"] .hall-companions { transition: none; }
+  #houseInterior .hall-actor {
+    --sprite-width: clamp(50px, 17vw, 88px);
+    bottom: var(--hall-floor);
+  }
+  /* The mobile positions also override any inline position set before a resize. */
+  #houseInterior .actor-elf {
+    left: calc(50% - var(--hall-prop-spacing) - var(--hall-board-width) - var(--actor-gap) - var(--sprite-width) / 2) !important;
+  }
+  #houseInterior .actor-snowman {
+    left: calc(50% + var(--hall-prop-spacing) + var(--hall-chair-width) + var(--actor-gap) + var(--sprite-width) / 2) !important;
+  }
 }

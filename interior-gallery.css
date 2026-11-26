@@ -288,3 +288,18 @@ body.inside-house:not(:has(.house-focus)) #soundPlayer .sound-summary { gap: 3px
   transform: none;
 }
 #houseInterior .mirror-preview .mirror-steam { font-size: clamp(20px, 4.9vw, 35px); }
+
+@media (max-width: 700px) {
+  body.inside-house:has(#houseInterior[data-scene="lobby"]):not(:has(.house-focus)) #soundPlayer {
+    top: calc(max(12px, env(safe-area-inset-top)) + 54px);
+    right: max(13px, env(safe-area-inset-right));
+    bottom: auto;
+    left: auto;
+  }
+  body.inside-house:has(#houseInterior[data-scene="lobby"]) #soundPanel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+  }
+  body.inside-house:has(#houseInterior[data-scene="lobby"]) #musicExpandIcon { rotate: 180deg; }
+}

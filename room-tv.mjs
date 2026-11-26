@@ -14,7 +14,7 @@ const labels = {
   fullscreenError:['Fullscreen is unavailable.','未能開啟全螢幕。']
 };
 
-export function createRoomTv(root, chinese) {
+export function createRoomTv(root, chinese, onVideoAudio) {
   const decks = new Map();
   let mounted = null;
   let youtubeApi;
@@ -99,6 +99,7 @@ export function createRoomTv(root, chinese) {
     const current=mounted;
     mounted=null;
     current?.destroy();
+    onVideoAudio(false);
   }
 
   function switchTo(room,index) {
@@ -125,9 +126,15 @@ export function createRoomTv(root, chinese) {
     const video=stage?.querySelector('video');
     const frame=stage?.querySelector('[data-youtube]');
     const status=cabinet.querySelector('.room-video-status');
-    let yt, timer, clockStart, loading, visible=false, playing, pendingAdvance=false, ytReady=false;
+    let yt, timer, clockStart, loading, visible=false, playing, pendingAdvance=false, ytReady=false, ytPlaying=false;
     const current={room, sync, toggleSound, fullscreen, destroy};
     mounted=current;
+
+    function syncBackgroundMusic() {
+      if(mounted!==current)return;
+      const audible=video ? !video.paused&&!video.ended&&!video.error&&video.volume>0 : ytPlaying;
+      onVideoAudio(Boolean(playing&&!deck.muted&&audible));
+    }
 
     function stopClock() {
       clearTimeout(timer);
@@ -136,15 +143,16 @@ export function createRoomTv(root, chinese) {
     }
     function advance() {
       if(mounted!==current)return;
-      if(stage&&document.fullscreenElement===stage){pendingAdvance=true;return;}
+      if(stage&&(document.fullscreenElement===stage||video?.webkitDisplayingFullscreen)){pendingAdvance=true;return;}
       switchTo(room, deck.index===length-1 ? challengeSlides.length : deck.index+1);
     }
     function sync() {
       if(mounted!==current)return;
-      const full=Boolean(stage&&document.fullscreenElement===stage);
+      const full=Boolean(stage&&(document.fullscreenElement===stage||video?.webkitDisplayingFullscreen));
       const shouldPlay=(visible||full)&&!document.hidden&&!deck.paused;
       if(playing===shouldPlay)return;
       playing=shouldPlay;
+      syncBackgroundMusic();
       if(!clip){
         if(!shouldPlay){stopClock();return;}
         clockStart=performance.now();
@@ -190,11 +198,13 @@ export function createRoomTv(root, chinese) {
       if(video)video.muted=deck.muted;
       if(ytReady){if(deck.muted)yt.mute();else yt.unMute();}
       updateSound();
+      syncBackgroundMusic();
     }
-    function volumeChange(){deck.muted=video.muted;updateSound();}
+    function volumeChange(){deck.muted=video.muted;updateSound();syncBackgroundMusic();}
+    function onPlaying(){status.textContent='';syncBackgroundMusic();}
     function fullscreenChange(){
       if(!stage)return;
-      if(pendingAdvance&&!document.fullscreenElement){advance();return;}
+      if(pendingAdvance&&!document.fullscreenElement&&!video?.webkitDisplayingFullscreen){advance();return;}
       sync();
       if(!document.fullscreenElement&&document.activeElement?.matches('.room-video-exit')){
         cabinet.querySelector('[data-house="tv-fullscreen"]')?.focus({preventScroll:true});
@@ -217,13 +227,18 @@ export function createRoomTv(root, chinese) {
       stopClock();
       clearTimeout(loading);
       video?.removeEventListener('volumechange',volumeChange);
+      video?.removeEventListener('playing',onPlaying);
+      for(const event of ['pause','ended','error'])video?.removeEventListener(event,syncBackgroundMusic);
+      for(const event of ['webkitbeginfullscreen','webkitendfullscreen'])video?.removeEventListener(event,fullscreenChange);
       video?.pause();
       yt?.destroy?.();
     }
 
     video?.addEventListener('ended',advance,{once:true});
     video?.addEventListener('volumechange',volumeChange);
-    video?.addEventListener('playing',()=>{status.textContent='';});
+    video?.addEventListener('playing',onPlaying);
+    for(const event of ['pause','ended','error'])video?.addEventListener(event,syncBackgroundMusic);
+    for(const event of ['webkitbeginfullscreen','webkitendfullscreen'])video?.addEventListener(event,fullscreenChange);
     document.addEventListener('visibilitychange',sync);
     document.addEventListener('fullscreenchange',fullscreenChange);
     const observer=new IntersectionObserver(([entry])=>{
@@ -243,11 +258,13 @@ export function createRoomTv(root, chinese) {
           },
           onStateChange:({data})=>{
             if(mounted!==current)return;
+            ytPlaying=data===1;
+            syncBackgroundMusic();
             if(data===1){clearTimeout(loading);status.textContent='';if(!playing&&ytReady)yt.pauseVideo();}
             if(data===0&&playing)advance();
           },
-          onError:()=>{clearTimeout(loading);if(mounted===current)status.textContent=t('slow');},
-          onAutoplayBlocked:()=>{clearTimeout(loading);if(mounted===current)status.textContent=t('slow');}
+          onError:()=>{clearTimeout(loading);ytPlaying=false;syncBackgroundMusic();if(mounted===current)status.textContent=t('slow');},
+          onAutoplayBlocked:()=>{clearTimeout(loading);ytPlaying=false;syncBackgroundMusic();if(mounted===current)status.textContent=t('slow');}
         }});
       }).catch(()=>{clearTimeout(loading);if(mounted===current)status.textContent=t('slow');});
     }

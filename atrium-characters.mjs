@@ -82,6 +82,7 @@ export function attachAtriumCharacters(root, {chinese, still}) {
     if ('aiming' in actor.dataset || actor.dataset.pose) return;
     const style=getComputedStyle(field);
     const distance=Number(style.getPropertyValue('--actor-step'));
+    if (!distance) return;
     const home=Number(style.getPropertyValue('--actor-inset'));
     const target=home+(comingIn?distance:-distance);
     const x=leftSide?target:100-target;

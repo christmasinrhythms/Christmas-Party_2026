@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#16100f">
   <meta name="description" content="Try on a Christmas look in your camera and save a photo or a short clip.">
   <title>Rock &amp; Punk 3D Camera · Christmas in Rhythms</title>
-  <link rel="stylesheet" href="tryon.css?v=room-polish-20261126">
+  <link rel="stylesheet" href="tryon.css?v=phone-framing-20261126">
   <link rel="icon" href="data:,">
   <link rel="preload" as="image" href="assets/logo.png">
   <style>
@@ -45,9 +45,16 @@
       <div class="view-bottom">
         <p class="view-status" id="status" aria-live="polite" role="status"></p>
         <div id="capture-controls" hidden>
-          <div class="modes" role="group" aria-label="Capture mode" data-label="captureMode">
-            <button type="button" data-mode="photo" aria-pressed="true" data-text="photo">Photo</button>
-            <button type="button" data-mode="video" aria-pressed="false" data-text="video">Video</button>
+          <div class="capture-options">
+            <div class="camera-zoom" id="camera-zoom" role="group" data-label="zoom" aria-label="Camera zoom" hidden>
+              <button type="button" data-camera-zoom="wide" data-text="wide" aria-pressed="true">Wide</button>
+              <button type="button" data-camera-zoom="1" aria-pressed="false">1×</button>
+              <button type="button" data-camera-zoom="2" aria-pressed="false">2×</button>
+            </div>
+            <div class="modes" role="group" aria-label="Capture mode" data-label="captureMode">
+              <button type="button" data-mode="photo" aria-pressed="true" data-text="photo">Photo</button>
+              <button type="button" data-mode="video" aria-pressed="false" data-text="video">Video</button>
+            </div>
           </div>
           <button type="button" class="shutter" id="shutter" aria-label="Take photo"><span aria-hidden="true"></span></button>
         </div>
@@ -109,6 +116,6 @@
   <script type="importmap">
     {"imports":{"three":"./assets/tryon/vendor/three/three.module.min.js"}}
   </script>
-  <script type="module" src="tryon.mjs?v=room-polish-20261126"></script>
+  <script type="module" src="tryon.mjs?v=phone-framing-20261126"></script>
 </body>
 </html>

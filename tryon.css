@@ -149,6 +149,28 @@ h1, h2, p { margin: 0; }
 .view-status { min-height: 1.4em; font-weight: 600; font-size: 12px; color: #fff5e9; }
 .view-status:empty { display: none; }
 #capture-controls { display: grid; justify-items: center; gap: 6px; margin-top: 8px; }
+.capture-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.camera-zoom {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid #d7ae785c;
+  border-radius: 24px;
+  background: #1a1210e3;
+  pointer-events: auto;
+}
+.camera-zoom button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 9px;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  color: #ffedda;
+  font-size: 12px;
+  font-weight: 650;
+}
+.camera-zoom button[aria-pressed="true"] { background: #f0ce9a; color: #2b180f; }
 .modes {
   display: inline-flex; align-items: center; padding: 3px;
   border: 1px solid #e0c0a053; border-radius: 99px;

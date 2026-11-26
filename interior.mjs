@@ -1,8 +1,8 @@
 import {schools,rundown,reelRules} from './interior-content.mjs';
 import {challengeTitle,reelDirectory,sharedReels} from './room-reels.mjs';
-import {createRoomTv} from './room-tv.mjs?v=room-polish-20261126';
+import {createRoomTv} from './room-tv.mjs?v=phone-framing-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
-import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=room-polish-20261126';
+import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=phone-framing-20261126';
 
 const dir='assets/interior/';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));
@@ -41,7 +41,7 @@ const words={
   fullscreen:['Fullscreen','全螢幕'],exitFullscreen:['Back to TV','返回電視'],fullscreenError:['Fullscreen is unavailable.','未能開啟全螢幕。'],videoError:['The TV video could not be played.','未能播放電視影片。'],
 };
 
-export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal}){
+export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal,onTvAudio}){
   const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
   let scene='outside',panel='',look=0,assignment=null,lookupValue='',lookupMethod='email',error='',checking=false,revealing=false,paused=false,transitioning=false,origin='',sequence=0;
   let exteriorTrigger=trigger,revealTimer,showClips=false;
@@ -51,7 +51,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   const zh=()=>document.documentElement.lang==='zh-Hant';
   const copy=key=>words[key][+zh()];
   const local=label=>label[+zh()];
-  const roomTv=createRoomTv(root,zh);
+  const roomTv=createRoomTv(root,zh,onTvAudio);
   const syncAtrium=attachAtriumCharacters(root,{chinese:zh,still:motion});
   const outfitGallery=attachOutfitGallery(root,()=>galleries.get(scene));
   const returnLabel=()=>schools[scene]?copy('backRoom'):copy('back');

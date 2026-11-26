@@ -1,4 +1,4 @@
-import {Soundscape} from './soundscape.mjs';
+import {Soundscape} from './soundscape.mjs?v=phone-framing-20261126';
 
 // Cue times are film positions, never elapsed page timers.
 export const INTRO_CUES=Object.freeze([
@@ -11,7 +11,7 @@ export const INTRO_CUES=Object.freeze([
 export function createSoundControls({t}){
  const $=s=>document.querySelector(s),sound=new Soundscape({musicVolume:.25,sfxVolume:.5});
  sound.music.hidden=true;sound.music.id='playlistAudio';sound.music.setAttribute('aria-hidden','true');$('#soundPlayer').append(sound.music);
- let level=.25,phase='loading',started=false,state=sound.getState(),lastFilmTime=0,resumeAfterPage=false,introCues=INTRO_CUES,orientationBlocked=false,resumeAfterRotate=false;
+ let level=.25,phase='loading',started=false,state=sound.getState(),lastFilmTime=0,resumeAfterPage=false,introCues=INTRO_CUES,orientationBlocked=false,resumeAfterRotate=false,tvAudible=false;
  const fired=new Set();
  function render(){
   const playing=state.playing,enableSound=playing&&needsSound(),playKey=playing?'music_pause':'music_play';
@@ -52,12 +52,13 @@ export function createSoundControls({t}){
  $('#musicExpand').addEventListener('click',()=>{const open=$('#soundPanel').hidden;$('#soundPanel').hidden=!open;$('#musicExpand').setAttribute('aria-expanded',String(open));$('#musicExpandIcon').textContent=open?'⌄':'⌃';render();});
  $('#soundPlayer').addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#soundPanel').hidden){$('#soundPanel').hidden=true;$('#musicExpand').setAttribute('aria-expanded','false');$('#musicExpandIcon').textContent='⌃';$('#musicExpand').focus();render();}});
  document.addEventListener('click',event=>{if(orientationBlocked)return;unlock();const button=event.target.closest('button,a');if(!button||button.disabled||document.hidden||['elfHello','snowmanHello'].includes(button.id))return;void sound.playSfx(button.id==='doorLock'?'doorRing':'uiWoodTap',{volume:button.id==='doorLock'?1:.9});});
- function applyVolume(){sound.setMusicVolume(level*(phase==='intro'?.25:1));}
+ function applyVolume(){sound.setMusicVolume(level*((phase==='intro'||tvAudible) ? .25 : 1));}
  function stopEffects(){
   sound.stopSfx?.();
  }
  return {
   applyLanguage:render,
+  setTvAudible(audible){if(tvAudible===audible)return;tvAudible=audible;applyVolume();},
   setOrientationBlocked(blocked){if(blocked===orientationBlocked)return;orientationBlocked=blocked;if(blocked){resumeAfterRotate=state.playing||state.status==='loading'||state.blocked;stopEffects();sound.pause();}else if(!document.hidden){if(resumeAfterRotate){resumeAfterRotate=false;void sound.play();}else if(!started&&phase!=='loading'){started=true;void sound.tryAutoplaySfx?.();void sound.play();}}},
   setIntroCues(cues){if(phase==='intro')return false;introCues=cues??INTRO_CUES;return true;},
   setPhase(next){phase=next;applyVolume();if(next==='intro'){lastFilmTime=0;fired.clear();}else stopEffects();if(!started&&next!=='loading'&&!orientationBlocked){started=true;void sound.tryAutoplaySfx?.();void sound.play();}},
