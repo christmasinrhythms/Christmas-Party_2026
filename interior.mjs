@@ -1,8 +1,8 @@
 import {schools,rundown,reelRules} from './interior-content.mjs';
-import {challengeTitle,reelDirectory,sharedReels} from './room-reels.mjs';
-import {createRoomTv} from './room-tv.mjs?v=phone-framing-20261126';
+import {reelDirectory,sharedReels} from './room-reels.mjs';
+import {createRoomTv} from './room-tv.mjs?v=atrium-mirror-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
-import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=phone-framing-20261126';
+import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=atrium-mirror-20261126';
 
 const dir='assets/interior/';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));
@@ -31,12 +31,12 @@ const words={
   choices:['Dress code options','服裝主題選擇'],askRep:['Ask your team representative which dress code your team will wear.','請向你的隊伍代表查詢隊伍選定的服裝主題。'],
   yourTeam:['Your team','你的隊伍'],generalManagement:['General Management','總管理部'],representative:['Team Representative','隊伍代表'],another:['Check another email','查詢其他電郵'],
   date:['24 December 2026 · HKT','2026 年 12 月 24 日 · 香港時間'],
-  photos:['Outfit gallery','穿搭相簿'],photo:['Outfit photo','穿搭相片'],galleryHint:['Drag to browse, or select the centre photo to enlarge it.','拖動瀏覽，或按中央相片放大。'],viewTv:['Reels TV','Reels 電視'],viewGallery:['Back to the gallery','返回相簿'],loadPhotosError:['Could not load the wall photos.','未能載入牆上相片。'],
+  photos:['Outfit gallery','穿搭相簿'],photo:['Outfit photo','穿搭相片'],galleryHint:['Drag to browse, or select the centre photo to enlarge it.','拖動瀏覽，或按中央相片放大。'],viewGallery:['Back to the gallery','返回相簿'],loadPhotosError:['Could not load the wall photos.','未能載入牆上相片。'],
+  hallTv:['Tips for MV Challenge','MV 挑戰貼士'],
   previous:['Previous photo','上一張相片'],next:['Next photo','下一張相片'],
   mirror:['Try-On Mirror','虛擬試穿鏡'],openMirror:['Open Camera','開啟試穿相機'],
   outfitReferences:['Outfit References','穿搭靈感'],
-  tryOn:['Try-On','虛擬試穿'],
-  openStudio:['Tap to Try On','按此試穿'],
+  openStudio:['Try-On The Style','試穿這個造型'],
   studioHint:['Try a room look with your camera or a photo.','用相機或相片試穿這間房的造型。'],
   rules:['Challenge rules','挑戰規則'],rulesShort:['Rules','規則'],deadline:['Submit by 1:00 p.m.','下午 1 時前提交'],everyone:['Everyone is encouraged to take part.','鼓勵每位隊員參與。'],
   watch:['Watch original','觀看原片'],sourceLink:['Original','原片'],instagramPlay:['Use the Instagram player or select Original.','請使用 Instagram 播放器，或選擇原片。'],
@@ -45,20 +45,20 @@ const words={
   fullscreen:['Fullscreen','全螢幕'],exitFullscreen:['Back to TV','返回電視'],fullscreenError:['Fullscreen is unavailable.','未能開啟全螢幕。'],videoError:['The TV video could not be played.','未能播放電視影片。'],
 };
 
-export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal,onTvAudio,onSceneChange}){
+export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal,onTvAudio,onTvFullscreen,onSceneChange}){
   const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
   let scene='outside',panel='',look=0,assignment=null,lookupValue='',lookupMethod='email',error='',checking=false,revealing=false,paused=false,transitioning=false,origin='',sequence=0;
-  let exteriorTrigger=trigger,revealTimer,showClips=false;
-  let hallPan=0,hallDrag=null,jumpToTv=false;
+  let exteriorTrigger=trigger,revealTimer;
+  let hallPan=0,hallDrag=null;
   const galleries=new Map(Object.keys(schools).map(id=>[id,{photos:[],scroll:0,focused:0,message:'',opening:false}]));
   const motion=()=>paused||motionQuery.matches||document.body.classList.contains('calm');
   const zh=()=>document.documentElement.lang==='zh-Hant';
   const copy=key=>words[key][+zh()];
   const local=label=>label[+zh()];
-  const roomTv=createRoomTv(root,zh,onTvAudio);
+  const roomTv=createRoomTv(root,zh,onTvAudio,onTvFullscreen);
   const syncAtrium=attachAtriumCharacters(root,{chinese:zh,still:motion});
   const outfitGallery=attachOutfitGallery(root,()=>galleries.get(scene));
-  const returnLabel=()=>schools[scene]?copy('backRoom'):copy('back');
+  const returnLabel=()=>panel==='photo'?copy('backRoom'):copy('back');
   const crest=id=>art(`crest-${id}`);
   const name=id=>local(schools[id].name);
   const btn=(a,label,classes='',value='')=>`<button class="${classes}" type="button" data-house="${a}"${value?` data-value="${value}"`:''}>${label}</button>`;
@@ -71,12 +71,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     clearTimeout(revealTimer);
     checking=false;revealing=false;
   }
-  function scrollToTv(){
-    if(!jumpToTv)return;
-    jumpToTv=false;
-    root.querySelector('[data-room-exhibit="tv"]')?.scrollIntoView({block:'start'});
-  }
-  function go(next){
+  function go(next,watchTv=false){
     if(transitioning||next===scene)return;
     const from=scene;
     center();
@@ -95,13 +90,17 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     scene=next;transitioning=!motion();
     onSceneChange?.(scene);
-    if(schools[next]){
-      galleries.get(next).opening=true;
-      roomTv.reset(next);
-      roomTv.setFiles(next,localReels);
+    if(schools[next])galleries.get(next).opening=true;
+    if(next==='lobby'){
+      roomTv.reset('lobby');
+      roomTv.setFiles('lobby',localReels);
     }
     render();
     if(schools[next])void loadRoomMedia(next);
+    const arrived=()=>{
+      if(watchTv)focusPanel('tv','tv');
+      else root.querySelector('#house-title')?.focus({preventScroll:true});
+    };
     if(transitioning){
       const token=sequence;const door=root.querySelector('.house-passage');
       const finish=()=>{
@@ -109,14 +108,10 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
         transitioning=false;
         door.remove();
         render();
-        root.querySelector('#house-title')?.focus({preventScroll:true});
-        scrollToTv();
+        arrived();
       };
       door.addEventListener('animationend',event=>{if(event.target===door)finish();});setTimeout(finish,820);
-    }else{
-      root.querySelector('#house-title')?.focus({preventScroll:true});
-      scrollToTv();
-    }
+    }else arrived();
   }
   function focusPanel(next,source,sourceValue){
     if(transitioning)return;
@@ -147,12 +142,14 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     const chair=btn('chair',`<span class="chair-preview" aria-hidden="true">
       ${art('chair-front')}${art('sorting-hat-rest','class="chair-preview-hat"')}
     </span><span class="hall-chair-label">${copy('chair')} <span aria-hidden="true">↗</span></span>`,'house-prop house-chair');
+    const tv=btn('tv',`<span class="hall-tv-screen">
+      <strong>${copy('hallTv')}</strong><i aria-hidden="true">▶</i>
+    </span>`,'house-prop hall-tv atrium-tv-art');
     return `<div class="hall-world" data-hall-world>
       <div class="hall-doors">${doors}</div>
-      <div class="hall-props">${board}${chair}</div>
+      <div class="hall-props">${board}${chair}${tv}</div>
     </div>${atriumCharacters(zh())}`;
   }
-  function tvShell(inner,extra='') {return `<div class="house-tv ${extra}"><div class="house-tv-screen">${inner}</div><div class="house-tv-dials" aria-hidden="true"><i></i><i></i></div></div>`;}
   function refreshGallery(){
     const gallery=galleries.get(scene);
     const frames=root.querySelector('[data-outfit-stage]');
@@ -202,7 +199,6 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
         <section class="outfit-gallery" aria-label="${copy('photos')}" data-room-exhibit="gallery">
           <header class="outfit-section-heading">
             <h3>${copy('outfitReferences')}</h3>
-            ${btn('jump-mirror',`<span>${copy('tryOn')}</span><span aria-hidden="true">↓</span>`,'try-on-jump')}
           </header>
           <div class="outfit-stage" data-outfit-stage tabindex="0" aria-label="${copy('photos')}" aria-describedby="outfit-hint"></div>
           <div class="outfit-nav">
@@ -212,16 +208,12 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
           </div>
           <p id="outfit-hint">${copy('galleryHint')}</p>
           <p class="room-wall-status" role="status"></p>
-          ${btn('jump-tv',copy('viewTv')+' ↓','house-action exhibit-jump')}
-        </section>
-        <section class="room-feature room-screening" data-room-exhibit="tv" aria-label="${copy('viewTv')}">
-          <div class="room-television" data-room-tv>${roomTv.render(scene,!panel&&!transitioning)}</div>
         </section>
         <section class="room-mirror-exhibit" data-room-exhibit="mirror" tabindex="-1" aria-labelledby="mirror-title">
           <h3 id="mirror-title">${copy('mirror')}</h3>
           <p>${copy('studioHint')}</p>
           <a class="room-mirror room-mirror-link" href="tryon.html?genre=${scene}${zh()?'&amp;lang=zh':''}">
-            <span class="mirror-surface"><span class="mirror-steam">${copy('openStudio')} <span aria-hidden="true">↗</span></span></span>
+            <span class="mirror-surface"><span class="mirror-steam">${copy('openStudio')}</span></span>
           </a>
           ${btn('jump-gallery','↑ '+copy('viewGallery'),'house-action exhibit-jump')}
         </section>
@@ -256,17 +248,18 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     </div></div>`;
   }
   function displayTv(){
-    const examples=sharedReels;
-    return `<div class="tv-focus">
-      <p class="house-kicker">${name(scene)}</p>
-      <h2 data-panel-heading tabindex="-1">${local(challengeTitle)}</h2>
-      ${tvShell(`<div class="tv-rule-sheet">
-        <ol>${reelRules.map(rule=>`<li>${local(rule)}</li>`).join('')}</ol>
-        <p>${copy('everyone')}</p>
-      </div>`,'large tv-rules-screen')}
-      ${examples.length?`<details class="tv-examples"${showClips?' open':''}><summary>${copy('examples')}</summary><ul>
-        ${examples.map((clip,i)=>`<li>${btn('tv-reference',`${escapeHtml(clip.title)}<small>${copy('playExample')}</small>`,'tv-example-choice',String(i))}</li>`).join('')}
-      </ul></details>`:''}
+    return `<div class="tv-focus atrium-tv-focus">
+      <h2 data-panel-heading tabindex="-1">${copy('hallTv')}</h2>
+      <div class="room-television" data-room-tv>${roomTv.render('lobby',true)}</div>
+      <details class="tv-examples" data-tv-details="rules"><summary>${copy('rules')}</summary>
+        <div class="tv-rule-sheet">
+          <ol>${reelRules.map(rule=>`<li>${local(rule)}</li>`).join('')}</ol>
+          <p>${copy('everyone')}</p>
+        </div>
+      </details>
+      <details class="tv-examples" data-tv-details="clips"><summary>${copy('examples')}</summary><ul>
+        ${sharedReels.map((clip,i)=>`<li>${btn('tv-reference',`${escapeHtml(clip.title)}<small>${copy('playExample')}</small>`,'tv-example-choice',String(i))}</li>`).join('')}
+      </ul></details>
     </div>`;
   }
   function render(){
@@ -299,7 +292,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       root.querySelector('[data-room-scroll]').scrollTop=galleries.get(scene).scroll;
     }
     syncAtrium(scene==='lobby'&&!panel&&!transitioning);
-    if(room)roomTv.connect(scene);
+    if(panel==='tv')roomTv.connect('lobby');
     if(scene==='lobby')placeHall(hallPan);
     const motionButton=root.querySelector('[data-house=motion]');
     motionButton?.setAttribute('aria-label',copy(motion()?'resume':'pause'));
@@ -328,20 +321,22 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     if(action==='close'){closePanel();return;}
     if(action==='motion'){if(motionQuery.matches||document.body.classList.contains('calm'))return;paused=!paused;center();render();root.querySelector('[data-house=motion]').focus();return;}
     if(action==='gallery-prev'||action==='gallery-next'){outfitGallery.step(action==='gallery-prev'?-1:1);return;}
-    if(action==='jump-tv'||action==='jump-gallery'||action==='jump-mirror'){
-      const section=root.querySelector(`[data-room-exhibit="${action.slice(5)}"]`);
-      if(action==='jump-mirror')section.focus({preventScroll:true});
+    if(action==='jump-gallery'){
+      const section=root.querySelector('[data-room-exhibit="gallery"]');
       section.scrollIntoView({behavior:motion()?'auto':'smooth',block:'start'});
       return;
     }
     if(action==='tv-rules'||action==='tv-clips'){
-      showClips=action==='tv-clips';focusPanel('tv',action);
-      if(showClips)root.querySelector('.tv-examples summary')?.scrollIntoView({block:'nearest'});
+      const details=root.querySelector(`[data-tv-details="${action.slice(3)}"]`);
+      details.open=true;
+      details.querySelector('summary').focus({preventScroll:true});
+      details.scrollIntoView({block:'start'});
       return;
     }
     if(action==='tv-reference'){
-      roomTv.selectClip(scene,Number(button.dataset.value));
-      closePanel();
+      roomTv.selectClip('lobby',Number(button.dataset.value));
+      root.querySelector('[data-panel-heading]').focus({preventScroll:true});
+      root.querySelector('[data-room-tv]').scrollIntoView({block:'start'});
       return;
     }
     if(roomTv.handle(action,button))return;
@@ -420,6 +415,18 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   document.addEventListener('keydown',event=>{
     if(root.hidden||document.documentElement.dataset.portraitBlocked==='true')return;
     if(document.fullscreenElement)return;
+    if(root.hasAttribute('data-tv-expanded')){
+      if(event.key==='Escape'){
+        event.preventDefault();roomTv.handle('tv-exit');
+      }else if(event.key==='Tab'){
+        const media=root.querySelector('.room-video-stage > :is(video,iframe)');
+        const exit=root.querySelector('.room-video-exit');
+        if(event.shiftKey?document.activeElement===media:document.activeElement===exit){
+          event.preventDefault();(event.shiftKey?exit:media)?.focus();
+        }
+      }
+      return;
+    }
     if(event.key==='Escape'){event.preventDefault();if(panel)closePanel();else go(scene==='lobby'?'outside':'lobby');return;}
     if(scene==='lobby'&&!panel&&!transitioning&&['ArrowLeft','ArrowRight'].includes(event.key)){
       event.preventDefault();stepHall(event.key==='ArrowLeft'?-1:1);return;
@@ -435,11 +442,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     if(document.hidden&&revealing){cancelSorting();render();}
   });
   return {
-    openHall:()=>go('lobby'),
-    openRoom:(id,{tv=false}={})=>{
-      if(!Object.hasOwn(schools,id))return;
-      jumpToTv=tv;
-      go(id);
-    }
+    openHall:watchTv=>go('lobby',watchTv),
+    openRoom:id=>{if(Object.hasOwn(schools,id))go(id);}
   };
 }

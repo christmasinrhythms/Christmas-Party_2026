@@ -80,17 +80,11 @@ export function attachAtriumCharacters(root, {chinese, still}) {
 
   function walk(actor, leftSide, comingIn) {
     if ('aiming' in actor.dataset || actor.dataset.pose) return;
-    const style=getComputedStyle(field);
-    const distance=Number(style.getPropertyValue('--actor-step'));
-    if (!distance) return;
-    const home=Number(style.getPropertyValue('--actor-inset'));
-    const target=home+(comingIn?distance:-distance);
-    const x=leftSide?target:100-target;
-    const stage=field.getBoundingClientRect();
-    const rect=actor.getBoundingClientRect();
-    actor.dataset.face=stage.left+stage.width*x/100>rect.left+rect.width/2?'right':'left';
+    const direction=leftSide===comingIn?1:-1;
+    const distance=Math.min(root.clientWidth*.05,48);
+    actor.dataset.face=direction>0?'right':'left';
     actor.dataset.walking='';
-    actor.style.left=x+'%';
+    actor.style.left=`calc(var(--actor-home) + ${direction*distance}px)`;
     setTimeout(()=>{delete actor.dataset.walking;faceOpponent(actor);},1475);
   }
 

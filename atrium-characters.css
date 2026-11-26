@@ -1,6 +1,4 @@
 .hall-companions {
-  --actor-inset: 30;
-  --actor-step: 5;
   position: absolute;
   z-index: 3;
   inset: 0;
@@ -10,6 +8,7 @@
   --sprite-width: clamp(113px, 12vw, 185px);
   position: absolute;
   bottom: max(74px, 9.5dvh);
+  left: var(--actor-home);
   width: var(--sprite-width);
   aspect-ratio: 352 / 420;
   transition: left 1.42s cubic-bezier(.32,.04,.44,1);
@@ -21,8 +20,8 @@
   touch-action: none;
   transform: translateX(-50%);
 }
-#houseInterior .actor-elf { left: calc(var(--actor-inset) * 1%); }
-#houseInterior .actor-snowman { left: calc(100% - var(--actor-inset) * 1%); --pose-y: 100%; }
+#houseInterior .actor-elf { --actor-home: 28%; }
+#houseInterior .actor-snowman { --actor-home: 89%; --pose-y: 100%; }
 .actor-sprite {
   position: absolute;
   inset: 0;
@@ -127,8 +126,6 @@
 @media (max-width: 700px) {
   /* Match the furniture's hall camera so the companions stay alongside it while panning. */
   #houseInterior[data-scene="lobby"] .hall-companions {
-    --actor-step: 0;
-    --actor-gap: 9px;
     inset: 50% auto auto 50%;
     width: var(--hall-width);
     height: var(--hall-height);
@@ -137,14 +134,13 @@
   }
   #houseInterior[data-dragging="true"] .hall-companions { transition: none; }
   #houseInterior .hall-actor {
-    --sprite-width: clamp(50px, 17vw, 88px);
-    bottom: var(--hall-floor);
+    --sprite-width: clamp(43px, 13vw, 76px);
+    bottom: calc(var(--hall-floor) - 17px);
   }
-  /* The mobile positions also override any inline position set before a resize. */
   #houseInterior .actor-elf {
-    left: calc(50% - var(--hall-prop-spacing) - var(--hall-board-width) - var(--actor-gap) - var(--sprite-width) / 2) !important;
+    --actor-home: calc(50% - 40vw);
   }
   #houseInterior .actor-snowman {
-    left: calc(50% + var(--hall-prop-spacing) + var(--hall-chair-width) + var(--actor-gap) + var(--sprite-width) / 2) !important;
+    --actor-home: calc(50% + 40vw);
   }
 }

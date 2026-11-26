@@ -4,7 +4,7 @@ import {INVITE_ART,isPhoneLayout,inviteGeometry,phoneInviteWidth,fitPhoneInvite,
 import {createSoundControls} from './audio-ui.mjs?v=tripo-rooms-20261126';
 import {WoodenFlipClock} from './flip-clock.mjs';
 import {countdown,cameraFrame,focusCamera,icsContent} from './domain.mjs';
-import {mountHouseInterior} from './interior.mjs?v=tripo-rooms-20261126';
+import {mountHouseInterior} from './interior.mjs?v=atrium-mirror-20261126';
 import {schools} from './interior-content.mjs';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const entryParams=new URLSearchParams(location.search);
@@ -75,7 +75,7 @@ function openDialog(id,trigger){endHover(true);const dialog=document.getElementB
 for(const dialog of $$('dialog')){dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});dialog.addEventListener('close',()=>{if(dialog.open||(orientationBlocked&&suspendedDialog===dialog))return;activeDialog=null;lastDialogTrigger?.focus({preventScroll:true});});}
 for(const close of $$('[data-close]'))close.addEventListener('click',()=>document.getElementById(close.dataset.close).close());
 $('#addressOpen').addEventListener('click',e=>openDialog('addressDialog',e.currentTarget));$('#calendarOpen').addEventListener('click',e=>{setCalendar();openDialog('calendarDialog',e.currentTarget);});
-const houseInterior=mountHouseInterior({root:$('#houseInterior'),outside:$('#experience'),trigger:$('#doorLock'),entrance:$('#enterHouse'),onEnter:()=>endHover(true),onReveal:()=>void soundControls.effect('titleBloom',.75),onTvAudio:soundControls.setTvAudible,onSceneChange:soundControls.setScene});
+const houseInterior=mountHouseInterior({root:$('#houseInterior'),outside:$('#experience'),trigger:$('#doorLock'),entrance:$('#enterHouse'),onEnter:()=>endHover(true),onReveal:()=>void soundControls.effect('titleBloom',.75),onTvAudio:soundControls.setTvAudible,onTvFullscreen:syncPortraitGuard,onSceneChange:soundControls.setScene});
 for(const link of $$('.calendar-links a,.calendar-phone-fallbacks a'))link.addEventListener('click',()=>{$('#calendarDialog').close();});
 // One camera owns zoom, drag, pointer parallax and tilt. Every result is clamped after composition.
 const viewport=$('#viewport'),world=$('#world');let size={w:innerWidth,h:innerHeight};let camera={zoom:1,panX:0,panY:0},current={...camera},pointer={x:0,y:0},tilt={x:0,y:0},drag=null,lastFrame=0;let selection=null,hover=null,hoverTimer,hoverPending=null,hoverCooldown=0;
@@ -199,7 +199,7 @@ let orientationBlocked=false,resumeFilmAfterRotate=false,guardFocus,suspendedDia
 const guardSnapshots=new Map();
 function syncPortraitGuard(){
  const profile=introMedia??{kind:isPhoneDevice({width:innerWidth,height:innerHeight,coarse:inviteCoarse.matches,mobileUA:phoneUA})?'mobile':'desktop'};
- const blocked=portraitBlocked(profile,innerWidth,innerHeight),changed=blocked!==orientationBlocked;
+ const blocked=!$('#houseInterior').hasAttribute('data-tv-fullscreen')&&portraitBlocked(profile,innerWidth,innerHeight),changed=blocked!==orientationBlocked;
  orientationBlocked=blocked;document.documentElement.dataset.portraitBlocked=String(blocked);
  $('#portraitGuard').hidden=!blocked;
  for(const el of [$('#loading'),$('#intro'),$('#experience'),$('#houseInterior'),$('#soundPlayer'),...$$('dialog')]){
@@ -221,7 +221,8 @@ function syncPortraitGuard(){
 function openRequestedRoom(){
  if((!directRoom&&!directHall)||orientationBlocked||phase!=='scene')return;
  const room=directRoom;directRoom=null;directHall=false;
- if(room)houseInterior.openRoom(room,{tv:directTv});
+ if(directTv)houseInterior.openHall(true);
+ else if(room)houseInterior.openRoom(room);
  else houseInterior.openHall();
 }
 function preparePhoneFilm(){

@@ -43,10 +43,6 @@
   object-fit: contain;
   background: #0c090d;
 }
-#houseInterior .room-video-stage:fullscreen > video {
-  width: min(100vw, calc(100dvh * 9 / 16));
-  height: 100dvh;
-}
 #houseInterior .tv-hardware { align-items: center; }
 .tv-transport, .tv-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; }
 .tv-pagination {
@@ -71,6 +67,161 @@
   }
   .room-tv-panel > :is(.tv-speaker,.tv-power) { display: none; }
   .tv-options .tv-key { flex: 0 0 auto; }
+}
+
+/* One illustrated cabinet for the hall entrance and the enlarged set. */
+#houseInterior[data-scene="lobby"] {
+  --cabinet-finish: repeating-linear-gradient(99deg, #f5c68f13 0 2px,#36180627 3px 5px,transparent 5px 9px),
+    linear-gradient(135deg,#9c6339,#693c25 40%,#3f251c 72%,#895637);
+  --cabinet-edge: #bd8d56;
+  --cabinet-trim: #e2b879;
+  --cabinet-glow: #f9d589;
+  --cabinet-key: linear-gradient(#6a4631,#342219);
+  --cabinet-radius: 20px;
+  --speaker-face: #4d3425;
+  --hall-tv-width: clamp(124px, 15vw, 200px);
+  --hall-tv-gap: clamp(13px, 1.5vw, 26px);
+}
+.atrium-tv-art {
+  position: relative;
+  aspect-ratio: 1;
+  background: url('assets/interior/atrium-television.png') center / 111% 100% no-repeat;
+}
+#houseInterior[data-scene="lobby"] .hall-tv {
+  width: var(--hall-tv-width);
+  margin-bottom: -4px;
+  background: url('assets/interior/atrium-television.png') center / 111% 100% no-repeat;
+  cursor: pointer;
+}
+#houseInterior[data-scene="lobby"] .hall-tv::before { bottom: 0; }
+#houseInterior .hall-tv .hall-tv-screen {
+  position: absolute;
+  inset: 23% 19% 32%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(2px,.35vw,5px);
+  padding: 0 1px;
+  border: 0;
+  color: #fff4d8;
+  background: transparent;
+  box-shadow: none;
+  font: 650 clamp(11px, 1.45vw, 20px)/1.07 var(--hall-serif);
+  text-shadow: 0 1px 4px #210e09;
+}
+.hall-tv-screen i { color: #ffdb8e; font: normal 8px/1 system-ui, sans-serif; }
+#houseInterior .atrium-tv-focus { width: min(100%, 520px); padding-bottom: 16px; }
+#houseInterior .atrium-tv-focus h2 { color: #fff0ce; text-shadow: 0 3px 12px #281615; }
+#houseInterior .atrium-tv-focus .room-tv-cabinet {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+#houseInterior .atrium-tv-focus .room-tv-cabinet .house-tv-screen {
+  position: absolute;
+  inset: 23% 17% 31.5%;
+  aspect-ratio: auto;
+  border-radius: 14% / 16%;
+  border: 0;
+  outline: 0;
+  background: #312018;
+}
+#houseInterior .atrium-tv-focus .tv-briefing {
+  padding: 8px 10%;
+  gap: clamp(3px,1vw,8px);
+  background: radial-gradient(ellipse at 50% 40%,#694f37,#2c201a 80%);
+}
+#houseInterior .atrium-tv-focus .tv-briefing p { font-size: clamp(8px,1.6vw,11px); letter-spacing: .09em; }
+#houseInterior .atrium-tv-focus .tv-briefing strong { font-size: clamp(13px,3.3vw,26px); }
+#houseInterior .atrium-tv-focus .tv-briefing > span { font-size: clamp(10px,2.3vw,15px); line-height: 1.25; }
+#houseInterior .atrium-tv-focus .room-tv-panel {
+  margin: 0;
+  padding: 6px 8px;
+  background: var(--cabinet-finish);
+}
+#houseInterior .atrium-tv-focus .room-video-status:empty { display: none; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet {
+  padding: 12px 16px;
+  color: var(--hall-ink);
+  background: none;
+  font-size: 15px;
+}
+#houseInterior .atrium-tv-focus .tv-rule-sheet :is(p, li::marker) { color: #6a3e29; }
+#houseInterior .atrium-tv-focus .tv-examples {
+  margin-top: 15px;
+  border: 1px solid #bd9662;
+  border-radius: 9px;
+  background: var(--hall-finish);
+}
+@media (min-width: 701px) {
+  #houseInterior[data-scene="lobby"] {
+    --hall-board-width: calc(var(--hall-furniture-height) * 940 / 1253);
+    --hall-chair-width: calc(var(--hall-furniture-height) * 661 / 1160);
+    --hall-row-start: calc(50% - (var(--hall-board-width) + var(--hall-chair-width) + var(--hall-tv-width)) / 2 - var(--hall-tv-gap));
+  }
+  #houseInterior[data-scene="lobby"] .house-board {
+    left: calc(var(--hall-row-start) + var(--hall-board-width) / 2);
+  }
+  #houseInterior[data-scene="lobby"] .house-chair {
+    left: calc(var(--hall-row-start) + var(--hall-board-width) + var(--hall-tv-gap) + var(--hall-chair-width) / 2);
+  }
+  #houseInterior[data-scene="lobby"] .hall-tv {
+    left: calc(var(--hall-row-start) + var(--hall-board-width) + var(--hall-chair-width) + 2 * var(--hall-tv-gap) + var(--hall-tv-width) / 2);
+  }
+}
+@media (min-width: 701px) and (max-width: 900px) {
+  #houseInterior[data-scene="lobby"] { --hall-furniture-height: clamp(166px, 29.5dvh, 215px); }
+}
+@media (max-width: 700px) {
+  #houseInterior[data-scene="lobby"] {
+    --hall-tv-width: clamp(98px, 27vw, 142px);
+    --hall-tv-gap: 9px;
+    --hall-tv-shift: calc((var(--hall-tv-width) + var(--hall-tv-gap)) / 2);
+  }
+  #houseInterior[data-scene="lobby"] .house-board {
+    left: calc(50% - var(--hall-prop-spacing) - var(--hall-board-width) / 2 - var(--hall-tv-shift));
+  }
+  #houseInterior[data-scene="lobby"] .house-chair {
+    left: calc(50% + var(--hall-prop-spacing) + var(--hall-chair-width) / 2 - var(--hall-tv-shift));
+  }
+  #houseInterior[data-scene="lobby"] .hall-tv {
+    left: calc(50% + var(--hall-prop-spacing) + var(--hall-chair-width) + var(--hall-tv-gap) / 2);
+  }
+  #houseInterior .atrium-tv-focus { padding-inline: 0; }
+}
+
+/* The embedded browser and phones can expand the same video without reloading it. */
+#houseInterior[data-tv-expanded] .atrium-tv-focus { animation: none; }
+#houseInterior[data-tv-expanded] .room-tv-player { scale: none; }
+#houseInterior[data-tv-expanded] .atrium-tv-focus .house-tv-screen { isolation: auto; }
+#houseInterior :is(.room-video-stage:fullscreen, .room-video-stage[role="dialog"]) {
+  display: grid;
+  place-items: center;
+  background: #090709;
+  touch-action: auto;
+}
+#houseInterior .room-video-stage[role="dialog"] {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+#houseInterior :is(.room-video-stage:fullscreen, .room-video-stage[role="dialog"]) > :is(video, iframe) {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+#houseInterior :is(.room-video-stage:fullscreen, .room-video-stage[role="dialog"]) .room-video-exit {
+  position: absolute;
+  z-index: 2;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  display: inline-flex;
+  min-height: 44px;
+  background: #171015ee;
+  color: #fff2d8;
+  border-color: #d2ae77;
 }
 
 @media (pointer: coarse) {

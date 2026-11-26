@@ -114,25 +114,6 @@
   font: 700 clamp(24px, 4.4vw, 48px)/1.08 Georgia, 'Songti TC', serif;
   text-shadow: 0 2px 4px #210e10, 0 0 25px #130c12;
 }
-#houseInterior .try-on-jump,
-#houseInterior .mirror-steam {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .55em;
-  min-height: 44px;
-  padding: 7px 14px;
-  border: 1px solid #ffe6ae;
-  border-radius: 100px;
-  color: #362018;
-  background: linear-gradient(#fff0c8,#dbab63);
-  box-shadow: 0 4px 0 #51301d, 0 10px 26px #150b12a1;
-  font: 700 clamp(16px, 2.3vw, 25px)/1.1 Georgia, 'Songti TC', serif;
-  text-shadow: none;
-}
-#houseInterior .try-on-jump:hover,
-#houseInterior .room-mirror-link:hover .mirror-steam { background: #fff3ce; }
-#houseInterior .try-on-jump:focus-visible,
 #houseInterior .room-mirror-link:focus-visible { outline: 2px solid #fff1c4; outline-offset: 4px; }
 .room-mirror-exhibit {
   display: grid;
@@ -153,18 +134,50 @@
   width: clamp(174px, 24vw, 252px);
   transform: perspective(1000px) rotateY(-5deg);
 }
-#houseInterior .room-mirror-exhibit .mirror-surface { aspect-ratio: .63; }
+#houseInterior .room-mirror-exhibit .mirror-surface {
+  aspect-ratio: .56;
+  background: linear-gradient(145deg,#b7b0bf,#605469 46%,#2c2537);
+}
+.room-mirror-exhibit .mirror-surface::after {
+  inset: -12%;
+  background:
+    radial-gradient(ellipse at 55% 24%,#fff7eacc 2%,#dcd4e3b8 20%, transparent 54%),
+    radial-gradient(ellipse at 36% 74%,#eee9f0c9 3%,#bfb7caba 23%,transparent 58%),
+    linear-gradient(153deg,transparent 33%,#fdf6ed6b 46%,transparent 58%);
+}
 #houseInterior .room-mirror-exhibit .mirror-steam {
-  padding: 10px;
-  max-width: calc(100% - 12px);
-  font-size: clamp(15px, 1.8vw, 22px);
+  position: relative;
+  max-width: 87%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff5e4;
+  font: 700 italic clamp(22px,3vw,35px)/1.04 'Bradley Hand','Segoe Print',Georgia,'Songti TC',serif;
+  text-wrap: balance;
+  text-shadow: 0 2px 3px #3c263f,0 1px 14px #2e1c33,0 0 4px #3c263f;
+  transform: rotate(-6deg);
+}
+#houseInterior[data-still="false"] .room-mirror-exhibit .mirror-surface::after {
+  animation: mirror-condensation 8s ease-in-out infinite alternate;
+}
+#houseInterior[data-still="false"] .room-mirror-exhibit .mirror-steam {
+  animation: mirror-lettering 4.8s ease-in-out infinite alternate;
+}
+@keyframes mirror-condensation {
+  from { opacity: .56; transform: translate(-6%,4%) scale(1); }
+  to { opacity: .91; transform: translate(7%,-6%) scale(1.13); }
+}
+@keyframes mirror-lettering {
+  from { opacity: .78; transform: translateY(3px) rotate(-7deg); }
+  to { opacity: 1; transform: translateY(-3px) rotate(-4deg); }
 }
 
 @media (max-width: 700px) {
   .room-atmosphere :is(.room-streamer,.room-confetti,.room-glint):nth-child(even) { display: none; }
   #houseInterior .outfit-section-heading h3 { font-size: clamp(22px,6.3vw,32px); }
-  #houseInterior .try-on-jump { min-height: 44px; font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .room-atmosphere { display: none; }
+  #houseInterior[data-still="false"] .room-mirror-exhibit .mirror-surface::after,
+  #houseInterior[data-still="false"] .room-mirror-exhibit .mirror-steam { animation: none; }
 }

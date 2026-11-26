@@ -10,11 +10,10 @@ const labels = {
   play:['Play','播放'], pause:['Pause','暫停'], full:['Fullscreen','全螢幕'], exit:['Back to TV','返回電視'],
   watch:['Video example','短片示例'], loading:['Loading video…','正在載入短片…'],
   slow:['If playback stalls, use the player’s Play button or open Original.','如短片未開始，請按播放器內嘅播放鍵，或開啟原片。'],
-  instagram:['Use Instagram’s Play and sound controls, or open Original.','請使用 Instagram 嘅播放同聲音控制，或開啟原片。'],
-  fullscreenError:['Fullscreen is unavailable.','未能開啟全螢幕。']
+  instagram:['Use Instagram’s Play and sound controls, or open Original.','請使用 Instagram 嘅播放同聲音控制，或開啟原片。']
 };
 
-export function createRoomTv(root, chinese, onVideoAudio) {
+export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
   const decks = new Map();
   let mounted = null;
   let youtubeApi;
@@ -54,7 +53,7 @@ export function createRoomTv(root, chinese, onVideoAudio) {
         </div>`;
     return `<div class="room-tv-player${clip&&!path?' has-youtube':''}" ${live?'data-tv-live':''}>
       <div class="room-tv-cabinet">
-        <div class="room-tv-bezel"><div class="house-tv-screen">${screen}</div></div>
+        <div class="atrium-tv-art"><div class="house-tv-screen">${screen}</div></div>
         <div class="room-tv-panel">
           <span class="tv-power" aria-hidden="true"></span><i class="tv-speaker" aria-hidden="true"></i>
           <div class="tv-hardware">
@@ -76,7 +75,6 @@ export function createRoomTv(root, chinese, onVideoAudio) {
           </div>
         </div>
       </div>
-      <div class="cabinet-feet" aria-hidden="true"></div>
       ${live&&clip?`<p class="tv-clip-caption">${t('watch')} · ${escapeHtml(clip.title)}</p>`:''}
       <p class="room-video-status" role="status">${live&&instagram?t('instagram'):''}</p>
     </div>`;
@@ -127,8 +125,14 @@ export function createRoomTv(root, chinese, onVideoAudio) {
     const frame=stage?.querySelector('[data-youtube]');
     const status=cabinet.querySelector('.room-video-status');
     let yt, timer, clockStart, loading, visible=false, playing, pendingAdvance=false, ytReady=false, ytPlaying=false;
-    const current={room, sync, toggleSound, fullscreen, destroy};
+    const current={room, sync, toggleSound, fullscreen, exitFullscreen, destroy};
     mounted=current;
+    const isFullscreen=()=>Boolean(stage&&(root.hasAttribute('data-tv-expanded')||document.fullscreenElement===stage||video?.webkitDisplayingFullscreen));
+    function setFullscreenState(full){
+      if(root.hasAttribute('data-tv-fullscreen')===full)return;
+      root.toggleAttribute('data-tv-fullscreen',full);
+      onFullscreenChange?.();
+    }
 
     function syncBackgroundMusic() {
       if(mounted!==current)return;
@@ -143,13 +147,12 @@ export function createRoomTv(root, chinese, onVideoAudio) {
     }
     function advance() {
       if(mounted!==current)return;
-      if(stage&&(document.fullscreenElement===stage||video?.webkitDisplayingFullscreen)){pendingAdvance=true;return;}
+      if(isFullscreen()){pendingAdvance=true;return;}
       switchTo(room, deck.index===length-1 ? challengeSlides.length : deck.index+1);
     }
     function sync() {
       if(mounted!==current)return;
-      const full=Boolean(stage&&(document.fullscreenElement===stage||video?.webkitDisplayingFullscreen));
-      const shouldPlay=(visible||full)&&!document.hidden&&!deck.paused;
+      const shouldPlay=(visible||isFullscreen())&&!document.hidden&&!deck.paused;
       if(playing===shouldPlay)return;
       playing=shouldPlay;
       syncBackgroundMusic();
@@ -204,21 +207,43 @@ export function createRoomTv(root, chinese, onVideoAudio) {
     function onPlaying(){status.textContent='';syncBackgroundMusic();}
     function fullscreenChange(){
       if(!stage)return;
-      if(pendingAdvance&&!document.fullscreenElement&&!video?.webkitDisplayingFullscreen){advance();return;}
+      const full=isFullscreen();
+      setFullscreenState(full);
+      if(!full&&pendingAdvance){advance();return;}
       sync();
-      if(!document.fullscreenElement&&document.activeElement?.matches('.room-video-exit')){
+      if(!full&&!root.inert&&document.activeElement?.matches('.room-video-exit')){
         cabinet.querySelector('[data-house="tv-fullscreen"]')?.focus({preventScroll:true});
       }
     }
     async function fullscreen() {
       if(!stage)return;
-      try {
-        if(document.fullscreenEnabled&&stage.requestFullscreen){
+      if(document.fullscreenEnabled&&stage.requestFullscreen){
+        try{
           await stage.requestFullscreen();
-          stage.querySelector('[data-house="tv-exit"]').focus({preventScroll:true});
-        }else if(video?.webkitEnterFullscreen)video.webkitEnterFullscreen();
-        else if(clip)window.open(clip.url,'_blank','noopener,noreferrer');
-      }catch{status.textContent=t('fullscreenError');}
+        }catch{
+          // Some embedded browsers deny the native fullscreen request.
+        }
+      }
+      if(mounted!==current)return;
+      if(document.fullscreenElement!==stage){
+        root.setAttribute('data-tv-expanded','');
+        stage.setAttribute('role','dialog');
+        stage.setAttribute('aria-modal','true');
+        stage.setAttribute('aria-label',t('watch'));
+      }
+      fullscreenChange();
+      stage.querySelector('[data-house="tv-exit"]').focus({preventScroll:true});
+    }
+    function exitFullscreen(){
+      if(root.hasAttribute('data-tv-expanded')){
+        root.removeAttribute('data-tv-expanded');
+        stage.removeAttribute('role');
+        stage.removeAttribute('aria-modal');
+        stage.removeAttribute('aria-label');
+        fullscreenChange();
+      }else if(document.fullscreenElement===stage){
+        void document.exitFullscreen().catch(()=>{});
+      }
     }
     function destroy() {
       observer.disconnect();
@@ -230,6 +255,8 @@ export function createRoomTv(root, chinese, onVideoAudio) {
       video?.removeEventListener('playing',onPlaying);
       for(const event of ['pause','ended','error'])video?.removeEventListener(event,syncBackgroundMusic);
       for(const event of ['webkitbeginfullscreen','webkitendfullscreen'])video?.removeEventListener(event,fullscreenChange);
+      root.removeAttribute('data-tv-expanded');
+      setFullscreenState(false);
       video?.pause();
       yt?.destroy?.();
     }
@@ -286,7 +313,7 @@ export function createRoomTv(root, chinese, onVideoAudio) {
     }else if(action==='tv-fullscreen'){
       void current.fullscreen();
     }else if(action==='tv-exit'){
-      void document.exitFullscreen().catch(()=>{});
+      current.exitFullscreen();
     }else return false;
     return true;
   }
@@ -300,7 +327,9 @@ export function createRoomTv(root, chinese, onVideoAudio) {
       deck.paused=false;
     },
     selectClip(room,index) {
-      if(sharedReels[index])switchTo(room,challengeSlides.length+index);
+      if(!sharedReels[index])return;
+      state(room).paused=false;
+      switchTo(room,challengeSlides.length+index);
     },
     setFiles(room,files) {
       const deck=state(room), clip=clipFor(deck);
