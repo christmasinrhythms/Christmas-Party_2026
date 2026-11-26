@@ -1,4 +1,4 @@
-import {schools,rundown,reelRules} from './interior-content.mjs';
+import {schools,rundown,reelRules,teamNames} from './interior-content.mjs';
 import {reelDirectory,sharedReels} from './room-reels.mjs';
 import {createRoomTv} from './room-tv.mjs?v=atrium-mirror-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
@@ -6,6 +6,9 @@ import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v
 import {playRoomLighting} from './room-lighting.mjs?v=rock-kpop-stage-20261126';
 
 const dir='assets/interior/';
+const chairEndpoint = ['127.0.0.1', 'localhost'].includes(location.hostname)
+  ? 'chair-team'
+  : 'https://christmas-sorting-chair.terryfung1990.workers.dev/chair-team';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));
 let photoManifest;
 function publishedPhotos(){
@@ -27,6 +30,7 @@ const words={
   unknown:['We couldn’t find a team for this email. Check the address you used to RSVP.','找不到這個電郵所屬的隊伍。請核對 RSVP 使用的電郵地址。'],invalid:['Enter a valid email address.','請輸入有效電郵地址。'],
   fullName:['Your full name','你的全名'],useName:['I don’t have an RSVP email','我沒有 RSVP 電郵'],useEmail:['Use my RSVP email','使用我的 RSVP 電郵'],
   unknownName:['We couldn’t find a team under that name. Check your full name with your team representative.','找不到這個姓名所屬的隊伍。請向隊伍代表確認你的全名。'],invalidName:['Enter your full name.','請輸入全名。'],
+  rateLimit:['Too many attempts. Wait a minute and try again.','查詢次數過多，請等一分鐘再試。'],
   lookupError:['The team list couldn’t be loaded. Try again.','未能載入隊伍名單，請重試。'],
   sorting:['The hat is listening…','分類帽正在聆聽…'],hatPause:['The hat has made its decision.','分類帽已作出選擇。'],reveal:['The hat reveals…','分類帽揭曉…'],sortingBanner:['School crest','學院圖騰'],
   choices:['Dress code options','服裝主題選擇'],askRep:['Ask your team representative which dress code your team will wear.','請向你的隊伍代表查詢隊伍選定的服裝主題。'],
@@ -215,14 +219,35 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     </section>`;
   }
   function displayChair(){
-    return `<div class="chair-ceremony">
+    const result=assignment&&!revealing;
+    const heading=result
+      ? assignment.team===null ? copy('generalManagement') : zh()? `${escapeHtml(teamNames[assignment.team])} 隊` : `Team ${escapeHtml(teamNames[assignment.team])}`
+      : copy('find');
+    const form=`<form class="house-email" novalidate>
+      <label for="house-email">${copy(lookupMethod==='email'?'email':'fullName')}</label>
+      <input id="house-email" type="${lookupMethod==='email'?'email':'text'}" autocomplete="off" inputmode="${lookupMethod==='email'?'email':'text'}" spellcheck="false" maxlength="${lookupMethod==='email'?254:120}"${checking?' readonly':''} aria-describedby="house-email-error">
+      <p id="house-email-error" role="status">${error?copy(error):''}</p>
+      <div class="house-email-actions"><button type="submit" class="house-action primary"${checking?' disabled aria-busy="true"':''}>${copy(checking?'checking':'seat')}</button></div>
+      ${checking?'':btn('chair-method',copy(lookupMethod==='email'?'useName':'useEmail'),'chair-method')}
+    </form>`;
+    return `<div class="chair-ceremony${revealing?' is-revealing':result?' has-reveal':''}">
       ${dressCodeChoices()}
-      <div class="chair-cutout" aria-hidden="true">
+      <div class="chair-cutout${assignment?' is-seated':''}" aria-hidden="true">
         ${art('chair-front','class="cutout-chair"')}
+        ${assignment?art('storybook-guest-seated','class="cutout-guest"'):''}
         ${art('sorting-hat-rest','class="cutout-hat"')}
       </div>
-      <div class="chair-words"><h2 data-panel-heading tabindex="-1">${copy('chair')}</h2></div>
+      <div class="chair-words${result?' team-announcement':''}">
+        ${result?`<p class="team-result-label">${copy('reveal')}</p>`:''}
+        <h2 data-panel-heading tabindex="-1">${revealing?copy('sorting'):heading}</h2>
+        ${result ? `${assignment.representative?`<p class="team-rep-badge"><span aria-hidden="true">✦</span>${copy('representative')}</p>`:''}
+          ${btn('chair-reset',copy('another'),'house-action')}` : revealing?`<span class="chair-reveal-trail" aria-hidden="true"><i></i><i></i><i></i></span>`:form}
+        ${revealing?`<span class="sr-only" role="status" data-chair-reveal>${copy('sorting')}</span>`:''}
+      </div>
     </div>`;
+  }
+  function focusSortingHeading(){
+    root.querySelector('[data-panel-heading]')?.focus({preventScroll:true});
   }
   function displayPhoto(){
     const {photos}=galleries.get(scene);
@@ -282,6 +307,9 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     syncAtrium(scene==='lobby'&&!panel&&!transitioning);
     if(panel==='tv')roomTv.connect('lobby');
+    if(panel==='chair'){
+      const input=root.querySelector('#house-email');if(input){input.value=lookupValue;if(error)input.setAttribute('aria-invalid','true');}
+    }
     if(scene==='lobby')placeHall(hallPan);
     const motionButton=root.querySelector('[data-house=motion]');
     motionButton?.setAttribute('aria-label',copy(motion()?'resume':'pause'));
@@ -300,6 +328,59 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     center();
     if(revealing&&motionQuery.matches)cancelSorting();
     render();
+  });
+  root.addEventListener('input',event=>{if(event.target.id==='house-email'){lookupValue=event.target.value;error='';event.target.removeAttribute('aria-invalid');const status=root.querySelector('#house-email-error');if(status) status.textContent='';}});
+  root.addEventListener('submit',async event=>{
+    if(!event.target.matches('.house-email'))return;
+    event.preventDefault();
+    if(checking)return;
+    const input=event.target.querySelector('input');
+    lookupValue=input.value.trim();
+    if(!lookupValue||!input.validity.valid){
+      error=lookupMethod==='email'?'invalid':'invalidName';
+      root.querySelector('#house-email-error').textContent=copy(error);
+      input.setAttribute('aria-invalid','true');
+      input.focus();
+      return;
+    }
+    error='';
+    checking=true;
+    const token=++sequence;
+    render();
+    try{
+      const response=await fetch(chairEndpoint,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[lookupMethod]:lookupValue}),
+        signal:AbortSignal.timeout(15000)
+      });
+      if(token!==sequence||panel!=='chair')return;
+      if(response.status===429){
+        error='rateLimit';
+      }else{
+        if(!response.ok)throw new Error('team lookup');
+        const result=await response.json();
+        if(token!==sequence||panel!=='chair')return;
+        assignment=result.assignment;
+        if(!assignment)error=lookupMethod==='email'?'unknown':'unknownName';
+      }
+    }catch{
+      if(token!==sequence||panel!=='chair')return;
+      error='lookupError';
+    }
+    checking=false;
+    if(assignment)lookupValue='';
+    revealing=Boolean(assignment&&!motion());
+    render();
+    if(assignment){
+      focusSortingHeading();
+      if(revealing)revealTimer=setTimeout(()=>{
+        root.querySelector('[data-panel-heading]').textContent=copy('hatPause');
+        root.querySelector('[data-chair-reveal]').textContent=copy('hatPause');
+        revealTimer=setTimeout(()=>{
+          revealing=false;render();focusSortingHeading();onReveal?.();
+        },720);
+      },1120);
+      else onReveal?.();
+    }else root.querySelector('#house-email').focus({preventScroll:true});
   });
   root.addEventListener('click',event=>{
     const button=event.target.closest('[data-house]');if(!button||transitioning)return;
@@ -327,6 +408,13 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       root.querySelector('[data-panel-heading]').focus({preventScroll:true});
       root.querySelector('[data-room-tv]').scrollIntoView({block:'start'});
       return;
+    }
+    if(action==='chair-method'){
+      lookupMethod=lookupMethod==='email'?'name':'email';
+      lookupValue='';error='';render();root.querySelector('#house-email').focus({preventScroll:true});return;
+    }
+    if(action==='chair-reset'){
+      assignment=null;lookupMethod='email';lookupValue='';error='';render();root.querySelector('#house-email').focus({preventScroll:true});return;
     }
     if(roomTv.handle(action,button))return;
     if(action==='next'||action==='previous'){
