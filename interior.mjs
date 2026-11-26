@@ -3,6 +3,7 @@ import {reelDirectory,sharedReels} from './room-reels.mjs';
 import {createRoomTv} from './room-tv.mjs?v=atrium-mirror-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
 import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=atrium-mirror-20261126';
+import {playRoomLighting} from './room-lighting.mjs?v=atrium-lighting-20261126';
 
 const dir='assets/interior/';
 const localReels=Object.fromEntries(sharedReels.map(clip=>[clip.id,reelDirectory+clip.file]));
@@ -50,6 +51,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   let scene='outside',panel='',look=0,assignment=null,lookupValue='',lookupMethod='email',error='',checking=false,revealing=false,paused=false,transitioning=false,origin='',sequence=0;
   let exteriorTrigger=trigger,revealTimer;
   let hallPan=0,hallDrag=null;
+  let stopRoomLighting;
   const galleries=new Map(Object.keys(schools).map(id=>[id,{photos:[],scroll:0,focused:0,message:'',opening:false}]));
   const motion=()=>paused||motionQuery.matches||document.body.classList.contains('calm');
   const zh=()=>document.documentElement.lang==='zh-Hant';
@@ -177,22 +179,6 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     if(scene===room&&!transitioning)refreshGallery();
   }
-  function roomAtmosphere(){
-    const renderParticles=(kind,count,glyphs=[''])=>Array.from({length:count},(_,i)=>{
-      const x=(i*37+11)%98;
-      const y=(i*29+12)%84;
-      const time=6+i%6;
-      const tint=i%3;
-      return `<i class="${kind}" data-tint="${tint}" style="--x:${x}%;--y:${y}%;--time:${time}s;--delay:-${(i*1.7).toFixed(1)}s">${glyphs[i%glyphs.length]}</i>`;
-    }).join('');
-    const effects={
-      rock:'<i class="room-vapor"></i><i class="room-vapor"></i><i class="room-vapor"></i>',
-      disco:renderParticles('room-glint',10)+renderParticles('room-streamer',14),
-      jazz:renderParticles('room-note',10,['♪','♫','♩','♬']),
-      kpop:'<i class="room-spot"></i><i class="room-spot"></i><i class="room-spot"></i>'+renderParticles('room-confetti',16)
-    };
-    return `<div class="room-atmosphere" aria-hidden="true">${effects[scene]}</div>`;
-  }
   function renderRoom(){
     return `<main class="room-scroll" data-room-scroll>
       <div class="room-layout room-exhibits">
@@ -268,15 +254,17 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     const previousScroll=root.querySelector('[data-room-scroll]');
     if(previousRoom&&previousScroll)previousRoom.scroll=previousScroll.scrollTop;
     roomTv.disconnect();
+    stopRoomLighting?.();
+    stopRoomLighting=undefined;
     const room=schools[scene];
+    const lightLayer=room&&!panel&&!transitioning&&!motion()?'<canvas class="room-atmosphere" aria-hidden="true"></canvas>':'';
     root.dataset.scene=scene;
     root.dataset.panel=panel||'none';
     root.dataset.room=String(Boolean(room));
     root.dataset.still=String(motion());
     root.style.setProperty('--house-accent',room?.accent||'#f6d594');
-    root.innerHTML=`<div class="house-background" aria-hidden="true">${art(room?.art||'atrium')}</div>
+    root.innerHTML=`<div class="house-background" aria-hidden="true">${art(room?.art||'atrium')}${lightLayer}</div>
       <div class="house-shade" aria-hidden="true"></div>
-      ${room?roomAtmosphere():''}
       <div class="house-scene${room?' room-scene':''}" ${panel?'inert aria-hidden="true"':transitioning?'inert':''}>
         <header class="house-top"><div class="house-top-actions">${room?'':btn('outside','‹ '+copy('outside'),'house-action')}${btn('motion',motion()?'▷':'Ⅱ','house-action compact')}</div>
           <div class="house-heading">${room?crest(scene):''}<h2 id="house-title" tabindex="-1">${room?name(scene):copy('lobby')}</h2></div>
@@ -288,6 +276,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       ${transitioning?'<div class="house-passage" aria-hidden="true"><i></i><i></i></div>':''}`;
     root.querySelector('[data-panel-heading]')?.setAttribute('id','interior-dialog-title');
     if(room){
+      stopRoomLighting=playRoomLighting(root.querySelector('.room-atmosphere'),scene);
       refreshGallery();
       root.querySelector('[data-room-scroll]').scrollTop=galleries.get(scene).scroll;
     }

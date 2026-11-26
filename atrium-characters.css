@@ -5,7 +5,7 @@
   pointer-events: none;
 }
 #houseInterior .hall-actor {
-  --sprite-width: clamp(113px, 12vw, 185px);
+  --sprite-width: clamp(125px, 13.3vw, 204px);
   position: absolute;
   bottom: max(74px, 9.5dvh);
   left: var(--actor-home);
@@ -134,7 +134,7 @@
   }
   #houseInterior[data-dragging="true"] .hall-companions { transition: none; }
   #houseInterior .hall-actor {
-    --sprite-width: clamp(43px, 13vw, 76px);
+    --sprite-width: clamp(48px, 14.4vw, 84px);
     bottom: calc(var(--hall-floor) - 17px);
   }
   #houseInterior .actor-elf {
