@@ -1,0 +1,170 @@
+.room-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.room-atmosphere i { position: absolute; display: block; font-style: normal; }
+#houseInterior[data-still="true"] .room-atmosphere,
+#houseInterior:not([data-panel="none"]) .room-atmosphere { display: none; }
+
+.room-vapor {
+  bottom: 1%;
+  left: -26%;
+  width: 115%;
+  height: 23%;
+  background: radial-gradient(ellipse at 40% 67%, #c5bdc765, #ba9ba143 27%, transparent 63%);
+  animation: room-vapor 16s ease-in-out infinite alternate;
+}
+.room-vapor:nth-child(2) {
+  bottom: 8%;
+  left: 23%;
+  height: 33%;
+  background: radial-gradient(ellipse at 55% 63%, #c2a1a541, #aa747c38 22%, transparent 64%);
+  animation-delay: -7s;
+}
+.room-vapor:nth-child(3) { left: -3%; bottom: 0; height: 16%; animation-delay: -11s; }
+@keyframes room-vapor {
+  from { transform: translate3d(-10%, 15%, 0) scale(.95); opacity: .5; }
+  to { transform: translate3d(19%, -12%, 0) scale(1.08); opacity: .95; }
+}
+
+.room-glint {
+  left: var(--x);
+  top: var(--y);
+  width: clamp(13px, 3vw, 35px);
+  aspect-ratio: 1;
+  background: #fff4c8;
+  clip-path: polygon(50% 0,58% 41%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 41%);
+  opacity: 0;
+  animation: room-glint var(--time) ease-out var(--delay) infinite;
+}
+@keyframes room-glint {
+  0%, 62%, 100% { transform: scale(.14) rotate(-18deg); opacity: 0; }
+  66% { transform: scale(1.1) rotate(12deg); opacity: .92; }
+  73% { transform: scale(.57) rotate(25deg); opacity: .18; }
+}
+.room-streamer, .room-confetti {
+  top: -6%;
+  left: var(--x);
+  width: 5px;
+  height: clamp(14px, 2.5vw, 25px);
+  border-radius: 2px;
+  background: linear-gradient(90deg, #93601e, #ffe38a 52%, #ce9539);
+  animation: room-paper var(--time) linear var(--delay) infinite;
+}
+.room-streamer[data-tint="1"] { background: linear-gradient(90deg,#f3bd50,#fff7bb,#ad7825); }
+.room-confetti {
+  width: 4px;
+  height: 8px;
+  background: #ffb9f6;
+  animation-duration: calc(var(--time) + 1.6s);
+}
+.room-confetti[data-tint="1"] { background: #a1eaff; }
+.room-confetti[data-tint="2"] { background: #fff4b0; }
+@keyframes room-paper {
+  0% { transform: translate3d(-18px, -20px, 0) rotate3d(1,.5,1,0deg); opacity: 0; }
+  13%, 78% { opacity: .73; }
+  100% { transform: translate3d(72px, 111dvh, 0) rotate3d(1,.5,1,550deg); opacity: 0; }
+}
+
+.room-note {
+  left: var(--x);
+  top: clamp(20%, var(--y), 95%);
+  color: #ffe9bb;
+  font: 400 clamp(20px, 3.2vw, 40px)/1 Georgia, serif;
+  text-shadow: 0 0 12px #ffb948, 0 3px 14px #311b0c;
+  animation: room-note var(--time) ease-in-out var(--delay) infinite;
+}
+@keyframes room-note {
+  from { transform: translate3d(-10px,35px,0) rotate(-23deg) scale(.6); opacity: 0; }
+  33%, 58% { opacity: .76; }
+  to { transform: translate3d(55px,-110px,0) rotate(15deg) scale(1.16); opacity: 0; }
+}
+
+.room-spot {
+  top: -12%;
+  left: 8%;
+  width: 51%;
+  height: 102%;
+  transform-origin: 50% 0;
+  background: conic-gradient(from 152deg at 50% 0%, transparent, #ff7ede45 24deg, #ffe7ff8a 28deg, #ff92f345 32deg, transparent 56deg);
+  animation: room-spot 8s ease-in-out infinite alternate;
+}
+.room-spot:nth-child(2) {
+  left: 44%;
+  animation-delay: -5s;
+  background: conic-gradient(from 152deg at 50% 0%, transparent, #9cb4ff4a 24deg, #dcf5ff9e 28deg, #80e6ff4a 32deg, transparent 56deg);
+}
+.room-spot:nth-child(3) { left: 20%; opacity: .55; animation-delay: -3s; }
+@keyframes room-spot { from { transform: rotate(-34deg); } to { transform: rotate(36deg); } }
+
+.outfit-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px clamp(12px, 3vw, 36px);
+  width: 100%;
+}
+#houseInterior .outfit-section-heading h3,
+#houseInterior .room-mirror-exhibit h3 {
+  margin: 0;
+  color: #fff0cd;
+  font: 700 clamp(24px, 4.4vw, 48px)/1.08 Georgia, 'Songti TC', serif;
+  text-shadow: 0 2px 4px #210e10, 0 0 25px #130c12;
+}
+#houseInterior .try-on-jump,
+#houseInterior .mirror-steam {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55em;
+  min-height: 44px;
+  padding: 7px 14px;
+  border: 1px solid #ffe6ae;
+  border-radius: 100px;
+  color: #362018;
+  background: linear-gradient(#fff0c8,#dbab63);
+  box-shadow: 0 4px 0 #51301d, 0 10px 26px #150b12a1;
+  font: 700 clamp(16px, 2.3vw, 25px)/1.1 Georgia, 'Songti TC', serif;
+  text-shadow: none;
+}
+#houseInterior .try-on-jump:hover,
+#houseInterior .room-mirror-link:hover .mirror-steam { background: #fff3ce; }
+#houseInterior .try-on-jump:focus-visible,
+#houseInterior .room-mirror-link:focus-visible { outline: 2px solid #fff1c4; outline-offset: 4px; }
+.room-mirror-exhibit {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin: clamp(30px, 7dvh, 70px) auto 0;
+  padding: 20px 0 12px;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 57%, #1e1021c2, transparent 72%);
+}
+.room-mirror-exhibit:focus { outline: none; }
+#houseInterior .room-mirror-exhibit p {
+  margin: 0 12px 4px;
+  color: #fff4df;
+  text-shadow: 0 2px 6px #13080e;
+}
+#houseInterior .room-mirror-exhibit .room-mirror {
+  width: clamp(174px, 24vw, 252px);
+  transform: perspective(1000px) rotateY(-5deg);
+}
+#houseInterior .room-mirror-exhibit .mirror-surface { aspect-ratio: .63; }
+#houseInterior .room-mirror-exhibit .mirror-steam {
+  padding: 10px;
+  max-width: calc(100% - 12px);
+  font-size: clamp(15px, 1.8vw, 22px);
+}
+
+@media (max-width: 700px) {
+  .room-atmosphere :is(.room-streamer,.room-confetti,.room-glint):nth-child(even) { display: none; }
+  #houseInterior .outfit-section-heading h3 { font-size: clamp(22px,6.3vw,32px); }
+  #houseInterior .try-on-jump { min-height: 44px; font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-atmosphere { display: none; }
+}

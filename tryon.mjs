@@ -1,4 +1,4 @@
-import { tryonSchools } from './tryon-looks.mjs?v=rigged-streetwear';
+import { tryonSchools } from './tryon-looks.mjs?v=tripo-rooms-20261126';
 import { createSchoolFrame } from './tryon-frame.mjs?v=room-polish-20261126';
 
 const copy = {
@@ -80,6 +80,12 @@ const schoolCopy = {
 const requestedGenre = params.get('genre');
 const genre = Object.hasOwn(tryonSchools, requestedGenre) ? requestedGenre : 'rock';
 const school = tryonSchools[genre];
+const studioCrest = byId('studio-crest');
+if (studioCrest) {
+  studioCrest.src = `assets/interior/school-crest-${genre}.png`;
+  document.body.style.setProperty('--studio-tint', school.tint);
+  document.body.style.setProperty('--studio-trim', school.trim);
+}
 const localized = (pair) => pair[language === 'zh' ? 1 : 0];
 const canvas = byId('view');
 const ctx = canvas.getContext('2d', { alpha: false });

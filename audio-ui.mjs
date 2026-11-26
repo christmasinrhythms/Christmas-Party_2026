@@ -1,4 +1,12 @@
-import {Soundscape} from './soundscape.mjs?v=phone-framing-20261126';
+import {Soundscape} from './soundscape.mjs?v=tripo-rooms-20261126';
+
+const PLAYLIST_LABELS={
+ christmas:['Christmas','聖誕'],
+ rock:['Rock & Punk','搖滾龐克'],
+ disco:['Disco','的士高'],
+ jazz:['Jazz & Classical','爵士古典樂'],
+ kpop:['K-pop & Hip-Hop','K-pop 與嘻哈']
+};
 
 // Cue times are film positions, never elapsed page timers.
 export const INTRO_CUES=Object.freeze([
@@ -10,6 +18,10 @@ export const INTRO_CUES=Object.freeze([
 
 export function createSoundControls({t}){
  const $=s=>document.querySelector(s),sound=new Soundscape({musicVolume:.25,sfxVolume:.5});
+ const playlist=$('#musicPlaylist');
+ const groups=new Map(Object.keys(PLAYLIST_LABELS).map(genre=>[genre,document.createElement('optgroup')]));
+ for(const track of sound.getState().tracks)groups.get(track.genre).append(new Option(track.title,track.id));
+ playlist.append(...groups.values());
  sound.music.hidden=true;sound.music.id='playlistAudio';sound.music.setAttribute('aria-hidden','true');$('#soundPlayer').append(sound.music);
  let level=.25,phase='loading',started=false,state=sound.getState(),lastFilmTime=0,resumeAfterPage=false,introCues=INTRO_CUES,orientationBlocked=false,resumeAfterRotate=false,tvAudible=false;
  const fired=new Set();
@@ -24,6 +36,10 @@ export function createSoundControls({t}){
   $('#soundPlayer').setAttribute('aria-label',t('music_region'));
   $('#soundPanel').setAttribute('aria-label',t('music_controls'));
   $('#soundTrack').textContent=state.track.title;$('#soundFullTitle').textContent=state.track.title;
+  const locale=+(document.documentElement.lang==='zh-Hant');
+  $('#musicPlaylistLabel').textContent=['Choose a song','選擇歌曲'][locale];
+  for(const [genre,group] of groups)group.label=PLAYLIST_LABELS[genre][locale];
+  playlist.value=state.track.id;
   for(const id of ['#musicPlay','#musicPlayFull']){$(id).title=t(playKey);$(id).setAttribute('aria-label',t(playKey));}
   if(enableSound){$('#musicPlay').title=t('sound_enable');$('#musicPlay').setAttribute('aria-label',t('sound_enable'));}
   $('#musicIcon').textContent=enableSound?'♪':playing?'Ⅱ':'▶';$('#musicFullIcon').textContent=playing?'Ⅱ':'▶';
@@ -45,6 +61,7 @@ export function createSoundControls({t}){
  const toggle=event=>{if(event.currentTarget.id==='musicPlay'&&state.playing&&needsSound()){unlock();return;}const pause=state.playing||state.status==='loading';unlock();if(pause)sound.pause();else void sound.play();};
  $('#musicPlay').addEventListener('click',toggle);$('#musicPlayFull').addEventListener('click',toggle);
  $('#musicPrevious').addEventListener('click',()=>{unlock();void sound.prev();});$('#musicNext').addEventListener('click',()=>{unlock();void sound.next();});
+ playlist.addEventListener('change',()=>{const choice=playlist.value;void sound.playTrack(choice);unlock();});
  $('#musicMute').addEventListener('click',()=>sound.setMusicMuted(!state.musicMuted));$('#soundEffects').addEventListener('click',()=>sound.setSfxMuted(!state.sfxMuted));
  $('#masterMute').addEventListener('click',()=>sound.setMasterMuted(!state.masterMuted));
  $('#musicVolume').addEventListener('input',event=>{level=Number(event.target.value)/100;applyVolume();unlock();});
@@ -58,6 +75,7 @@ export function createSoundControls({t}){
  }
  return {
   applyLanguage:render,
+  setScene(scene){void sound.setGenre(groups.has(scene)?scene:'christmas');},
   setTvAudible(audible){if(tvAudible===audible)return;tvAudible=audible;applyVolume();},
   setOrientationBlocked(blocked){if(blocked===orientationBlocked)return;orientationBlocked=blocked;if(blocked){resumeAfterRotate=state.playing||state.status==='loading'||state.blocked;stopEffects();sound.pause();}else if(!document.hidden){if(resumeAfterRotate){resumeAfterRotate=false;void sound.play();}else if(!started&&phase!=='loading'){started=true;void sound.tryAutoplaySfx?.();void sound.play();}}},
   setIntroCues(cues){if(phase==='intro')return false;introCues=cues??INTRO_CUES;return true;},

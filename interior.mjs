@@ -34,6 +34,10 @@ const words={
   photos:['Outfit gallery','穿搭相簿'],photo:['Outfit photo','穿搭相片'],galleryHint:['Drag to browse, or select the centre photo to enlarge it.','拖動瀏覽，或按中央相片放大。'],viewTv:['Reels TV','Reels 電視'],viewGallery:['Back to the gallery','返回相簿'],loadPhotosError:['Could not load the wall photos.','未能載入牆上相片。'],
   previous:['Previous photo','上一張相片'],next:['Next photo','下一張相片'],
   mirror:['Try-On Mirror','虛擬試穿鏡'],openMirror:['Open Camera','開啟試穿相機'],
+  outfitReferences:['Outfit References','穿搭靈感'],
+  tryOn:['Try-On','虛擬試穿'],
+  openStudio:['Tap to Try On','按此試穿'],
+  studioHint:['Try a room look with your camera or a photo.','用相機或相片試穿這間房的造型。'],
   rules:['Challenge rules','挑戰規則'],rulesShort:['Rules','規則'],deadline:['Submit by 1:00 p.m.','下午 1 時前提交'],everyone:['Everyone is encouraged to take part.','鼓勵每位隊員參與。'],
   watch:['Watch original','觀看原片'],sourceLink:['Original','原片'],instagramPlay:['Use the Instagram player or select Original.','請使用 Instagram 播放器，或選擇原片。'],
   clips:['Clips','短片'],examples:['Choose a Reel','選擇短片'],examplesOpen:['Open source','開啟來源'],playExample:['Play on the TV','在電視播放'],
@@ -41,7 +45,7 @@ const words={
   fullscreen:['Fullscreen','全螢幕'],exitFullscreen:['Back to TV','返回電視'],fullscreenError:['Fullscreen is unavailable.','未能開啟全螢幕。'],videoError:['The TV video could not be played.','未能播放電視影片。'],
 };
 
-export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal,onTvAudio}){
+export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReveal,onTvAudio,onSceneChange}){
   const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
   let scene='outside',panel='',look=0,assignment=null,lookupValue='',lookupMethod='email',error='',checking=false,revealing=false,paused=false,transitioning=false,origin='',sequence=0;
   let exteriorTrigger=trigger,revealTimer,showClips=false;
@@ -81,7 +85,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     if(next==='outside'){
       syncAtrium(false);
       scene=next;root.hidden=true;root.inert=true;outside.inert=false;outside.removeAttribute('aria-hidden');
-      document.body.classList.remove('inside-house');exteriorTrigger.focus({preventScroll:true});return;
+      document.body.classList.remove('inside-house');onSceneChange?.(scene);exteriorTrigger.focus({preventScroll:true});return;
     }
     if(from==='outside'){
       if(next==='lobby')void publishedPhotos().catch(()=>{});
@@ -90,6 +94,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       document.body.classList.add('inside-house');onEnter();
     }
     scene=next;transitioning=!motion();
+    onSceneChange?.(scene);
     if(schools[next]){
       galleries.get(next).opening=true;
       roomTv.reset(next);
@@ -175,10 +180,30 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     if(scene===room&&!transitioning)refreshGallery();
   }
+  function roomAtmosphere(){
+    const renderParticles=(kind,count,glyphs=[''])=>Array.from({length:count},(_,i)=>{
+      const x=(i*37+11)%98;
+      const y=(i*29+12)%84;
+      const time=6+i%6;
+      const tint=i%3;
+      return `<i class="${kind}" data-tint="${tint}" style="--x:${x}%;--y:${y}%;--time:${time}s;--delay:-${(i*1.7).toFixed(1)}s">${glyphs[i%glyphs.length]}</i>`;
+    }).join('');
+    const effects={
+      rock:'<i class="room-vapor"></i><i class="room-vapor"></i><i class="room-vapor"></i>',
+      disco:renderParticles('room-glint',10)+renderParticles('room-streamer',14),
+      jazz:renderParticles('room-note',10,['♪','♫','♩','♬']),
+      kpop:'<i class="room-spot"></i><i class="room-spot"></i><i class="room-spot"></i>'+renderParticles('room-confetti',16)
+    };
+    return `<div class="room-atmosphere" aria-hidden="true">${effects[scene]}</div>`;
+  }
   function renderRoom(){
     return `<main class="room-scroll" data-room-scroll>
       <div class="room-layout room-exhibits">
         <section class="outfit-gallery" aria-label="${copy('photos')}" data-room-exhibit="gallery">
+          <header class="outfit-section-heading">
+            <h3>${copy('outfitReferences')}</h3>
+            ${btn('jump-mirror',`<span>${copy('tryOn')}</span><span aria-hidden="true">↓</span>`,'try-on-jump')}
+          </header>
           <div class="outfit-stage" data-outfit-stage tabindex="0" aria-label="${copy('photos')}" aria-describedby="outfit-hint"></div>
           <div class="outfit-nav">
             <button class="house-action compact" type="button" data-house="gallery-prev" aria-label="${copy('previous')}">‹</button>
@@ -191,8 +216,12 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
         </section>
         <section class="room-feature room-screening" data-room-exhibit="tv" aria-label="${copy('viewTv')}">
           <div class="room-television" data-room-tv>${roomTv.render(scene,!panel&&!transitioning)}</div>
-          <a class="room-mirror room-mirror-link" href="tryon.html?genre=${scene}${zh()?'&amp;lang=zh':''}" aria-label="${copy('mirror')}">
-            <span class="mirror-surface"><span class="mirror-steam">${copy('openMirror')} ↗</span></span>
+        </section>
+        <section class="room-mirror-exhibit" data-room-exhibit="mirror" tabindex="-1" aria-labelledby="mirror-title">
+          <h3 id="mirror-title">${copy('mirror')}</h3>
+          <p>${copy('studioHint')}</p>
+          <a class="room-mirror room-mirror-link" href="tryon.html?genre=${scene}${zh()?'&amp;lang=zh':''}">
+            <span class="mirror-surface"><span class="mirror-steam">${copy('openStudio')} <span aria-hidden="true">↗</span></span></span>
           </a>
           ${btn('jump-gallery','↑ '+copy('viewGallery'),'house-action exhibit-jump')}
         </section>
@@ -254,6 +283,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     root.style.setProperty('--house-accent',room?.accent||'#f6d594');
     root.innerHTML=`<div class="house-background" aria-hidden="true">${art(room?.art||'atrium')}</div>
       <div class="house-shade" aria-hidden="true"></div>
+      ${room?roomAtmosphere():''}
       <div class="house-scene${room?' room-scene':''}" ${panel?'inert aria-hidden="true"':transitioning?'inert':''}>
         <header class="house-top"><div class="house-top-actions">${room?'':btn('outside','‹ '+copy('outside'),'house-action')}${btn('motion',motion()?'▷':'Ⅱ','house-action compact')}</div>
           <div class="house-heading">${room?crest(scene):''}<h2 id="house-title" tabindex="-1">${room?name(scene):copy('lobby')}</h2></div>
@@ -298,8 +328,9 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     if(action==='close'){closePanel();return;}
     if(action==='motion'){if(motionQuery.matches||document.body.classList.contains('calm'))return;paused=!paused;center();render();root.querySelector('[data-house=motion]').focus();return;}
     if(action==='gallery-prev'||action==='gallery-next'){outfitGallery.step(action==='gallery-prev'?-1:1);return;}
-    if(action==='jump-tv'||action==='jump-gallery'){
-      const section=root.querySelector(`[data-room-exhibit="${action==='jump-tv'?'tv':'gallery'}"]`);
+    if(action==='jump-tv'||action==='jump-gallery'||action==='jump-mirror'){
+      const section=root.querySelector(`[data-room-exhibit="${action.slice(5)}"]`);
+      if(action==='jump-mirror')section.focus({preventScroll:true});
       section.scrollIntoView({behavior:motion()?'auto':'smooth',block:'start'});
       return;
     }

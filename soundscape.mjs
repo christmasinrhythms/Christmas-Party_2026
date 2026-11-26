@@ -1,9 +1,17 @@
 /** Isolated local audio controller. No scene, timer-cue or DOM-control ownership. */
+import {ROOM_TRACKS} from './room-music.mjs?v=tripo-rooms-20261126-genre-audio';
+
 export const MUSIC_TRACKS = Object.freeze([
-  { id: 'christmas-in-rhythms', title: 'Christmas in Rhythms', file: 'music/christmas-in-rhythms.m4a' },
-  { id: 'one-more-song-we-go', title: 'One More Song We Go', file: 'music/one-more-song-we-go.m4a' },
-  { id: 'the-christmas-house', title: 'The Christmas House', file: 'music/the-christmas-house.m4a' }
+  { id: 'christmas-in-rhythms', title: 'Christmas in Rhythms', file: 'music/christmas-in-rhythms.m4a', genre: 'christmas' },
+  { id: 'one-more-song-we-go', title: 'One More Song We Go', file: 'music/one-more-song-we-go.m4a', genre: 'christmas' },
+  { id: 'the-christmas-house', title: 'The Christmas House', file: 'music/the-christmas-house.m4a', genre: 'christmas' },
+  ...ROOM_TRACKS
 ].map(Object.freeze));
+const PLAYLISTS = new Map();
+for (const [index, track] of MUSIC_TRACKS.entries()) {
+  if (!PLAYLISTS.has(track.genre)) PLAYLISTS.set(track.genre, []);
+  PLAYLISTS.get(track.genre).push(index);
+}
 const EAGER_SFX = Object.freeze({uiWoodTap:'sfx/ui-wood-tap.wav',doorRing:'sfx/door-ring.wav',magicChime:'sfx/magic-chime.wav',woodFlip:'sfx/wood-flip.wav',elfBell:'sfx/elf-bell.wav',snowPuff:'sfx/snow-puff.wav',introArrival:'sfx/intro-arrival.wav',throwWhoosh:'sfx/throw-whoosh.wav',discoShimmer:'sfx/disco-shimmer.wav',titleBloom:'sfx/title-bloom.wav'});
 export const SFX_SOURCES = Object.freeze({
   ...EAGER_SFX,
@@ -18,13 +26,16 @@ export class Soundscape {
     this.baseUrl=new URL(baseUrl,import.meta.url);this.music=new Audio();this.music.preload='none';this.music.setAttribute('playsinline','');
     this._index=0;this._status='paused';this._intent=false;this._blocked=false;this._error=null;this._token=0;this._destroyed=false;this._resume=false;this._failed=new Set();this._subscribers=new Set();this._voices=new Set();this._lastSfx=new Map();this._gesture=false;this._sfxContext=null;this._sfxGain=null;this._bufferCache=new Map();this._fetches=new Set();this._sfxEpoch=0;this._lastSfxPlayed=null;this._sfxError=null;this._sfxReady=false;this._sfxBlocked=false;
     this._musicVolume=clamp(musicVolume);this._sfxVolume=clamp(sfxVolume);this._musicMuted=false;this._sfxMuted=false;this._masterMuted=false;
+    this._genre='christmas';
+    this._queue=PLAYLISTS.get('christmas');
+    this._lastRoomTrack=new Map();
     this.music.volume=.5;
     this._nativeMusicVolume=this.music.volume===.5;
     this._musicGain=null;
     this._handlers={
       playing:()=>{if(this._destroyed||!this._intent||document.hidden){this.music.pause();return}this._status='playing';this._blocked=false;this._error=null;this._emit()},
       pause:()=>{if(this._status==='playing')this._status=this._resume?'visibility-paused':'paused';this._emit()},
-      ended:()=>{if(this._intent&&!this._destroyed){this._failed.clear();this._select((this._index+1)%3);if(!document.hidden)void this._attempt(this._token);else{this._resume=true;this._status='visibility-paused';this._emit()}}},
+      ended:()=>{if(this._intent&&!this._destroyed)void this.next()},
       error:()=>{if(this.music.error&&!this._destroyed)void this._fail(this._token)}
     };
     Object.entries(this._handlers).forEach(([name,fn])=>this.music.addEventListener(name,fn));
@@ -34,7 +45,7 @@ export class Soundscape {
   getState(){return Object.freeze({status:this._status,playing:this._status==='playing'&&!this.music.paused,blocked:this._blocked,index:this._index,track:MUSIC_TRACKS[this._index],tracks:MUSIC_TRACKS,musicVolume:this._musicVolume,sfxVolume:this._sfxVolume,musicMuted:this._musicMuted,sfxMuted:this._sfxMuted,masterMuted:this._masterMuted,gestureUnlocked:this._gesture,error:this._error,visibilityPaused:this._status==='visibility-paused',sfxContextState:this._sfxContext?.state??'not-created',lastSfxPlayed:this._lastSfxPlayed,sfxError:this._sfxError,sfxReady:this._sfxReady,sfxBlocked:this._sfxBlocked});}
   subscribe(fn){if(typeof fn!=='function')throw new TypeError('Listener must be a function');this._subscribers.add(fn);fn(this.getState());return()=>this._subscribers.delete(fn)}
   _emit(){const state=this.getState();for(const fn of this._subscribers){try{fn(state)}catch(error){console.error('Soundscape subscriber error',error)}}}
-  _select(index){this._token++;this._index=index;this.music.pause();this.music.src=new URL(MUSIC_TRACKS[index].file,this.baseUrl).href;this.music.preload='none';this._status='paused';this._blocked=false;this._error=null;this._emit();}
+  _select(index){this._token++;this._index=index;this.music.pause();this.music.src=new URL(MUSIC_TRACKS[index].file,this.baseUrl).href;this.music.preload='none';this._status='paused';this._blocked=false;this._error=null;if(MUSIC_TRACKS[index].genre===this._genre&&this._genre!=='christmas')this._lastRoomTrack.set(this._genre,index);this._emit();}
   _volume(){
     const muted=this._musicMuted||this._masterMuted;
     if(this._nativeMusicVolume)this.music.volume=this._musicVolume;
@@ -53,13 +64,45 @@ export class Soundscape {
     if(this._destroyed||token!==this._token)return false;
     this._failed.add(this._index);this._error=`Cannot play ${MUSIC_TRACKS[this._index].title}`;
     if(!this._intent){this._status='error';this._emit();return false}
-    let next=null;for(let n=1;n<=3;n++){const index=(this._index+n)%3;if(!this._failed.has(index)){next=index;break}}
-    if(next===null){this._intent=false;this._resume=false;this._status='error';this._error='All three music sources failed; use Play to retry.';this.music.pause();this._emit();return false}
+    let next=null;
+    for(let offset=1;offset<=this._queue.length;offset++){
+      const index=this._queuedIndex(1,offset);
+      if(!this._failed.has(index)){next=index;break;}
+    }
+    if(next===null){this._intent=false;this._resume=false;this._status='error';this._error='All songs in the current playlist failed; use Play to retry.';this.music.pause();this._emit();return false}
     this._select(next);return this._attempt(this._token);
   }
   async play(){if(this._destroyed)return false;this._failed.clear();this._intent=true;this._error=null;return this._attempt(this._token)}
   pause(){this._intent=false;this._resume=false;this._token++;this.music.pause();this._status='paused';this._blocked=false;this._emit()}
-  async _step(n){if(this._destroyed)return false;const wanted=this._intent;this._failed.clear();this._select((this._index+n+3)%3);this._intent=wanted;return wanted?this._attempt(this._token):false}
+  _queuedIndex(direction,offset=1){
+    const position=this._queue.indexOf(this._index);
+    const length=this._queue.length;
+    const start=position<0&&direction<0?0:position;
+    return this._queue[(start+direction*offset+length)%length];
+  }
+  async setGenre(genre){
+    if(this._destroyed||genre===this._genre||!PLAYLISTS.has(genre))return false;
+    const queue=[...PLAYLISTS.get(genre)];
+    if(genre!=='christmas'){
+      for(let index=queue.length-1;index>0;index--){
+        const pick=Math.floor(Math.random()*(index+1));
+        [queue[index],queue[pick]]=[queue[pick],queue[index]];
+      }
+      if(queue.length>1&&queue[0]===this._lastRoomTrack.get(genre))queue.push(queue.shift());
+    }
+    this._genre=genre;
+    this._queue=queue;
+    this._failed.clear();
+    this._select(queue[0]);
+    return this._intent?this._attempt(this._token):false;
+  }
+  async playTrack(id){
+    const index=MUSIC_TRACKS.findIndex(track=>track.id===id);
+    if(this._destroyed||index<0)return false;
+    if(index!==this._index)this._select(index);
+    return this.play();
+  }
+  async _step(n){if(this._destroyed)return false;this._failed.clear();this._select(this._queuedIndex(n));return this._intent?this._attempt(this._token):false}
   next(){return this._step(1)} prev(){return this._step(-1)}
   setMusicVolume(n){this._musicVolume=clamp(n);this._volume();this._emit()}
   setSfxVolume(n){this._sfxVolume=clamp(n);this._volume();this._emit()}

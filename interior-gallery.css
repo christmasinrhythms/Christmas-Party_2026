@@ -257,38 +257,6 @@ body.inside-house:not(:has(.house-focus)) #soundPlayer .sound-summary { gap: 3px
 @media (max-width: 360px) {
   body.inside-house:not(:has(.house-focus)) #soundPlayer { bottom: 65px; }
 }
-
-.room-screening .room-mirror { width: clamp(178px, 27vw, 294px); }
-#houseInterior .room-mirror-link .mirror-steam {
-  padding: .25em;
-  border: 0;
-  background: transparent;
-  color: #fffaf3;
-  font-size: clamp(19px, 3vw, 33px);
-  transform: rotate(-6deg);
-  text-shadow: 0 1px 4px #322335, 0 0 12px #fff9ed80;
-}
-#houseInterior .mirror-preview {
-  display: grid;
-  justify-items: center;
-  align-self: center;
-  gap: clamp(12px, 2.7dvh, 25px);
-  width: min(100%, 560px);
-  margin: auto;
-  text-align: center;
-  color: #fff1da;
-}
-#houseInterior .mirror-preview h2 {
-  font: 700 clamp(24px, 5.2vw, 42px)/1.1 Georgia, 'Songti TC', serif;
-  text-shadow: 0 2px 7px #1f1420;
-}
-#houseInterior .mirror-preview .room-mirror {
-  width: min(76vw, clamp(152px, 25dvh, 292px));
-  margin-inline: auto;
-  transform: none;
-}
-#houseInterior .mirror-preview .mirror-steam { font-size: clamp(20px, 4.9vw, 35px); }
-
 @media (max-width: 700px) {
   body.inside-house:has(#houseInterior[data-scene="lobby"]):not(:has(.house-focus)) #soundPlayer {
     top: calc(max(12px, env(safe-area-inset-top)) + 54px);

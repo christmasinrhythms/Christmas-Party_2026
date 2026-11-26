@@ -1,10 +1,10 @@
 import {createIntroMediaLock,shouldCutIntro,isPhoneDevice,portraitBlocked,createIntroPlayback} from './intro-media.mjs?v=wave-20261112';
 import {calendarPlatformLinks,isMobileCalendar} from './calendar-platform.mjs';
 import {INVITE_ART,isPhoneLayout,inviteGeometry,phoneInviteWidth,fitPhoneInvite,sideExploreState} from './invite-layout.mjs';
-import {createSoundControls} from './audio-ui.mjs?v=phone-framing-20261126';
+import {createSoundControls} from './audio-ui.mjs?v=tripo-rooms-20261126';
 import {WoodenFlipClock} from './flip-clock.mjs';
 import {countdown,cameraFrame,focusCamera,icsContent} from './domain.mjs';
-import {mountHouseInterior} from './interior.mjs?v=phone-framing-20261126';
+import {mountHouseInterior} from './interior.mjs?v=tripo-rooms-20261126';
 import {schools} from './interior-content.mjs';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const entryParams=new URLSearchParams(location.search);
@@ -75,7 +75,7 @@ function openDialog(id,trigger){endHover(true);const dialog=document.getElementB
 for(const dialog of $$('dialog')){dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});dialog.addEventListener('close',()=>{if(dialog.open||(orientationBlocked&&suspendedDialog===dialog))return;activeDialog=null;lastDialogTrigger?.focus({preventScroll:true});});}
 for(const close of $$('[data-close]'))close.addEventListener('click',()=>document.getElementById(close.dataset.close).close());
 $('#addressOpen').addEventListener('click',e=>openDialog('addressDialog',e.currentTarget));$('#calendarOpen').addEventListener('click',e=>{setCalendar();openDialog('calendarDialog',e.currentTarget);});
-const houseInterior=mountHouseInterior({root:$('#houseInterior'),outside:$('#experience'),trigger:$('#doorLock'),entrance:$('#enterHouse'),onEnter:()=>endHover(true),onReveal:()=>void soundControls.effect('titleBloom',.75),onTvAudio:soundControls.setTvAudible});
+const houseInterior=mountHouseInterior({root:$('#houseInterior'),outside:$('#experience'),trigger:$('#doorLock'),entrance:$('#enterHouse'),onEnter:()=>endHover(true),onReveal:()=>void soundControls.effect('titleBloom',.75),onTvAudio:soundControls.setTvAudible,onSceneChange:soundControls.setScene});
 for(const link of $$('.calendar-links a,.calendar-phone-fallbacks a'))link.addEventListener('click',()=>{$('#calendarDialog').close();});
 // One camera owns zoom, drag, pointer parallax and tilt. Every result is clamped after composition.
 const viewport=$('#viewport'),world=$('#world');let size={w:innerWidth,h:innerHeight};let camera={zoom:1,panX:0,panY:0},current={...camera},pointer={x:0,y:0},tilt={x:0,y:0},drag=null,lastFrame=0;let selection=null,hover=null,hoverTimer,hoverPending=null,hoverCooldown=0;
