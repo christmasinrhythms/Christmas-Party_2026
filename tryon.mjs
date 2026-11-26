@@ -1,4 +1,4 @@
-import { tryonSchools } from './tryon-looks.mjs?v=aligned-tripo-20261126';
+import { tryonSchools } from './tryon-looks.mjs?v=refit-lookbook-20261126';
 import { createSchoolFrame } from './tryon-frame.mjs?v=room-polish-20261126';
 
 const copy = {
@@ -64,6 +64,8 @@ const schoolCopy = {
     adjust: 'Adjust', fitEffect: 'Effect to adjust', fitDone: 'Done', fitLock: 'Lock position',
     drag: 'Drag on the preview to move the selected effect.', fitCanvas: 'Move the selected effect with the arrow keys.',
     reset: 'Reset this effect',
+    resetMapping: 'Reset mapping', remapping: 'Detecting your face and shoulders again…',
+    fitPhotoMissing: 'Choose a photo that shows your face and both shoulders.',
   },
   zh: {
     back: '搖滾學院', title: 'Rock & Punk 3D 試穿', welcome: '試穿 Rock & Punk', rock: '銀釘背心',
@@ -75,6 +77,8 @@ const schoolCopy = {
     adjust: '調整位置', fitEffect: '選擇要調整的效果', fitDone: '完成', fitLock: '固定位置',
     drag: '拖動畫面，移動揀中嘅效果。', fitCanvas: '用方向鍵移動揀中嘅效果。',
     reset: '重設此項',
+    resetMapping: '重新定位', remapping: '正在重新偵測面部同肩膊…',
+    fitPhotoMissing: '請選一張見到面部同兩邊肩膊嘅相。',
   },
 };
 const requestedGenre = params.get('genre');
@@ -103,8 +107,10 @@ const looks = school.looks.map((entry) => {
   button.className = 'look';
   button.dataset.look = entry.id;
   thumb.className = `thumbnail ${genre}`;
+  if (entry.photo) thumb.classList.add('look-photo');
   image.src = entry.src;
   image.alt = '';
+  image.decoding = 'async';
   thumb.append(image);
   button.append(thumb, label);
   byId('look-list').append(button);
@@ -137,6 +143,7 @@ let facing = 'user';
 let cameraZoom = 'wide';
 let sourceInput = 0;
 let cameraPending = false;
+let mappingResetting = false;
 let poseStatus = 'idle';
 let poseLoading = null;
 let tracker = null;
@@ -262,7 +269,7 @@ const captureReady = () => schoolCamera
   : garmentReady();
 
 function refreshStatus() {
-  const key = previewError || hudStatus || (source && !garmentReady() && (!schoolCamera || trackingOn())
+  const key = (mappingResetting && source ? 'remapping' : '') || previewError || hudStatus || (source && !garmentReady() && (!schoolCamera || trackingOn())
     ? ((schoolCamera ? vestStatus === 'error' : look.image.complete) ? 'lookFailed' : 'lookLoading')
     : source === 'camera'
       ? poseStatus === 'error' && trackingNeeded() && !captureReady() ? 'fitUnavailable'
@@ -290,46 +297,51 @@ function setLanguage() {
 
 function updateControls() {
   const active = Boolean(source);
+  const fitBusy = Boolean(recording) || saving || cameraPending || mappingResetting;
   byId('welcome').hidden = active || cameraPending;
   viewfinder.classList.toggle('has-source', active);
+  viewfinder.classList.toggle('is-recording', Boolean(recording));
   byId('view-top').hidden = schoolCamera ? !active : source !== 'camera';
   byId('flip-camera').hidden = source !== 'camera';
-  byId('flip-camera').disabled = Boolean(recording) || saving;
+  byId('flip-camera').disabled = fitBusy;
   byId('capture-controls').hidden = !active || editingFit;
   zoomGroup.hidden = source !== 'camera' || !phoneCamera.matches;
   for (const button of zoomButtons) {
-    button.disabled = Boolean(recording) || saving || cameraPending;
+    button.disabled = fitBusy;
     button.setAttribute('aria-pressed', String(button.dataset.cameraZoom === cameraZoom));
   }
   if (schoolCamera) {
     byId('fit-panel').hidden = !active || !editingFit;
-    byId('fit-open').disabled = Boolean(recording) || saving || cameraPending;
+    byId('fit-open').disabled = fitBusy;
     byId('fit-open').setAttribute('aria-expanded', String(editingFit));
+    byId('reset-mapping').disabled = fitBusy || !trackingNeeded();
     viewfinder.classList.toggle('fit-editing', editingFit);
     canvas.tabIndex = editingFit ? 0 : -1;
     canvas.setAttribute('aria-hidden', String(!editingFit));
     canvas.setAttribute('aria-label', t('fitCanvas'));
   }
-  byId('gallery-button').disabled = Boolean(recording) || saving;
+  byId('gallery-button').disabled = fitBusy;
   byId('back-to-camera').hidden = source !== 'photo';
-  byId('back-to-camera').disabled = cameraPending || saving;
+  byId('back-to-camera').disabled = fitBusy;
   byId('start-camera').disabled = cameraPending;
   document.querySelectorAll('[data-mode]').forEach((btn) => {
     const isVideo = btn.dataset.mode === 'video';
     btn.hidden = isVideo && source === 'photo';
-    btn.disabled = Boolean(recording) || saving || (isVideo && !canRecord);
+    btn.disabled = fitBusy || (isVideo && !canRecord);
     btn.setAttribute('aria-pressed', String(mode === btn.dataset.mode));
     if (isVideo && !canRecord) btn.title = t('recordingUnavailable');
   });
   shutter.classList.toggle('video', mode === 'video');
   shutter.classList.toggle('recording', Boolean(recording));
-  shutter.disabled = editingFit || saving || cameraPending || (!captureReady() && !recording);
+  shutter.disabled = editingFit || saving || cameraPending || mappingResetting || (!captureReady() && !recording);
   shutter.setAttribute('aria-label', t(mode === 'photo' ? 'takePhoto' : recording ? 'stopRecording' : 'startRecording'));
   clock.hidden = !recording;
   byId('head-effect-control').hidden = !hasHeadEffect();
+  byId('track-pose').disabled = mappingResetting;
+  byId('show-face-paint').disabled = mappingResetting;
   document.querySelector('[data-fit-target="face"]').hidden = !hasHeadEffect();
   looks.forEach((entry) => {
-    entry.button.disabled = Boolean(recording) || saving;
+    entry.button.disabled = fitBusy;
     entry.button.setAttribute('aria-pressed', String(entry === look));
   });
   refreshStatus();
@@ -403,9 +415,7 @@ function paintOnce() {
   if (source !== 'camera') paint();
 }
 
-function setSource(value) {
-  source = value;
-  editingFit = false;
+function resetTracking() {
   rockVest?.reset();
   faceAnchors = null;
   facePoints = null;
@@ -415,6 +425,12 @@ function setSource(value) {
   lastTrackingAt = -Infinity;
   lastPoseTime = -Infinity;
   previousVideoTime = -1;
+}
+
+function setSource(value) {
+  source = value;
+  editingFit = false;
+  resetTracking();
   previewError = '';
   if (value !== 'camera') mode = 'photo';
   cancelAnimationFrame(loop);
@@ -577,7 +593,7 @@ function setTrackingMode(mode) {
 function prepareCameraTracking() {
   const ready = prepareTracker();
   if (schoolCamera) void ready.then(() => {
-    if (source === 'camera') return setTrackingMode('VIDEO');
+    if (source === 'camera' && !mappingResetting) return setTrackingMode('VIDEO');
   });
 }
 
@@ -674,12 +690,60 @@ function handleTrackerError() {
   bodyFit = null;
 }
 
+async function resetMapping() {
+  if (!source || !trackingNeeded() || recording || saving || cameraPending || mappingResetting) return;
+  const request = sourceInput;
+  const live = source === 'camera';
+  const image = live ? video : imageSource;
+  const isCurrent = () => request === sourceInput;
+  mappingResetting = true;
+  previewError = '';
+  resetPosition();
+  resetTracking();
+  paintOnce();
+  updateControls();
+  try {
+    if (poseStatus === 'error' && !tracker && !faceTracker) {
+      await modeChange.catch(() => {});
+      if (!isCurrent()) return;
+      poseLoading = null;
+      trackerMode = 'VIDEO';
+    }
+    await prepareTracker();
+    if (!isCurrent()) return;
+    // IMAGE mode starts a fresh detection instead of inheriting a tracked ROI.
+    await setTrackingMode('IMAGE');
+    if (!isCurrent()) return;
+    if (!tracker && !faceTracker) {
+      previewError = 'fitUnavailable';
+      return;
+    }
+    const layout = imageLayout(image);
+    if (layout && (!live || video.readyState >= 2)) {
+      bodyFit = detectFit(image, layout, performance.now(), true);
+      if (bodyFit) {
+        frozenFit = { ...bodyFit };
+        lastTrackingAt = performance.now();
+      }
+    }
+    if (!live && !bodyFit && !facePoints) previewError = 'fitPhotoMissing';
+  } catch {
+    handleTrackerError();
+    previewError = 'fitUnavailable';
+  } finally {
+    if (source === 'camera') await setTrackingMode('VIDEO');
+    mappingResetting = false;
+    paintOnce();
+    updateControls();
+  }
+}
+
 async function fitGalleryPhoto() {
   const image = imageSource;
   await prepareTracker();
-  if ((!tracker && !faceTracker) || source !== 'photo' || image !== imageSource || !trackingNeeded()) return;
+  if ((!tracker && !faceTracker) || source !== 'photo' || image !== imageSource || !trackingNeeded() || mappingResetting) return;
   if (schoolCamera) await setTrackingMode('IMAGE');
-  if (source !== 'photo' || image !== imageSource || !trackingNeeded()) return;
+  if (source !== 'photo' || image !== imageSource || !trackingNeeded() || mappingResetting) return;
   try {
     const fit = detectFit(image, imageLayout(image), performance.now(), schoolCamera);
     if (fit) {
@@ -724,7 +788,7 @@ function cameraFrame(now) {
   if (source !== 'camera') return;
   const layout = imageLayout(video);
   const couldCapture = schoolCamera && captureReady();
-  trackShoulders(now, layout);
+  if (!mappingResetting) trackShoulders(now, layout);
   if (schoolCamera && couldCapture !== captureReady()) updateControls();
   paint(layout);
   refreshStatus();
@@ -1048,6 +1112,7 @@ byId('show-face-paint')?.addEventListener('change', () => {
 });
 byId('show-frame').addEventListener('change', paintOnce);
 byId('fit-open')?.addEventListener('click', () => setFitEditing(!editingFit));
+byId('reset-mapping')?.addEventListener('click', () => void resetMapping());
 byId('fit-done')?.addEventListener('click', () => setFitEditing(false));
 byId('fit-lock')?.addEventListener('change', (event) => setFitLock(event.target.checked));
 document.querySelectorAll('[data-fit-target]').forEach((button) => {

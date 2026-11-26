@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#16100f">
   <meta name="description" content="Try on a Christmas look in your camera and save a photo or a short clip.">
   <title>Rock &amp; Punk 3D Camera · Christmas in Rhythms</title>
-  <link rel="stylesheet" href="tryon.css?v=tripo-rooms-20261126">
+  <link rel="stylesheet" href="tryon.css?v=refit-lookbook-20261126">
   <link rel="stylesheet" href="tryon-studio.css?v=tripo-rooms-20261126">
   <link rel="icon" href="data:,">
   <link rel="preload" as="image" href="assets/logo.png">
@@ -33,7 +33,10 @@
       <video id="camera-video" playsinline muted aria-hidden="true"></video>
       <canvas id="view" width="720" height="1280" aria-hidden="true"></canvas>
       <div class="view-top" id="view-top" hidden>
-        <button class="pill" id="fit-open" type="button" aria-controls="fit-panel" aria-expanded="false" data-text="adjust">Adjust fit</button>
+        <div class="fit-actions">
+          <button class="pill" id="fit-open" type="button" aria-controls="fit-panel" aria-expanded="false" data-text="adjust">Adjust fit</button>
+          <button class="pill" id="reset-mapping" type="button" data-text="resetMapping">Reset mapping</button>
+        </div>
         <span class="live-dot" id="record-clock" hidden></span>
         <button class="pill" id="flip-camera" type="button" data-text="flip" hidden>Flip camera</button>
       </div>
@@ -121,6 +124,6 @@
   <script type="importmap">
     {"imports":{"three":"./assets/tryon/vendor/three/three.module.min.js"}}
   </script>
-  <script type="module" src="tryon.mjs?v=aligned-tripo-20261126"></script>
+  <script type="module" src="tryon.mjs?v=refit-lookbook-20261126"></script>
 </body>
 </html>

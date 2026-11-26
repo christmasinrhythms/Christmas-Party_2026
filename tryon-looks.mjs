@@ -1,9 +1,10 @@
 const models = 'assets/tryon/models/';
 const fittedModels = models + 'tripo/';
+const lookImages = 'assets/tryon/looks/';
 
 const head = (id, label, size = 1, rise = 0) => ({ model: fittedModels + id + '.glb', label, size, rise });
 const look = (id, label, options = {}) => ({
-  id, label, src: models + 'thumb-' + id + '.webp', model: fittedModels + id + '.glb', sleeves: true, ...options,
+  id, label, src: lookImages + id + '.webp', model: fittedModels + id + '.glb', sleeves: true, ...options,
 });
 
 export const tryonSchools = {
@@ -47,9 +48,11 @@ export const tryonSchools = {
         head: head('kpop-crown', ['Pink crown', '粉紅皇冠'], .99, .075),
       }),
       look('kpop-jersey', ['42 Street Jersey', '42 街頭球衣'], {
+        src: 'assets/interior/wall-photos/kpop/ce01e5690f53743945ee4faf486da4f9.jpg', photo: true,
         head: head('kpop-snapback', ['Red cap and hair', '紅色平頂帽連髮型'], 1.04, .015),
       }),
       look('kpop-tracksuit', ['Old-school Tracksuit', '復古黑金運動套裝'], {
+        src: 'assets/interior/wall-photos/kpop/images (80) copy.jpeg', photo: true,
         head: head('kpop-bucket-hat', ['Black bucket hat', '黑色漁夫帽'], 1.02, .046),
       }),
     ],
