@@ -271,11 +271,19 @@
   #houseInterior .atrium-tv-focus .tv-side > .tv-examples:first-child { margin-top: 0; }
 }
 @media (max-width: 700px) {
+  #houseInterior[data-panel="tv"] {
+    --tv-top-space: max(6px, env(safe-area-inset-top));
+    --tv-bottom-space: max(8px, env(safe-area-inset-bottom));
+  }
   #houseInterior[data-panel="tv"] .focus-content {
+    padding-block-start: var(--tv-top-space);
     padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
   }
   #houseInterior[data-panel="tv"] .atrium-tv-focus {
-    padding: 8px 8px 12px;
+    /* Budget for the frame and both rows of controls, including the phone's safe areas. */
+    --tv-screen-height: clamp(195px, calc((100svh - 203px - var(--tv-top-space) - var(--tv-bottom-space)) / 1.425), 520px);
+    --tv-screen-width: min(calc(var(--tv-screen-height) * 9 / 16), calc((100vw - 12px) / 1.49));
+    padding: 5px 8px 12px;
     border: 1px solid var(--hall-brass);
     border-radius: 14px;
     background: var(--hall-paper);
@@ -286,15 +294,21 @@
     inset: 7px;
   }
   #houseInterior[data-panel="tv"] .atrium-tv-focus h2 {
-    margin-bottom: 6px !important;
+    margin-bottom: 4px !important;
     color: var(--hall-ink);
     text-shadow: none;
   }
+  #houseInterior .atrium-tv-focus .room-tv-panel { padding: 3px 5px; }
+  #houseInterior .atrium-tv-focus .tv-hardware { row-gap: 3px; }
   #houseInterior .atrium-tv-focus .tv-clip-caption {
+    padding-top: 4px;
     color: var(--hall-ink);
     text-shadow: none;
   }
-  #houseInterior[data-panel="tv"] .interior-return { padding-top: 5px; }
+  #houseInterior[data-panel="tv"] .interior-return {
+    padding-top: 3px;
+    padding-bottom: var(--tv-bottom-space);
+  }
 }
 @media (max-width: 350px) {
   #houseInterior .atrium-tv-focus .tv-briefing {
