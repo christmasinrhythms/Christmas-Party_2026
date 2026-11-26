@@ -327,6 +327,8 @@
     inset: 7px;
   }
   #houseInterior[data-panel="tv"] .atrium-tv-focus h2 {
+    position: relative;
+    inset-block-start: 6px;
     margin-bottom: 3px !important;
     color: var(--hall-ink);
     text-shadow: none;
