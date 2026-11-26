@@ -227,3 +227,24 @@
 @media (pointer: coarse) {
   #houseInterior .tv-key { min-width: 44px; min-height: 44px; }
 }
+
+/* Xmas Video Challenge panel: three category chips on the TV, rules always visible,
+   and TV + rules side by side on wide screens so nothing needs scrolling. */
+#houseInterior .tv-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(4px,.7vw,8px); margin: clamp(2px,.6vw,6px) 0 0; padding: 0; list-style: none; }
+#houseInterior .tv-categories li { display: inline-flex; align-items: center; gap: .4em; padding: .3em .75em .3em .35em; border: 1px solid #e9c78a80; border-radius: 999px; background: #fff3d914; color: #fff4d8; font: 650 clamp(10px,1.25vw,15px)/1.2 system-ui, sans-serif; white-space: nowrap; }
+#houseInterior .tv-categories b { display: grid; place-items: center; width: 1.55em; height: 1.55em; border-radius: 50%; background: #f4c982; color: #3a2316; font-size: .85em; }
+#houseInterior .tv-examples h3 { margin: 0; min-height: 40px; padding: 10px 14px 8px; border-bottom: 1px solid #a787602e; font: 750 16px/1.3 system-ui, sans-serif; color: var(--hall-ink); text-align: center; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet { padding: 10px 16px 12px; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet ol { gap: .35em; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet p { margin-top: .6em; padding-top: .5em; }
+#houseInterior .atrium-tv-focus .tv-examples ul { margin: 0; }
+#houseInterior .atrium-tv-focus .tv-examples li:last-child .tv-example-choice { border-bottom: 0; }
+@media (min-width: 900px) {
+  #houseInterior .atrium-tv-focus { width: min(100%, 1060px); }
+  #houseInterior .atrium-tv-focus .tv-layout { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 24px; align-items: center; }
+  #houseInterior .atrium-tv-focus .tv-side > .tv-examples:first-child { margin-top: 0; }
+  #houseInterior .atrium-tv-focus .tv-briefing p { font-size: clamp(8px,.9vw,11px); }
+  #houseInterior .atrium-tv-focus .tv-briefing strong { font-size: clamp(16px,1.9vw,26px); }
+  #houseInterior .atrium-tv-focus .tv-categories li { font-size: clamp(10px,.95vw,14px); }
+  #houseInterior .atrium-tv-focus .tv-briefing > span { font-size: clamp(10px,1.05vw,14px); }
+}

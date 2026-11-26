@@ -17,10 +17,9 @@ export const teamNames = {
 };
 
 export const reelRules = [
- ['Choose your own song.','自選歌曲。'],
- ['Film a video under one minute at the venue on the day of the party.','必須喺派對當日到場拍攝，片長須少於一分鐘。'],
- ['Try a dance, a music-video recreation, or a short skit.','可以跳舞、模仿音樂錄像，或拍攝短劇。'],
- ['Submit your video at the party by 1:00 p.m.','喺派對當日下晝 1 點前提交短片。']
+ ['Pick one: dance challenge, MV recreation, or short skit.','三揀一：跳舞挑戰、模仿 MV 或短劇。'],
+ ['Under one minute, filmed at the venue on party day.','片長少於一分鐘，派對當日喺場地拍攝。'],
+ ['Submit at the party by 1:00 p.m.','派對當日下晝 1 點前提交。']
 ];
 
 export const rundown = [

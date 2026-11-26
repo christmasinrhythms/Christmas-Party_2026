@@ -1,4 +1,4 @@
-import {challengeSlides, challengeTitle, reelDirectory, sharedReels} from './room-reels.mjs';
+import {challengeSlides, challengeTitle, reelDirectory, sharedReels} from './room-reels.mjs?v=video-challenge-20261126b';
 
 const length = challengeSlides.length + sharedReels.length;
 const escapeHtml = text => text.replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'})[char]);
@@ -48,7 +48,8 @@ export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
       ? `<div class="room-video-stage">${media(clip,path,deck.muted)}<button class="house-action room-video-exit" type="button" data-house="tv-exit">${t('exit')}</button></div>`
       : `<div class="tv-briefing" aria-live="polite">
           <p>${local(challengeTitle)}</p><strong>${local(slide.title)}</strong>
-          <span>${local(slide.body)}</span>
+          ${slide.body?`<span>${local(slide.body)}</span>`:''}
+          ${slide.categories?`<ul class="tv-categories">${slide.categories.map((c,i)=>`<li><b>${i+1}</b>${local(c)}</li>`).join('')}</ul>`:''}
           ${slide.note?`<span class="tv-filming-note">${local(slide.note)}</span>`:''}
         </div>`;
     return `<div class="room-tv-player${clip&&!path?' has-youtube':''}" ${live?'data-tv-live':''}>
@@ -69,7 +70,6 @@ export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
               ${instagram?'':key('tv-sound',t(deck.muted?'silent':'audible'),t(deck.muted?'unmute':'mute'),`aria-pressed="${!deck.muted}"`)}
               ${live&&clip?key('tv-fullscreen','⛶',t('full')):''}
               ${key('tv-rules',t('rules'))}
-              ${key('tv-clips',t('clips'))}
               ${live&&clip&&!path?`<a class="tv-key" href="${clip.url}" target="_blank" rel="noopener noreferrer">${t('original')}</a>`:''}
             </div>
           </div>
@@ -156,12 +156,7 @@ export function createRoomTv(root, chinese, onVideoAudio, onFullscreenChange) {
       if(playing===shouldPlay)return;
       playing=shouldPlay;
       syncBackgroundMusic();
-      if(!clip){
-        if(!shouldPlay){stopClock();return;}
-        clockStart=performance.now();
-        timer=setTimeout(advance,deck.left);
-        return;
-      }
+      if(!clip)return; // briefing slides stay on screen until the viewer presses ›
       if(video){
         if(!shouldPlay){video.pause();return;}
         video.muted=deck.muted;

@@ -1,6 +1,6 @@
-import {schools,rundown,reelRules,teamNames} from './interior-content.mjs';
-import {reelDirectory,sharedReels} from './room-reels.mjs';
-import {createRoomTv} from './room-tv.mjs?v=atrium-mirror-20261126';
+import {schools,rundown,reelRules,teamNames} from './interior-content.mjs?v=video-challenge-20261126b';
+import {reelDirectory,sharedReels} from './room-reels.mjs?v=video-challenge-20261126b';
+import {createRoomTv} from './room-tv.mjs?v=video-challenge-20261126b';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
 import {atriumCharacters,attachAtriumCharacters} from './atrium-characters.mjs?v=atrium-mirror-20261126';
 import {playRoomLighting} from './room-lighting.mjs?v=rock-kpop-stage-20261126';
@@ -37,7 +37,7 @@ const words={
   yourTeam:['Your team','你的隊伍'],generalManagement:['General Management','總管理部'],representative:['Team Representative','隊伍代表'],another:['Check another email','查詢其他電郵'],
   date:['24 December 2026 · HKT','2026 年 12 月 24 日 · 香港時間'],
   photos:['Outfit gallery','穿搭相簿'],photo:['Outfit photo','穿搭相片'],galleryHint:['Drag to browse, or select the centre photo to enlarge it.','拖動瀏覽，或按中央相片放大。'],viewGallery:['Back to the gallery','返回相簿'],loadPhotosError:['Could not load the wall photos.','未能載入牆上相片。'],
-  hallTv:['Tips for MV Challenge','MV 挑戰貼士'],
+  hallTv:['Xmas Video Challenge','聖誕短片挑戰'],
   previous:['Previous photo','上一張相片'],next:['Next photo','下一張相片'],
   mirror:['Try-On Mirror','虛擬試穿鏡'],openMirror:['Open Camera','開啟試穿相機'],
   outfitReferences:['Outfit References','穿搭靈感'],
@@ -261,16 +261,17 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   function displayTv(){
     return `<div class="tv-focus atrium-tv-focus">
       <h2 data-panel-heading tabindex="-1">${copy('hallTv')}</h2>
+      <div class="tv-layout">
       <div class="room-television" data-room-tv>${roomTv.render('lobby',true)}</div>
-      <details class="tv-examples" data-tv-details="rules"><summary>${copy('rules')}</summary>
+      <div class="tv-side">
+      <section class="tv-examples" data-tv-details="rules"><h3 tabindex="-1">${copy('rules')}</h3>
         <div class="tv-rule-sheet">
           <ol>${reelRules.map(rule=>`<li>${local(rule)}</li>`).join('')}</ol>
           <p>${copy('everyone')}</p>
         </div>
-      </details>
-      <details class="tv-examples" data-tv-details="clips"><summary>${copy('examples')}</summary><ul>
-        ${sharedReels.map((clip,i)=>`<li>${btn('tv-reference',`${escapeHtml(clip.title)}<small>${copy('playExample')}</small>`,'tv-example-choice',String(i))}</li>`).join('')}
-      </ul></details>
+      </section>
+      </div>
+      </div>
     </div>`;
   }
   function render(){
@@ -398,8 +399,8 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
     }
     if(action==='tv-rules'||action==='tv-clips'){
       const details=root.querySelector(`[data-tv-details="${action.slice(3)}"]`);
-      details.open=true;
-      details.querySelector('summary').focus({preventScroll:true});
+      if(!details)return;
+      details.querySelector('h3').focus({preventScroll:true});
       details.scrollIntoView({block:'start'});
       return;
     }

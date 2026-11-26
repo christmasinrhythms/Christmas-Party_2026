@@ -24,21 +24,20 @@ export const sharedReels = [
 
 export const reelDirectory = 'assets/interior/reels/';
 
-export const challengeTitle = ['Xmas Video Challenge','聖誕短片挑戰'];
+export const challengeTitle = ['Make a video with your team','同隊友一齊拍短片'];
 
 export const challengeSlides = [
   {
-    title:['Make a Video with your team','同隊友一齊拍短片'],
-    body:['Choose your own song. Film a video under one minute and submit it at the party by 1:00 p.m.',
-      '自選歌曲，拍一條少於一分鐘嘅短片，喺派對當日下晝 1 點前提交。'],
-    note:['You must film at the venue on the day of the party.',
-      '必須喺派對當日到場拍攝。'],
+    title:['Pick 1 of 3 categories','三揀一'],
+    categories:[['Dance challenge','跳舞挑戰'],['MV recreation','模仿 MV'],['Short skit','短劇']],
+    note:['Any dance, MV or skit works — it doesn’t need to match your dress code.',
+      '任何舞蹈、MV 或短劇都得，唔使跟你嘅服裝主題。'],
     duration:11000
   },
   {
     title:['Watch for an idea you can use','睇吓有咩靈感可以用'],
-    body:['The next three videos show ways to turn music into a dance, a music-video recreation, or a short skit. Borrow an idea and make it your own.',
-      '接住嘅三條片示範點樣用音樂跳舞、模仿 MV 或拍短劇。揀一個靈感，再加你哋自己嘅創意。'],
+    body:['Next up: example videos. Borrow an idea and make it your own.',
+      '接住係示範短片，借個靈感，再加你哋自己嘅創意。'],
     duration:11500
   }
 ];
