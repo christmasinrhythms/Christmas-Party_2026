@@ -1,8 +1,9 @@
 const models = 'assets/tryon/models/';
+const fittedModels = models + 'tripo/';
 
-const head = (id, label, size = 1, rise = 0) => ({ model: models + id + '.glb', label, size, rise });
+const head = (id, label, size = 1, rise = 0) => ({ model: fittedModels + id + '.glb', label, size, rise });
 const look = (id, label, options = {}) => ({
-  id, label, src: models + 'thumb-' + id + '.webp', model: models + id + '.glb', sleeves: true, ...options,
+  id, label, src: models + 'thumb-' + id + '.webp', model: fittedModels + id + '.glb', sleeves: true, ...options,
 });
 
 export const tryonSchools = {

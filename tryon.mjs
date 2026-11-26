@@ -1,4 +1,4 @@
-import { tryonSchools } from './tryon-looks.mjs?v=tripo-rooms-20261126';
+import { tryonSchools } from './tryon-looks.mjs?v=aligned-tripo-20261126';
 import { createSchoolFrame } from './tryon-frame.mjs?v=room-polish-20261126';
 
 const copy = {
