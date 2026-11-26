@@ -28,11 +28,11 @@ export function phoneInviteWidth(width,height,safeWidth=width-24){
 export function inviteGeometry(scale,{phone=false,coarse=false,width=INVITE_ART.width}={}){
  const a=INVITE_ART;
  if(!phone){
-  const row=coarse?Math.max(38.4,40/scale):38.4,height=Math.max(a.minHeight,24+2*row+2+56);
+  const row=coarse?Math.max(38.4,40/scale):38.4,height=Math.max(a.minHeight,24+row+2+56);
   return geometry(width,height,{row,caption:24,gap:1,button:32.4,phone:false});
  }
  const row=Math.max(32.4,44/scale),caption=Math.max(24,24/scale),gap=6/scale,padding=16/scale;
- const group=caption+2*row+2*gap;
+ const group=caption+row+gap;
  // Solve the usable round-belly height, rather than the full bitmap including its tail.
  const usable=h=>artY(a.bodyBottom,h)-artY(a.bodyTop,h);
  const slope=usable(201)-usable(200),height=Math.max(a.minHeight,200+(group+2*padding-usable(200))/slope);
