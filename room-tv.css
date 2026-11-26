@@ -69,7 +69,7 @@
   .tv-options .tv-key { flex: 0 0 auto; }
 }
 
-/* One illustrated cabinet for the hall entrance and the enlarged set. */
+/* Illustrated TV prop in the hall. */
 #houseInterior[data-scene="lobby"] {
   --cabinet-finish: repeating-linear-gradient(99deg, #f5c68f13 0 2px,#36180627 3px 5px,transparent 5px 9px),
     linear-gradient(135deg,#9c6339,#693c25 40%,#3f251c 72%,#895637);
@@ -110,35 +110,125 @@
   text-shadow: 0 1px 4px #210e09;
 }
 .hall-tv-screen i { color: #ffdb8e; font: normal 8px/1 system-ui, sans-serif; }
-#houseInterior .atrium-tv-focus { width: min(100%, 520px); padding-bottom: 16px; }
-#houseInterior .atrium-tv-focus h2 { color: #fff0ce; text-shadow: 0 3px 12px #281615; }
-#houseInterior .atrium-tv-focus .room-tv-cabinet {
+/* Match the expanded screen to the shared portrait videos. */
+#houseInterior[data-panel="tv"] .focus-content {
+  padding-block: max(10px, env(safe-area-inset-top)) 20px;
+  scroll-padding-block: 12px;
+}
+#houseInterior[data-panel="tv"] .atrium-tv-focus {
+  --tv-screen-height: clamp(235px, calc(100svh - 284px), 595px);
+  --tv-screen-width: calc(var(--tv-screen-height) * 9 / 16);
+  --tv-frame: 9px;
+  --tv-cabinet-width: max(242px, calc(var(--tv-screen-width) + 2 * var(--tv-frame) + 2px));
+  width: min(100%, 760px);
   padding: 0;
-  background: none;
   border: 0;
+  background: none;
   box-shadow: none;
+}
+#houseInterior[data-panel="tv"] .atrium-tv-focus::before { content: none; }
+#houseInterior[data-panel="tv"] .atrium-tv-focus h2 {
+  margin: 0 0 10px !important;
+  color: #fff1d7;
+  font-size: clamp(23px, 4.5vw, 34px);
+  line-height: 1.1;
+  text-wrap: balance;
+  text-shadow: 0 2px 8px #24140f;
+}
+#houseInterior .atrium-tv-focus .room-television {
+  width: min(100%, var(--tv-cabinet-width));
+  margin-inline: auto;
+}
+#houseInterior .atrium-tv-focus .room-tv-cabinet {
+  padding: var(--tv-frame);
+  border: 1px solid var(--cabinet-edge);
+  border-radius: var(--cabinet-radius);
+  background: var(--cabinet-finish);
+  box-shadow: inset 0 0 0 2px #f3d5a726, 0 10px 28px #150b09b0;
+}
+#houseInterior .atrium-tv-focus .atrium-tv-art {
+  position: relative;
+  width: min(100%, var(--tv-screen-width));
+  aspect-ratio: 9 / 16;
+  margin-inline: auto;
+  border-radius: 3px;
+  background: #0c090d;
+  box-shadow: 0 0 0 1px var(--cabinet-trim), 0 0 0 4px #352219;
 }
 #houseInterior .atrium-tv-focus .room-tv-cabinet .house-tv-screen {
   position: absolute;
-  inset: 23% 17% 31.5%;
+  inset: 0;
+  width: auto;
+  height: auto;
   aspect-ratio: auto;
-  border-radius: 14% / 16%;
   border: 0;
+  border-radius: 3px;
   outline: 0;
-  background: #312018;
+  background: #0c090d;
 }
+#houseInterior .atrium-tv-focus .room-video-stage > video { object-fit: contain; }
+#houseInterior .atrium-tv-focus .house-tv-screen:has(.room-video-stage)::after { content: none; }
 #houseInterior .atrium-tv-focus .tv-briefing {
-  padding: 8px 10%;
-  gap: clamp(3px,1vw,8px);
-  background: radial-gradient(ellipse at 50% 40%,#694f37,#2c201a 80%);
+  gap: clamp(6px, 1.9svh, 12px);
+  padding: 9px clamp(9px, 3vw, 18px);
+  background: radial-gradient(ellipse at 50% 40%, #694f37, #2c201a 80%);
+  overflow: auto;
 }
-#houseInterior .atrium-tv-focus .tv-briefing p { font-size: clamp(8px,1.6vw,11px); letter-spacing: .09em; }
-#houseInterior .atrium-tv-focus .tv-briefing strong { font-size: clamp(13px,3.3vw,26px); }
-#houseInterior .atrium-tv-focus .tv-briefing > span { font-size: clamp(10px,2.3vw,15px); line-height: 1.25; }
+#houseInterior .atrium-tv-focus .tv-briefing p {
+  font-size: clamp(10px, 1.65svh, 13px);
+  letter-spacing: .08em;
+  text-wrap: balance;
+}
+#houseInterior .atrium-tv-focus .tv-briefing strong {
+  font-size: clamp(18px, 3.4svh, 29px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+#houseInterior .atrium-tv-focus .tv-briefing > span {
+  font-size: clamp(12px, 1.85svh, 16px);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
 #houseInterior .atrium-tv-focus .room-tv-panel {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 8px;
+  padding: 3px;
+}
+#houseInterior .atrium-tv-focus .room-tv-panel > :is(.tv-speaker,.tv-power) { display: none; }
+#houseInterior .atrium-tv-focus .tv-hardware {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: stretch;
+  gap: 4px;
+}
+#houseInterior .atrium-tv-focus .tv-pagination { grid-template-columns: minmax(44px, 1fr) 45px minmax(44px, 1fr); }
+#houseInterior .atrium-tv-focus .tv-transport > .tv-pagination { width: 100%; }
+#houseInterior .atrium-tv-focus .tv-options { display: flex; gap: 4px; }
+#houseInterior .atrium-tv-focus .tv-options .tv-key {
+  flex: 1 0 auto;
+  padding-inline: 5px;
+  font-size: clamp(11px, 2vw, 13px);
+}
+#houseInterior .atrium-tv-focus .tv-key[data-house="tv-fullscreen"] { font-size: 19px; }
+#houseInterior .atrium-tv-focus .tv-seek {
+  position: absolute;
+  z-index: 1;
+  inset: auto 9px 0;
+  width: calc(100% - 18px);
+  height: 44px;
   margin: 0;
-  padding: 6px 8px;
-  background: var(--cabinet-finish);
+  accent-color: var(--cabinet-trim);
+  cursor: pointer;
+  opacity: .85;
+}
+#houseInterior .atrium-tv-focus .tv-seek:is(:hover, :focus-visible) { opacity: 1; }
+#houseInterior .atrium-tv-focus .room-video-stage:is(:fullscreen, [role="dialog"]) .tv-seek { display: none; }
+#houseInterior .atrium-tv-focus .tv-clip-caption {
+  padding: 7px 6px 0;
+  color: #fff1d7;
+  font-size: 12px;
+  line-height: 1.25;
+  text-wrap: balance;
 }
 #houseInterior .atrium-tv-focus .room-video-status:empty { display: none; }
 #houseInterior .atrium-tv-focus .tv-rule-sheet {
@@ -147,12 +237,37 @@
   background: none;
   font-size: 15px;
 }
-#houseInterior .atrium-tv-focus .tv-rule-sheet :is(p, li::marker) { color: #6a3e29; }
+#houseInterior .atrium-tv-focus .tv-rule-sheet p,
+#houseInterior .atrium-tv-focus .tv-rule-sheet li::marker { color: #6a3e29; }
 #houseInterior .atrium-tv-focus .tv-examples {
-  margin-top: 15px;
+  width: min(100%, 390px);
+  margin: 12px auto 0;
   border: 1px solid #bd9662;
   border-radius: 9px;
   background: var(--hall-finish);
+}
+@media (min-width: 760px) {
+  #houseInterior .atrium-tv-focus .tv-layout {
+    display: grid;
+    grid-template-columns: var(--tv-cabinet-width) minmax(245px, 330px);
+    justify-content: center;
+    align-items: start;
+    gap: clamp(18px, 3vw, 34px);
+  }
+  #houseInterior .atrium-tv-focus .tv-side > .tv-examples:first-child { margin-top: 0; }
+}
+@media (max-width: 700px) {
+  #houseInterior[data-panel="tv"] .focus-content {
+    padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
+  }
+  #houseInterior[data-panel="tv"] .interior-return { padding-top: 5px; }
+}
+@media (max-width: 700px) and (min-height: 730px) {
+  #houseInterior .atrium-tv-focus .tv-briefing {
+    gap: 14px;
+    padding-inline: 23px;
+  }
+  #houseInterior .atrium-tv-focus .tv-categories { row-gap: 7px; }
 }
 @media (min-width: 701px) {
   #houseInterior[data-scene="lobby"] {
@@ -188,7 +303,6 @@
   #houseInterior[data-scene="lobby"] .hall-tv {
     left: calc(50% + var(--hall-prop-spacing) + var(--hall-chair-width) + var(--hall-tv-gap) / 2);
   }
-  #houseInterior .atrium-tv-focus { padding-inline: 0; }
 }
 
 /* The embedded browser and phones can expand the same video without reloading it. */
@@ -229,9 +343,9 @@
 }
 
 /* Xmas Video Challenge panel: three category chips on the TV, rules always visible,
-   and TV + rules side by side on wide screens so nothing needs scrolling. */
-#houseInterior .tv-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(4px,.7vw,8px); margin: clamp(2px,.6vw,6px) 0 0; padding: 0; list-style: none; }
-#houseInterior .tv-categories li { display: inline-flex; align-items: center; gap: .4em; padding: .3em .75em .3em .35em; border: 1px solid #e9c78a80; border-radius: 999px; background: #fff3d914; color: #fff4d8; font: 650 clamp(10px,1.25vw,15px)/1.2 system-ui, sans-serif; white-space: nowrap; }
+   and TV + rules side by side on wide screens. */
+#houseInterior .tv-categories { display: grid; justify-items: start; gap: clamp(4px,.7vw,8px); margin: clamp(2px,.6vw,6px) 0 0; padding: 0; list-style: none; }
+#houseInterior .tv-categories li { display: inline-flex; align-items: center; gap: .4em; padding: .3em .75em .3em .35em; border: 1px solid #e9c78a80; border-radius: 999px; background: #fff3d914; color: #fff4d8; font: 650 clamp(11px,1.65svh,15px)/1.2 system-ui, sans-serif; white-space: nowrap; }
 #houseInterior .tv-categories b { display: grid; place-items: center; width: 1.55em; height: 1.55em; border-radius: 50%; background: #f4c982; color: #3a2316; font-size: .85em; }
 #houseInterior .tv-examples h3 { margin: 0; min-height: 40px; padding: 10px 14px 8px; border-bottom: 1px solid #a787602e; font: 750 16px/1.3 system-ui, sans-serif; color: var(--hall-ink); text-align: center; }
 #houseInterior .atrium-tv-focus .tv-rule-sheet { padding: 10px 16px 12px; }
@@ -239,12 +353,3 @@
 #houseInterior .atrium-tv-focus .tv-rule-sheet p { margin-top: .6em; padding-top: .5em; }
 #houseInterior .atrium-tv-focus .tv-examples ul { margin: 0; }
 #houseInterior .atrium-tv-focus .tv-examples li:last-child .tv-example-choice { border-bottom: 0; }
-@media (min-width: 900px) {
-  #houseInterior .atrium-tv-focus { width: min(100%, 1060px); }
-  #houseInterior .atrium-tv-focus .tv-layout { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 24px; align-items: center; }
-  #houseInterior .atrium-tv-focus .tv-side > .tv-examples:first-child { margin-top: 0; }
-  #houseInterior .atrium-tv-focus .tv-briefing p { font-size: clamp(8px,.9vw,11px); }
-  #houseInterior .atrium-tv-focus .tv-briefing strong { font-size: clamp(16px,1.9vw,26px); }
-  #houseInterior .atrium-tv-focus .tv-categories li { font-size: clamp(10px,.95vw,14px); }
-  #houseInterior .atrium-tv-focus .tv-briefing > span { font-size: clamp(10px,1.05vw,14px); }
-}
