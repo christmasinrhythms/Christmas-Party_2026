@@ -88,9 +88,8 @@ h1, h2, p { margin: 0; }
   opacity: .01; pointer-events: none;
 }
 #view { width: 100%; height: 100%; display: block; touch-action: pan-y; }
-.viewfinder.fit-editing #view { touch-action: none; }
+.viewfinder.can-adjust #view { touch-action: none; cursor: grab; }
 .viewfinder:not(.has-source) #view { visibility: hidden; }
-.viewfinder.has-source #view { cursor: grab; }
 .viewfinder.dragging #view { cursor: grabbing; }
 .welcome {
   position: absolute;
@@ -209,18 +208,6 @@ h1, h2, p { margin: 0; }
   font-weight: 650;
 }
 .camera-zoom button[aria-pressed="true"] { background: #f0ce9a; color: #2b180f; }
-.modes {
-  display: inline-flex; align-items: center; padding: 3px;
-  border: 1px solid #e0c0a053; border-radius: 99px;
-  background: #211613de;
-  pointer-events: auto;
-}
-.modes button {
-  min-height: 32px; padding: 2px 12px;
-  border: 0; border-radius: 99px; background: transparent;
-  color: #ebd6c6; font-size: 12px;
-}
-.modes button[aria-pressed=true] { background: #f0ce9a; color: #2b180f; font-weight: 750; }
 .shutter {
   width: 62px; height: 62px; border-radius: 50%; border: 2px solid #fff2dc;
   display: grid; place-items: center; background: #291712c9; pointer-events: auto;
@@ -259,12 +246,6 @@ h1, h2, p { margin: 0; }
 .switches { display: flex; flex-wrap: wrap; gap: 7px 17px; margin: 12px 0; }
 .toggle { display: flex; align-items: center; gap: 7px; min-height: 34px; color: var(--ink); font-size: 13px; }
 .toggle input { accent-color: var(--gold); width: 17px; height: 17px; }
-.adjustments { padding: 9px 0 4px; border-top: 1px solid #81706163; }
-.adjustments summary { font-size: 14px; font-weight: 650; cursor: pointer; color: #f5dec4; padding: 7px 0; }
-.adjustments p { color: var(--quiet); font-size: 12px; margin: 5px 0 12px; }
-.adjustments label { display: flex; justify-content: space-between; font-size: 13px; }
-.adjustments input { display: block; width: 100%; accent-color: var(--gold); margin: 3px 0 10px; }
-.adjustments output { color: var(--quiet); font-variant-numeric: tabular-nums; }
 .privacy { margin-top: 16px; font-size: 12px; color: var(--quiet); }
 dialog {
   width: min(420px, calc(100% - 26px)); max-height: calc(100dvh - 26px);
@@ -303,7 +284,6 @@ dialog img, dialog video {
   }
   .camera-station .viewfinder.has-source { width: min(100%, max(235px, calc((100svh - 235px) * 9 / 16))); }
   .header-control, .pill, .action, .plain, .subtle, .toggle { min-height: 44px; }
-  .fit-toolbar .fit-reset, .fit-toolbar .fit-done, .modes button { min-height: 44px; }
   .tools { padding-top: 12px; }
   .tools h2 { font-size: 23px; }
   .looks { margin-top: 8px; }
@@ -312,42 +292,10 @@ dialog img, dialog video {
 @media (max-width: 350px) {
   .studio-header { padding-inline: 8px; }
   .header-control { padding-inline: 8px; }
-  .fit-toolbar { flex-wrap: wrap; }
 }
 
-.viewfinder.fit-editing #view:focus-visible { outline-offset: -4px; }
-.fit-panel {
-  width: 100%;
-  max-width: 405px;
-  margin-inline: auto;
-  padding: 9px 11px 6px;
-  border: 1px solid #c18962;
-  border-radius: 15px;
-  color: var(--ink);
-  background: #251511f5;
-  box-shadow: 0 4px 14px #170a08ab;
-  pointer-events: auto;
-  text-align: left;
-}
-.fit-toolbar { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
-.fit-panel p { padding: 6px 0 4px; font-size: 12px; color: var(--quiet); }
-.fit-sliders { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.fit-sliders label { display: flex; justify-content: space-between; gap: 4px; font-size: 12px; }
-.fit-sliders output { color: var(--quiet); font-variant-numeric: tabular-nums; }
-.fit-sliders input { display: block; width: 100%; height: 24px; margin: 0; accent-color: var(--gold); }
-.fit-toolbar .toggle { min-height: 36px; white-space: nowrap; }
-.fit-reset, .fit-done {
-  min-height: 36px;
-  padding: 4px 9px;
-  border: 0;
-  border-radius: 7px;
-  color: #f5d5a4;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-.fit-done { color: #2b180f; background: #f0ce9a; }
-.fit-reset { text-decoration: underline; text-underline-offset: 3px; }
+.viewfinder.can-adjust #view:focus-visible { outline-offset: -4px; }
+.reset-outfit { min-height: 44px; padding-inline: 13px; }
+.gesture-hint { margin: 0; font-size: 12px; color: var(--quiet); }
 .thumbnail.kpop { background: radial-gradient(#765393, #352445); }
 .look:disabled { opacity: .7; }

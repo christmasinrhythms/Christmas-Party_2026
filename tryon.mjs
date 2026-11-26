@@ -7,8 +7,7 @@ const copy = {
     welcome: 'Your Christmas look', framing: 'Keep both shoulders in view.',
     startCamera: 'Open camera', gallery: 'Choose a photo', captureMode: 'Capture mode',
     photo: 'Photo', video: 'Video', zoom: 'Camera zoom', wide: 'Wide', looks: 'Looks', rock: 'Rock', disco: 'Disco', jazz: 'Jazz',
-    tracking: 'Follow shoulders', frame: 'Christmas frame', adjust: 'Adjust fit',
-    drag: 'Drag the look on the preview to position it.', size: 'Size', angle: 'Angle', reset: 'Reset fit',
+    tracking: 'Follow shoulders', frame: 'Christmas frame',
     privacy: 'Photos and videos stay on this device.', close: 'Close', download: 'Download', share: 'Share',
     capturedPhoto: 'Captured try-on photo', capturedVideo: 'Captured try-on video',
     takePhoto: 'Take photo', startRecording: 'Start recording', stopRecording: 'Stop recording',
@@ -30,8 +29,7 @@ const copy = {
     welcome: '試吓你嘅聖誕造型', framing: '請將兩邊肩膊一齊入鏡。',
     startCamera: '開啟相機', gallery: '從相簿選相', captureMode: '拍攝模式',
     photo: '拍照', video: '錄影', zoom: '相機縮放', wide: '廣角', looks: '試穿造型', rock: '搖滾', disco: '迪斯可', jazz: '爵士',
-    tracking: '跟住肩位', frame: '聖誕相框', adjust: '微調衣服', drag: '在預覽畫面拖動衣服，就可以調整位置。',
-    size: '大小', angle: '角度', reset: '重設位置', privacy: '相片同短片保留喺你嘅裝置。',
+    tracking: '跟住肩位', frame: '聖誕相框', privacy: '相片同短片保留喺你嘅裝置。',
     close: '關閉', download: '下載', share: '分享', capturedPhoto: '試穿相片', capturedVideo: '試穿短片',
     takePhoto: '拍照', startRecording: '開始錄影', stopRecording: '停止錄影',
     startingCamera: '正在開啟相機…', switchingCamera: '正在轉換鏡頭…',
@@ -61,10 +59,9 @@ const schoolCopy = {
     fitLoading: 'Starting face and body tracking…', fitSearching: 'Bring your face and shoulders into view.',
     fitUnavailable: 'Body tracking is unavailable in this browser.',
     fitManual: '', tracking: '3D vest', facePaint: 'Face paint', frame: 'Rock Christmas frame',
-    adjust: 'Adjust', fitEffect: 'Effect to adjust', fitDone: 'Done', fitLock: 'Lock position',
-    drag: 'Drag on the preview to move the selected effect.', fitCanvas: 'Move the selected effect with the arrow keys.',
-    reset: 'Reset this effect',
-    resetMapping: 'Reset mapping', remapping: 'Detecting your face and shoulders again…',
+    gestureHint: 'Drag to move. Pinch to resize.',
+    fitCanvas: 'Adjust outfit. Drag or use the arrow keys to move. Pinch or use plus and minus to resize.',
+    resetMapping: 'Reset', resetOutfitLabel: 'Reset outfit position and size', remapping: 'Detecting your face and shoulders again…',
     fitPhotoMissing: 'Choose a photo that shows your face and both shoulders.',
   },
   zh: {
@@ -74,10 +71,9 @@ const schoolCopy = {
     fitLoading: '正在啟動面部同身體追蹤…', fitSearching: '請將面部同兩邊肩膊移入鏡頭。',
     fitUnavailable: '目前瀏覽器未能使用身體追蹤。',
     fitManual: '', tracking: '3D 背心', facePaint: '搖滾面妝', frame: '搖滾聖誕相框',
-    adjust: '調整位置', fitEffect: '選擇要調整的效果', fitDone: '完成', fitLock: '固定位置',
-    drag: '拖動畫面，移動揀中嘅效果。', fitCanvas: '用方向鍵移動揀中嘅效果。',
-    reset: '重設此項',
-    resetMapping: '重新定位', remapping: '正在重新偵測面部同肩膊…',
+    gestureHint: '拖動服裝可移位，雙指捏合可縮放。',
+    fitCanvas: '調整服裝。拖動或用方向鍵移位，雙指捏合或用加減鍵縮放。',
+    resetMapping: '重設', resetOutfitLabel: '重設服裝位置同大小', remapping: '正在重新偵測面部同肩膊…',
     fitPhotoMissing: '請選一張見到面部同兩邊肩膊嘅相。',
   },
 };
@@ -163,7 +159,6 @@ let facePoints = null;
 let faceAnchors = null;
 let lastFaceAt = -Infinity;
 let drawRockPaint = null;
-let defaultRockFace = null;
 let schoolFrame = null;
 let headAsset = null;
 let headwear = null;
@@ -176,11 +171,9 @@ let lastTrackingAt = -Infinity;
 let bodyFit = null;
 let frozenFit = defaultFit;
 const newOffset = () => ({ x: 0, y: 0, scale: 1, rotation: 0 });
-const offsets = { vest: newOffset(), face: newOffset() };
-const fixedFits = { vest: null, face: null };
-let fitTarget = 'vest';
-let editingFit = false;
-const selectedOffset = () => offsets[fitTarget];
+let outfitOffset = newOffset();
+const headOffset = newOffset();
+let manualFit = null;
 let hudStatus = '';
 let previewError = '';
 let recording = null;
@@ -188,7 +181,7 @@ let saving = false;
 let resultFile = null;
 let resultUrl = '';
 let loop = 0;
-let drag = null;
+const outfitPointers = new Map();
 let rockVest = null;
 let vestStatus = 'loading';
 if (schoolCamera) {
@@ -217,9 +210,8 @@ if (schoolCamera) {
       rockVest = vest;
       void loadAppearance();
       import('./rock-face-mesh.mjs').then(({ createRockFaceMesh }) => createRockFaceMesh(W, H, vest.renderLayer))
-        .then(({ drawFaceMesh, defaultFace }) => {
+        .then(({ drawFaceMesh }) => {
           drawRockPaint = drawFaceMesh;
-          defaultRockFace = defaultFace;
           paintOnce();
           updateControls();
         })
@@ -267,10 +259,10 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const trackingOn = () => byId('track-pose').checked;
 const facePaintOn = () => schoolCamera && hasHeadEffect() && byId('show-face-paint').checked;
 const trackingNeeded = () => trackingOn() || facePaintOn();
-const fittedVestReady = () => trackingOn() && Boolean(rockVest && vestStatus === 'ready' && (bodyFit || fixedFits.vest));
-const paintedFaceReady = () => facePaintOn() && Boolean((look.paint ? drawRockPaint : headAsset) && (
-  fixedFits.face ? fixedFits.face.points || defaultRockFace : facePoints
-));
+const fittedVestReady = () => trackingOn() && Boolean(rockVest && vestStatus === 'ready' && (bodyFit || manualFit));
+const paintedFaceReady = () => facePaintOn() && Boolean((look.paint ? drawRockPaint : headAsset) && facePoints);
+const fitBusy = () => Boolean(recording || saving || cameraPending || mappingResetting);
+const canAdjustOutfit = () => Boolean(source && trackingOn() && garmentReady() && !fitBusy());
 const garmentReady = () => schoolCamera ? vestStatus === 'ready' :
   look.image.complete && look.image.naturalWidth > 0;
 const captureReady = () => schoolCamera
@@ -285,7 +277,7 @@ function refreshStatus() {
         : trackingNeeded() && poseStatus === 'loading' ? 'fitLoading'
           : trackingNeeded() && !fittedVestReady() && !bodyFit && !paintedFaceReady() ? 'fitSearching' : ''
       : source === 'photo' ? trackingNeeded() && poseStatus === 'loading' ? 'fitLoading' : 'fitManual' : '');
-  const value = key && !editingFit ? t(key) : '';
+  const value = key ? t(key) : '';
   if (statusNode.textContent !== value) statusNode.textContent = value;
 }
 
@@ -310,51 +302,48 @@ function setLanguage() {
 
 function updateControls() {
   const active = Boolean(source);
-  const fitBusy = Boolean(recording) || saving || cameraPending || mappingResetting;
+  const busy = fitBusy();
+  const canAdjust = canAdjustOutfit();
   byId('welcome').hidden = active || cameraPending;
   viewfinder.classList.toggle('has-source', active);
   viewfinder.classList.toggle('is-recording', Boolean(recording));
   byId('view-top').hidden = schoolCamera ? !active : source !== 'camera';
   byId('flip-camera').hidden = source !== 'camera';
-  byId('flip-camera').disabled = fitBusy;
-  byId('capture-controls').hidden = !active || editingFit;
+  byId('flip-camera').disabled = busy;
+  byId('capture-controls').hidden = !active;
   zoomGroup.hidden = source !== 'camera' || !phoneCamera.matches;
   for (const button of zoomButtons) {
-    button.disabled = fitBusy;
+    button.disabled = busy;
     button.setAttribute('aria-pressed', String(button.dataset.cameraZoom === cameraZoom));
   }
-  if (schoolCamera) {
-    byId('fit-panel').hidden = !active || !editingFit;
-    byId('fit-open').disabled = fitBusy;
-    byId('fit-open').setAttribute('aria-expanded', String(editingFit));
-    byId('reset-mapping').disabled = fitBusy || !trackingNeeded();
-    viewfinder.classList.toggle('fit-editing', editingFit);
-    canvas.tabIndex = editingFit ? 0 : -1;
-    canvas.setAttribute('aria-hidden', String(!editingFit));
-    canvas.setAttribute('aria-label', t('fitCanvas'));
-  }
-  byId('gallery-button').disabled = fitBusy;
+  byId('reset-mapping').disabled = busy;
+  byId('outfit-gesture-hint').hidden = !canAdjust;
+  viewfinder.classList.toggle('can-adjust', canAdjust);
+  canvas.tabIndex = canAdjust ? 0 : -1;
+  canvas.setAttribute('aria-hidden', String(!canAdjust));
+  canvas.setAttribute('aria-label', t('fitCanvas'));
+  if (!canAdjust) clearOutfitGesture();
+  byId('gallery-button').disabled = busy;
   byId('back-to-camera').hidden = source !== 'photo';
-  byId('back-to-camera').disabled = fitBusy;
+  byId('back-to-camera').disabled = busy;
   byId('start-camera').disabled = cameraPending;
   document.querySelectorAll('[data-mode]').forEach((btn) => {
     const isVideo = btn.dataset.mode === 'video';
     btn.hidden = source === 'photo';
-    btn.disabled = fitBusy || (isVideo && !canRecord);
+    btn.disabled = busy || (isVideo && !canRecord);
     btn.setAttribute('aria-pressed', String(mode === btn.dataset.mode));
     btn.title = t(isVideo && !canRecord ? 'recordingUnavailable' : btn.dataset.mode);
   });
   shutter.classList.toggle('video', mode === 'video');
   shutter.classList.toggle('recording', Boolean(recording));
-  shutter.disabled = editingFit || saving || cameraPending || mappingResetting || (!captureReady() && !recording);
+  shutter.disabled = saving || cameraPending || mappingResetting || (!captureReady() && !recording);
   shutter.setAttribute('aria-label', t(mode === 'photo' ? 'takePhoto' : recording ? 'stopRecording' : 'startRecording'));
   clock.hidden = !recording;
   byId('head-effect-control').hidden = !hasHeadEffect();
   byId('track-pose').disabled = mappingResetting;
   byId('show-face-paint').disabled = mappingResetting;
-  document.querySelector('[data-fit-target="face"]').hidden = !hasHeadEffect();
   looks.forEach((entry) => {
-    entry.button.disabled = fitBusy;
+    entry.button.disabled = busy;
     entry.button.setAttribute('aria-pressed', String(entry === look));
   });
   refreshStatus();
@@ -370,58 +359,19 @@ function releaseCamera() {
   video.srcObject = null;
 }
 
-function syncFitControls() {
-  const offset = selectedOffset();
-  byId('scale').value = String(Math.round(offset.scale * 100));
-  byId('rotate').value = String(offset.rotation);
-  byId('scale-value').value = byId('scale').value + '%';
-  byId('rotate-value').value = byId('rotate').value + '°';
-  if (!schoolCamera) return;
-  byId('fit-lock').checked = Boolean(fixedFits[fitTarget]);
-  document.querySelectorAll('[data-fit-target]').forEach((button) => {
-    button.setAttribute('aria-pressed', String(button.dataset.fitTarget === fitTarget));
-  });
+function clearOutfitGesture() {
+  const pointers = [...outfitPointers.keys()];
+  outfitPointers.clear();
+  for (const id of pointers) {
+    if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+  }
+  viewfinder.classList.remove('dragging');
 }
 
 function resetPosition() {
-  offsets.vest = newOffset();
-  offsets.face = newOffset();
-  fixedFits.vest = fixedFits.face = null;
-  editingFit = false;
-  fitTarget = 'vest';
-  syncFitControls();
-}
-
-function setFitLock(locked) {
-  fixedFits[fitTarget] = !locked ? null : fitTarget === 'vest'
-    ? { snapshot: bodyFit ? rockVest?.fittedSnapshot() : null }
-    : { points: facePoints, mirrored: mirrorOn() };
-  syncFitControls();
-  paintOnce();
-  updateControls();
-}
-
-function selectFitTarget(target) {
-  fitTarget = target;
-  const effect = byId(target === 'vest' ? 'track-pose' : 'show-face-paint');
-  if (!effect.checked) {
-    effect.checked = true;
-    effect.dispatchEvent(new Event('change'));
-  }
-  const hasFit = target === 'vest' ? bodyFit : facePoints;
-  if (!hasFit && !fixedFits[target]) setFitLock(true);
-  else {
-    syncFitControls();
-    paintOnce();
-  }
-}
-
-function setFitEditing(open) {
-  if (!source || recording || saving || cameraPending) return;
-  editingFit = open;
-  if (open) selectFitTarget(fitTarget);
-  updateControls();
-  (open ? document.querySelector(`[data-fit-target="${fitTarget}"]`) : byId('fit-open')).focus({ preventScroll: true });
+  clearOutfitGesture();
+  outfitOffset = newOffset();
+  manualFit = null;
 }
 
 function paintOnce() {
@@ -442,7 +392,7 @@ function resetTracking() {
 
 function setSource(value) {
   source = value;
-  editingFit = false;
+  clearOutfitGesture();
   resetTracking();
   previewError = '';
   if (value !== 'camera') mode = 'photo';
@@ -763,6 +713,7 @@ async function fitGalleryPhoto() {
     if (fit) {
       bodyFit = fit;
       frozenFit = fit;
+      manualFit = null;
     } else if (schoolCamera) bodyFit = null;
   } catch {
     handleTrackerError();
@@ -785,6 +736,7 @@ function trackShoulders(now, layout) {
           for (const key of Object.keys(next)) bodyFit[key] += (next[key] - bodyFit[key]) * .39;
         }
         frozenFit = { ...bodyFit };
+        manualFit = null;
         lastTrackingAt = now;
       }
     } catch {
@@ -881,7 +833,7 @@ function drawFrame() {
 const faceOval = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377,
   152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109];
 
-function drawGarment(fixed) {
+function drawGarment() {
   ctx.save();
   if (facePoints) {
     // Keep the real lower face in front of the clothing, including during a manual refit.
@@ -895,7 +847,7 @@ function drawGarment(fixed) {
     jaw.closePath();
     ctx.clip(jaw, 'evenodd');
   }
-  rockVest.draw(ctx, offsets.vest, fixed?.snapshot);
+  rockVest.draw(ctx, outfitOffset, manualFit);
   ctx.restore();
 }
 
@@ -920,29 +872,13 @@ function paint(layout) {
   ctx.restore();
 
   if (schoolCamera) {
-    if (fittedVestReady()) {
-      const fixed = fixedFits.vest;
-      if (fixed && !fixed.snapshot) fixed.snapshot = rockVest.fittedSnapshot();
-      drawGarment(fixed);
-    }
+    if (fittedVestReady()) drawGarment();
     if (paintedFaceReady()) {
-      const fixed = fixedFits.face;
-      if (fixed && !fixed.points) fixed.points = defaultRockFace(fixed.mirrored);
-      const points = fixed ? fixed.points : facePoints;
-      const offset = offsets.face;
-      if (look.paint) {
-        const anchor = points[1];
-        ctx.save();
-        ctx.translate(anchor.x + offset.x, anchor.y + offset.y);
-        ctx.rotate(offset.rotation * Math.PI / 180);
-        ctx.scale(offset.scale, offset.scale);
-        ctx.translate(-anchor.x, -anchor.y);
-        drawRockPaint(ctx, points, fixed ? fixed.mirrored : mirrorOn());
-        ctx.restore();
-      } else headwear.draw(ctx, headAsset, points, offset, facePoints, look.head);
+      if (look.paint) drawRockPaint(ctx, facePoints, mirrorOn());
+      else headwear.draw(ctx, headAsset, facePoints, headOffset, facePoints, look.head);
     }
   } else if (garmentReady()) {
-    const offset = offsets.vest;
+    const offset = outfitOffset;
     const fit = (source === 'camera' && trackingOn() && bodyFit) || frozenFit;
     const width = fit.width * offset.scale;
     const height = width * look.image.naturalHeight / look.image.naturalWidth;
@@ -987,7 +923,7 @@ function showResult(blob, type) {
 }
 
 async function snap() {
-  if (!source || editingFit || cameraPending || saving || !captureReady()) return;
+  if (!source || cameraPending || saving || !captureReady()) return;
   saving = true;
   previewError = '';
   hudStatus = 'saving';
@@ -1023,7 +959,7 @@ function readRecorders(stream) {
 }
 
 function startRecording() {
-  if (source !== 'camera' || editingFit || cameraPending || recording || saving || !captureReady()) return;
+  if (source !== 'camera' || cameraPending || recording || saving || !captureReady()) return;
   previewError = '';
   if (!canRecord) {
     previewError = 'recordingUnavailable';
@@ -1133,7 +1069,7 @@ byId('gallery-input').addEventListener('change', (event) => {
 byId('track-pose').addEventListener('change', () => {
   if (schoolCamera && !trackingOn()) {
     rockVest?.reset();
-    bodyFit = null;
+    bodyFit = manualFit = null;
   }
   if (source === 'camera' && trackingOn()) prepareCameraTracking();
   if (source === 'photo' && trackingOn()) fitGalleryPhoto();
@@ -1147,62 +1083,75 @@ byId('show-face-paint')?.addEventListener('change', () => {
   updateControls();
 });
 byId('show-frame').addEventListener('change', paintOnce);
-byId('fit-open')?.addEventListener('click', () => setFitEditing(!editingFit));
-byId('reset-mapping')?.addEventListener('click', () => void resetMapping());
-byId('fit-done')?.addEventListener('click', () => setFitEditing(false));
-byId('fit-lock')?.addEventListener('change', (event) => setFitLock(event.target.checked));
-document.querySelectorAll('[data-fit-target]').forEach((button) => {
-  button.addEventListener('click', () => selectFitTarget(button.dataset.fitTarget));
+byId('reset-mapping').addEventListener('click', () => {
+  if (trackingNeeded()) {
+    void resetMapping();
+  } else {
+    resetPosition();
+    frozenFit = defaultFit;
+    paintOnce();
+  }
 });
-byId('scale').addEventListener('input', (event) => {
-  selectedOffset().scale = Number(event.target.value) / 100;
-  syncFitControls();
+
+function gestureFrame() {
+  const [first, second] = outfitPointers.values();
+  return second ? {
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+    span: Math.hypot(second.x - first.x, second.y - first.y),
+  } : { ...first, span: 0 };
+}
+
+function adjustOutfit(dx, dy, ratio = 1) {
+  if (schoolCamera && !bodyFit && !manualFit) manualFit = rockVest.fittedSnapshot();
+  outfitOffset.x = clamp(outfitOffset.x + dx, -W, W);
+  outfitOffset.y = clamp(outfitOffset.y + dy, -H * .85, H * .85);
+  outfitOffset.scale = clamp(outfitOffset.scale * ratio, .35, 2);
   paintOnce();
-});
-byId('rotate').addEventListener('input', (event) => {
-  selectedOffset().rotation = Number(event.target.value);
-  syncFitControls();
-  paintOnce();
-});
-byId('reset-fit').addEventListener('click', () => {
-  offsets[fitTarget] = newOffset();
-  frozenFit = bodyFit || defaultFit;
-  syncFitControls();
-  paintOnce();
-});
+  if (manualFit && !bodyFit && shutter.disabled) updateControls();
+}
+
 canvas.addEventListener('pointerdown', (event) => {
-  if (!source || (schoolCamera && !editingFit) || !event.isPrimary || event.button !== 0) return;
-  const offset = selectedOffset();
-  drag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: offset.x, startY: offset.y, offset };
+  if (!canAdjustOutfit() || event.button !== 0 || outfitPointers.size >= 2) return;
+  outfitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   canvas.setPointerCapture(event.pointerId);
   viewfinder.classList.add('dragging');
 });
 canvas.addEventListener('pointermove', (event) => {
-  if (!drag || event.pointerId !== drag.id) return;
+  if (!outfitPointers.has(event.pointerId)) return;
+  const before = gestureFrame();
+  outfitPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  const after = gestureFrame();
   const bounds = canvas.getBoundingClientRect();
   const zoom = cameraScale(imageLayout(video));
-  drag.offset.x = clamp(drag.startX + (event.clientX - drag.x) * W / (bounds.width * zoom), -W, W);
-  drag.offset.y = clamp(drag.startY + (event.clientY - drag.y) * H / (bounds.height * zoom), -H * .85, H * .85);
-  paintOnce();
-});
-canvas.addEventListener('keydown', (event) => {
-  const directions = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
-  const direction = directions[event.key];
-  if (!editingFit || !direction) return;
-  event.preventDefault();
-  const offset = selectedOffset();
-  const step = (event.shiftKey ? 20 : 5) / cameraScale(imageLayout(video));
-  offset.x = clamp(offset.x + direction[0] * step, -W, W);
-  offset.y = clamp(offset.y + direction[1] * step, -H * .85, H * .85);
-  paintOnce();
+  const ratio = before.span > 6 && after.span > 6 ? after.span / before.span : 1;
+  adjustOutfit(
+    (after.x - before.x) * W / (bounds.width * zoom),
+    (after.y - before.y) * H / (bounds.height * zoom),
+    ratio,
+  );
 });
 for (const name of ['lostpointercapture', 'pointercancel', 'pointerup']) {
   canvas.addEventListener(name, (event) => {
-    if (event.pointerId !== drag?.id) return;
-    drag = null;
-    viewfinder.classList.remove('dragging');
+    outfitPointers.delete(event.pointerId);
+    if (!outfitPointers.size) viewfinder.classList.remove('dragging');
   });
 }
+canvas.addEventListener('keydown', (event) => {
+  if (!canAdjustOutfit()) return;
+  const directions = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+  const direction = directions[event.key];
+  const ratio = event.key === '+' || event.key === '=' ? 1.05 : event.key === '-' ? 1 / 1.05 : 1;
+  if (!direction && ratio === 1) return;
+  event.preventDefault();
+  const step = (event.shiftKey ? 20 : 5) / cameraScale(imageLayout(video));
+  adjustOutfit((direction?.[0] || 0) * step, (direction?.[1] || 0) * step, ratio);
+});
+canvas.addEventListener('wheel', (event) => {
+  if (!event.ctrlKey || !canAdjustOutfit()) return;
+  event.preventDefault();
+  adjustOutfit(0, 0, Math.exp(clamp(-event.deltaY * .012, -.25, .25)));
+}, { passive: false });
 shutter.addEventListener('click', capture);
 byId('result-close').addEventListener('click', () => result.close());
 result.addEventListener('close', () => {
@@ -1228,6 +1177,5 @@ addEventListener('pagehide', () => {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && recording) stopRecording();
 });
-syncFitControls();
 setLanguage();
 paint();

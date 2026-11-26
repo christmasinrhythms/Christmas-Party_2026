@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#16100f">
   <meta name="description" content="Try on a Christmas look in your camera and save a photo or a short clip.">
   <title>Rock &amp; Punk 3D Camera · Christmas in Rhythms</title>
-  <link rel="stylesheet" href="tryon.css?v=mirror-fit-20261126">
+  <link rel="stylesheet" href="tryon.css?v=mirror-gestures-20261126">
   <link rel="stylesheet" href="tryon-studio.css?v=mirror-fit-20261126">
   <link rel="icon" href="data:,">
   <link rel="preload" as="image" href="assets/logo.png">
@@ -45,8 +45,7 @@
       <div class="camera-dock">
         <p class="view-status" id="status" aria-live="polite" role="status"></p>
         <div class="camera-actions" id="view-top" hidden>
-          <button class="camera-icon" id="fit-open" type="button" aria-controls="fit-panel" aria-expanded="false" data-label="adjust" aria-label="Adjust fit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h6m4 0h6M4 17h10m4 0h2"/><circle cx="12" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></svg></button>
-          <button class="camera-icon" id="reset-mapping" type="button" data-label="resetMapping" aria-label="Reset mapping"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5v5h5M4 10a8 8 0 1 1 1.4 7.1"/><circle cx="12" cy="12" r="2"/></svg></button>
+          <button class="subtle reset-outfit" id="reset-mapping" type="button" data-text="resetMapping" data-label="resetOutfitLabel">Reset</button>
           <div class="camera-zoom" id="camera-zoom" role="group" data-label="zoom" aria-label="Camera zoom" hidden>
             <button type="button" data-camera-zoom="wide" data-text="wide" aria-pressed="true">Wide</button>
             <button type="button" data-camera-zoom="1" aria-pressed="false">1×</button>
@@ -59,30 +58,7 @@
           <button type="button" class="shutter" id="shutter" aria-label="Take photo"><span aria-hidden="true"></span></button>
           <button class="camera-icon" type="button" data-mode="video" aria-pressed="false" data-label="video" aria-label="Video"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg></button>
         </div>
-        <section id="fit-panel" class="fit-panel" aria-label="Adjust fit" data-label="adjust" hidden>
-          <div class="fit-toolbar">
-            <div class="modes" role="group" aria-label="Adjust effect" data-label="fitEffect">
-              <button type="button" data-fit-target="vest" data-text="tracking" aria-pressed="true">3D vest</button>
-              <button type="button" data-fit-target="face" data-text="facePaint" aria-pressed="false">Face paint</button>
-            </div>
-            <button type="button" class="fit-done" id="fit-done" data-text="fitDone">Done</button>
-          </div>
-          <p data-text="drag">Drag on the preview to move the selected effect.</p>
-          <div class="fit-sliders">
-            <div>
-              <label for="scale"><span data-text="size">Size</span><output id="scale-value" for="scale">100%</output></label>
-              <input id="scale" type="range" min="35" max="200" step="1" value="100">
-            </div>
-            <div>
-              <label for="rotate"><span data-text="angle">Angle</span><output id="rotate-value" for="rotate">0°</output></label>
-              <input id="rotate" type="range" min="-45" max="45" step="1" value="0">
-            </div>
-          </div>
-          <div class="fit-toolbar">
-            <label class="toggle"><input type="checkbox" id="fit-lock"><span data-text="fitLock">Lock position</span></label>
-            <button type="button" class="fit-reset" id="reset-fit" data-text="reset">Reset fit</button>
-          </div>
-        </section>
+        <p class="gesture-hint" id="outfit-gesture-hint" data-text="gestureHint" hidden>Drag to move. Pinch to resize.</p>
       </div>
     </div>
 
@@ -117,6 +93,6 @@
   <script type="importmap">
     {"imports":{"three":"./assets/tryon/vendor/three/three.module.min.js"}}
   </script>
-  <script type="module" src="tryon.mjs?v=mirror-upper-body-20261126"></script>
+  <script type="module" src="tryon.mjs?v=mirror-gestures-20261126"></script>
 </body>
 </html>
