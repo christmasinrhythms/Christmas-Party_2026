@@ -1,8 +1,8 @@
 export const schools = {
- rock:{name:['Rock & Punk School','搖滾龐克學院'],genre:['Rock & Punk','搖滾與龐克'],accent:'#efa298',art:'rock'},
- disco:{name:['Disco School','的士高堂'],genre:['Disco','的士高'],accent:'#f4c779',art:'disco'},
- kpop:{name:['KPOP & HIPHOP ACADEMY','KPOP & HIPHOP 派'],genre:['K-Pop & Hip-Hop','韓流與嘻哈'],accent:'#ffc0f0',art:'kpop'},
- jazz:{name:['Jazz & Classic Lab','爵士古典樂分部'],genre:['Jazz & Classical','爵士與古典'],accent:'#c3d7ff',art:'jazz'}
+ rock:{name:'Rock & Punk School',genre:['Rock & Punk','搖滾與龐克'],accent:'#efa298',art:'rock'},
+ disco:{name:'Disco Avenue',genre:['Disco','的士高'],accent:'#f4c779',art:'disco'},
+ kpop:{name:'K-Pop & HipHop Academy',genre:['K-Pop & Hip-Hop','韓流與嘻哈'],accent:'#ffc0f0',art:'kpop'},
+ jazz:{name:'Jazz & Classic Lab',genre:['Jazz & Classical','爵士與古典'],accent:'#c3d7ff',art:'jazz'}
 };
 
 export const teamNames = {

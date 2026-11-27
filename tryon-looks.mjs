@@ -13,7 +13,7 @@ const look = (id, label, reference, options = {}) => ({
 
 export const tryonSchools = {
   rock: {
-    name: ['Rock & Punk', 'Rock & Punk'], back: ['Rock Room', '搖滾學院'], marque: 'ROCK & PUNK',
+    name: ['Rock & Punk', 'Rock & Punk'], marque: 'ROCK & PUNK',
     tint: '#42121b', trim: '#ffc777', accent: '#dc3958', highlight: '#ff9859',
     looks: [
       look('rock', ['Studded Vest', '銀釘背心'], 'assets/tryon/rock-3d/outfit-reference.webp', {
@@ -27,7 +27,7 @@ export const tryonSchools = {
     ],
   },
   jazz: {
-    name: ['Jazz & Classic', 'Jazz & Classic'], back: ['Jazz Room', '爵士學院'], marque: 'JAZZ & CLASSIC',
+    name: ['Jazz & Classic', 'Jazz & Classic'], marque: 'JAZZ & CLASSIC',
     tint: '#182749', trim: '#f4d087', accent: '#254bad', highlight: '#a2cfe9',
     looks: [
       look('jazz-baroque', ['Baroque Brocade', '巴洛克織錦禮服'], referencePhotos + 'jazz/images (80).jpeg', {
@@ -43,7 +43,7 @@ export const tryonSchools = {
     ],
   },
   kpop: {
-    name: ['K-pop & Hip-Hop', 'K-pop & Hip-Hop'], back: ['K-pop Room', '韓流學院'], marque: 'K-POP & HIP-HOP',
+    name: ['K-pop & Hip-Hop', 'K-pop & Hip-Hop'], marque: 'K-POP & HIP-HOP',
     tint: '#34135b', trim: '#ffc3f0', accent: '#bd42db', highlight: '#43e8e7',
     looks: [
       look('kpop-gold', ['Black & Gold Idol', '黑金偶像舞台裝'], referencePhotos + 'kpop/images (87).jpeg'),
@@ -70,7 +70,7 @@ export const tryonSchools = {
     ],
   },
   disco: {
-    name: ['Disco Vibe', 'Disco Vibe'], back: ['Disco Room', '迪斯可學院'], marque: 'DISCO VIBE',
+    name: ['Disco Vibe', 'Disco Vibe'], marque: 'DISCO VIBE',
     tint: '#44154e', trim: '#ffc6ec', accent: '#e139b1', highlight: '#73c5ff',
     looks: [
       look('disco-magenta', ['Magenta Sequins', '桃紅閃片西裝'], referencePhotos + 'disco/images (79).jpeg', {

@@ -1,4 +1,5 @@
-import { tryonSchools } from './tryon-looks.mjs?v=mirror-upper-body-20261126';
+import { schools } from './interior-content.mjs?v=school-room-names-20261127';
+import { tryonSchools } from './tryon-looks.mjs?v=school-room-names-20261127';
 import { createSchoolFrame } from './tryon-frame.mjs?v=mirror-fit-20261126';
 
 const copy = {
@@ -82,7 +83,7 @@ const genre = Object.hasOwn(tryonSchools, requestedGenre) ? requestedGenre : 'ro
 const school = tryonSchools[genre];
 const studioCrest = byId('studio-crest');
 if (studioCrest) {
-  studioCrest.src = `assets/interior/school-crest-${genre}.png`;
+  studioCrest.src = `assets/interior/crest-${genre}.webp`;
   document.body.style.setProperty('--studio-tint', school.tint);
   document.body.style.setProperty('--studio-trim', school.trim);
 }
@@ -133,7 +134,7 @@ const defaultFit = { x: W * .5, y: H * .36, width: W * .67, angle: 0 };
 let look = selectedFromGenre || looks[0];
 const hasHeadEffect = () => Boolean(look.paint || look.head);
 const t = (key) => {
-  if (key === 'back') return localized(school.back);
+  if (key === 'back') return schools[genre].name;
   if (key === 'title') return language === 'zh' ? '魔法試衣鏡' : 'MAGIC MIRROR';
   if (key === 'welcome') return (language === 'zh' ? '試穿 ' : 'Try on ') + localized(school.name);
   if (key === 'tracking' && !look.paint) return language === 'zh' ? '3D 服裝' : '3D outfit';

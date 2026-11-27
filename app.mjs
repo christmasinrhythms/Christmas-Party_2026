@@ -4,8 +4,8 @@ import {INVITE_ART,isPhoneLayout,inviteGeometry,phoneInviteWidth,fitPhoneInvite,
 import {createSoundControls} from './audio-ui.mjs?v=tripo-rooms-20261126';
 import {WoodenFlipClock} from './flip-clock.mjs';
 import {countdown,cameraFrame,focusCamera,icsContent} from './domain.mjs';
-import {mountHouseInterior} from './interior.mjs?v=tv-copy-layout-20261126';
-import {schools} from './interior-content.mjs?v=video-challenge-20261126b';
+import {mountHouseInterior} from './interior.mjs?v=school-room-names-20261127';
+import {schools} from './interior-content.mjs?v=school-room-names-20261127';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const entryParams=new URLSearchParams(location.search);
 let directRoom=Object.hasOwn(schools,entryParams.get('room'))?entryParams.get('room'):null;

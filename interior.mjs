@@ -1,4 +1,4 @@
-import {schools,rundown,reelRules,teamNames} from './interior-content.mjs?v=video-challenge-20261126b';
+import {schools,rundown,reelRules,teamNames} from './interior-content.mjs?v=school-room-names-20261127';
 import {reelDirectory,sharedReels} from './room-reels.mjs?v=tv-copy-layout-20261126';
 import {createRoomTv} from './room-tv.mjs?v=tv-copy-layout-20261126';
 import {attachOutfitGallery} from './outfit-gallery.mjs?v=room-polish-20261126';
@@ -66,7 +66,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   const outfitGallery=attachOutfitGallery(root,()=>galleries.get(scene));
   const returnLabel=()=>panel==='photo'?copy('backRoom'):copy('back');
   const crest=id=>art(`crest-${id}`);
-  const name=id=>local(schools[id].name);
+  const name=id=>schools[id].name;
   const btn=(a,label,classes='',value='')=>`<button class="${classes}" type="button" data-house="${a}"${value?` data-value="${value}"`:''}>${label}</button>`;
   const updateTrigger=()=>{
     trigger.setAttribute('aria-label',copy('enter'));
@@ -138,7 +138,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
   }
   function renderHall(){
     const doors=Object.keys(schools).map(id=>btn('room',`<span class="door-sign hall-plaque">
-      <span class="plaque-hangers" aria-hidden="true"></span>${crest(id)}<span class="crest-plaque hall-incised">${name(id)}</span>
+      <span class="plaque-hangers" aria-hidden="true"></span>${crest(id)}<span class="crest-plaque hall-incised" lang="en">${name(id)}</span>
     </span>`,'school-door',id)).join('');
     const board=btn('rundown',`${art('rundown')}
       <span class="hall-board-face"><span class="hall-incised">${copy('rundown')}</span>
@@ -293,7 +293,7 @@ export function mountHouseInterior({root,outside,trigger,entrance,onEnter,onReve
       <div class="house-shade" aria-hidden="true"></div>
       <div class="house-scene${room?' room-scene':''}" ${panel?'inert aria-hidden="true"':transitioning?'inert':''}>
         <header class="house-top"><div class="house-top-actions">${room?'':btn('outside','‹ '+copy('outside'),'house-action')}${btn('motion',motion()?'▷':'Ⅱ','house-action compact')}</div>
-          <div class="house-heading">${room?crest(scene):''}<h2 id="house-title" tabindex="-1">${room?name(scene):copy('lobby')}</h2></div>
+          <div class="house-heading">${room?crest(scene):''}<h2 id="house-title" tabindex="-1"${room?' lang="en"':''}>${room?name(scene):copy('lobby')}</h2></div>
         </header>
         ${room?renderRoom():renderHall()}
         ${room?`<footer class="interior-return">${btn('lobby','‹ '+copy('back'),'house-action return-button')}</footer>`:`<footer class="hall-nav" aria-label="${copy('insideHint')}">${btn('pan-left','‹','house-action compact')}<span>${copy('insideHint')}</span>${btn('pan-right','›','house-action compact')}</footer>`}
